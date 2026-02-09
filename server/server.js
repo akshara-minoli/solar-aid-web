@@ -2,6 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import connectDB from './config/db.js';
+
+// Import routes
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
+import contactRoutes from './routes/contact.js';
 
 dotenv.config();
 
@@ -9,9 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected successfully'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+connectDB();
 
 // Middleware
 app.use(cors({
@@ -31,6 +35,20 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'Server is healthy',
     database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/contact', contactRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal server error'
   });
 });
 
