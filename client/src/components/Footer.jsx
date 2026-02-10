@@ -1,51 +1,82 @@
 import React from 'react';
-import './Footer.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-content">
-          <div className="footer-section">
-            <h3>
-              <span className="footer-logo">☀️</span> Solar Aid
+    <footer className="bg-gradient-to-br from-gray-800 to-gray-600 text-white py-12 px-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <div className="text-center md:text-left">
+            <h3 className="text-xl md:text-2xl mb-4 flex items-center gap-2 justify-center md:justify-start">
+              <span className="text-3xl">☀️</span> Solar Aid
             </h3>
-            <p>Empowering rural communities with clean, affordable solar energy solutions.</p>
+            <p className="leading-relaxed text-gray-300 mb-2">Empowering rural communities with clean, affordable solar energy solutions.</p>
           </div>
 
-          <div className="footer-section">
-            <h4>Quick Links</h4>
-            <ul>
-              <li><a href="#home">Home</a></li>
-              <li><a href="#about">About Us</a></li>
-              <li><a href="#features">Features</a></li>
-              <li><a href="#contact">Contact</a></li>
+          <div className="text-center md:text-left">
+            <h4 className="text-lg md:text-xl mb-4 text-yellow-200">Quick Links</h4>
+            <ul className="list-none p-0">
+              <li className="mb-3">
+                <a href="#home" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Home
+                </a>
+              </li>
+              <li className="mb-3">
+                <a href="#about" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  About Us
+                </a>
+              </li>
+              <li className="mb-3">
+                <a href="#features" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Features
+                </a>
+              </li>
+              <li className="mb-3">
+                <a href="#contact" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Contact
+                </a>
+              </li>
             </ul>
           </div>
 
-          <div className="footer-section">
-            <h4>Resources</h4>
-            <ul>
-              <li><a href="#features">Learn Solar</a></li>
-              <li><a href="#contact">Cost Estimation</a></li>
-              <li><a href="#signin">Sign In</a></li>
-              <li><a href="#login">Login</a></li>
+          <div className="text-center md:text-left">
+            <h4 className="text-lg md:text-xl mb-4 text-yellow-200">Resources</h4>
+            <ul className="list-none p-0">
+              <li className="mb-3">
+                <a href="#features" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Learn Solar
+                </a>
+              </li>
+              <li className="mb-3">
+                <a href="#contact" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Cost Estimation
+                </a>
+              </li>
+              <li className="mb-3">
+                <a href="#signin" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Sign In
+                </a>
+              </li>
+              <li className="mb-3">
+                <a href="#login" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
+                  Login
+                </a>
+              </li>
             </ul>
           </div>
 
-          <div className="footer-section">
-            <h4>Contact Info</h4>
-            <p>📧 info@solaraid.com</p>
-            <p>📱 +1 (555) 123-4567</p>
-            <p>📍 University Campus</p>
+          <div className="text-center md:text-left">
+            <h4 className="text-lg md:text-xl mb-4 text-yellow-200">Contact Info</h4>
+            <p className="text-gray-300 mb-2">📧 info@solaraid.com</p>
+            <p className="text-gray-300 mb-2">📱 +1 (555) 123-4567</p>
+            <p className="text-gray-300 mb-2">📍 University Campus</p>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <p>&copy; {currentYear} Solar Aid. All rights reserved. | A University Project</p>
-          <p className="footer-note">Made with 💚 for rural communities</p>
+        <div className="border-t border-white/20 pt-6 text-center">
+          <p className="text-gray-300 mb-2">&copy; {currentYear} Solar Aid. All rights reserved. | A University Project</p>
+          <p className="text-sm text-gray-400">Made with 💚 for rural communities</p>
         </div>
       </div>
     </footer>

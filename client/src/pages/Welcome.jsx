@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 
 const Welcome = () => {
   return (
-    <div className="welcome-page">
+    <div className="w-full">
       <Navbar />
       <IntroBanner />
       <Features />

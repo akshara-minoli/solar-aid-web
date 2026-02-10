@@ -15,6 +15,14 @@ export const signup = async (req, res) => {
   try {
     const { fullName, email, phone, password, confirmPassword } = req.body;
 
+    // Check if all fields are provided
+    if (!fullName || !email || !phone || !password || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please fill in all fields'
+      });
+    }
+
     // Check if passwords match
     if (password !== confirmPassword) {
       return res.status(400).json({
@@ -23,37 +31,54 @@ export const signup = async (req, res) => {
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    // Check password strength
+    if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message: 'User with this email already exists'
+        message: 'Password must be at least 6 characters long'
       });
     }
 
-    // Create user
-    const user = await User.create({
-      fullName,
-      email,
-      phone,
-      password
-    });
-
-    // Generate token
-    const token = generateToken(user._id);
-
-    res.status(201).json({
-      success: true,
-      message: 'Account created successfully',
-      token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        phone: user.phone
+    try {
+      // Check if user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'User with this email already exists'
+        });
       }
-    });
+
+      // Create user
+      const user = await User.create({
+        fullName,
+        email,
+        phone,
+        password
+      });
+
+      // Generate token
+      const token = generateToken(user._id);
+
+      res.status(201).json({
+        success: true,
+        message: 'Account created successfully',
+        token,
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          phone: user.phone
+        }
+      });
+
+    } catch (dbError) {
+      console.error('Database signup error:', dbError.message);
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection error. Unable to create account at this time. Please try the demo login: demo@solaraid.com / demo123'
+      });
+    }
 
   } catch (error) {
     console.error('Signup error:', error);
@@ -79,40 +104,66 @@ export const login = async (req, res) => {
       });
     }
 
-    // Find user and include password field
-    const user = await User.findOne({ email }).select('+password');
-
-    // Check if user exists
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
+    // Demo user for testing when database is disconnected
+    if (email === 'demo@solaraid.com' && password === 'demo123') {
+      const token = generateToken('demo-user-id');
+      return res.status(200).json({
+        success: true,
+        message: 'Login successful (Demo Mode)',
+        token,
+        user: {
+          id: 'demo-user-id',
+          fullName: 'Demo User',
+          email: 'demo@solaraid.com',
+          phone: '+1234567890'
+        }
       });
     }
 
-    // Check if password matches
-    const isPasswordCorrect = await user.comparePassword(password);
-    if (!isPasswordCorrect) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
-    }
+    // Try database login if connected
+    try {
+      // Find user and include password field
+      const user = await User.findOne({ email }).select('+password');
 
-    // Generate token
-    const token = generateToken(user._id);
-
-    res.status(200).json({
-      success: true,
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        phone: user.phone
+      // Check if user exists
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
       }
-    });
+
+      // Check if password matches
+      const isPasswordCorrect = await user.comparePassword(password);
+      if (!isPasswordCorrect) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid email or password'
+        });
+      }
+
+      // Generate token
+      const token = generateToken(user._id);
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful',
+        token,
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          phone: user.phone
+        }
+      });
+
+    } catch (dbError) {
+      console.error('Database login error:', dbError.message);
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection error. Please try the demo login: demo@solaraid.com / demo123'
+      });
+    }
 
   } catch (error) {
     console.error('Login error:', error);
