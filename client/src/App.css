@@ -1,18 +1,1 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-#root {
-  width: 100%;
-}
-
-.welcome-page {
-  width: 100%;
-}
-
-/* Smooth scrolling for anchor links */
-html {
-  scroll-behavior: smooth;
-}
+/* App-specific utilities - most styling is now handled by Tailwind classes */

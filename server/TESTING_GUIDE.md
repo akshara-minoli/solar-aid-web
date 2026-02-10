@@ -8,6 +8,78 @@ Test your Solar Aid backend APIs using these methods:
 2. Import the requests below
 3. Test each endpoint
 
+### Postman Setup for POST Requests:
+1. **Method**: Set to POST
+2. **URL**: Enter the endpoint URL
+3. **Body Tab**: Click on "Body"
+4. **Raw**: Select "raw" radio button
+5. **JSON**: Select "JSON" from the dropdown (next to raw)
+6. **Body Content**: Paste the JSON body below
+
+### 🔥 Quick Test Endpoints:
+
+#### 1. Health Check (GET)
+- **URL**: `http://localhost:5000/api/health`
+- **Method**: GET
+- **Body**: None needed
+
+#### 2. View All Users (GET) 
+- **URL**: `http://localhost:5000/api/auth/users`
+- **Method**: GET
+- **Body**: None needed
+
+#### 3. View All Contacts (GET)
+- **URL**: `http://localhost:5000/api/contact/debug`
+- **Method**: GET  
+- **Body**: None needed
+
+#### 4. User Registration (POST)
+- **URL**: `http://localhost:5000/api/auth/signup`
+- **Method**: POST
+- **Body** (raw JSON):
+```json
+{
+  "fullName": "Postman Test User",
+  "email": "postman@test.com", 
+  "phone": "+1234567890",
+  "password": "postman123",
+  "confirmPassword": "postman123"
+}
+```
+
+#### 5. User Login (POST)
+- **URL**: `http://localhost:5000/api/auth/login`
+- **Method**: POST
+- **Body** (raw JSON):
+```json
+{
+  "email": "postman@test.com",
+  "password": "postman123"
+}
+```
+
+#### 6. Contact Form (POST)
+- **URL**: `http://localhost:5000/api/contact`
+- **Method**: POST
+- **Body** (raw JSON):
+```json
+{
+  "name": "Postman Contact",
+  "email": "postman@contact.com", 
+  "message": "This is a test message from Postman!"
+}
+```
+
+#### 7. Forgot Password (POST)
+- **URL**: `http://localhost:5000/api/users/forgot-password`
+- **Method**: POST
+- **Body** (raw JSON):
+```json
+{
+  "email": "postman@test.com"
+}
+```
+
 ## Method 2: Using curl (Command Line)
 
 ### Test Sign Up
@@ -109,9 +181,16 @@ Invoke-RestMethod -Uri "http://localhost:5000/api/contact" -Method Post -Body $b
 
 ## Troubleshooting
 
+**Error: "Please provide email and password"**
+- Make sure you're using POST method (not GET)
+- Go to Body tab in Postman
+- Select "raw" and choose "JSON" from dropdown
+- Paste the JSON body with required fields
+
 **Error: Connection refused**
 - Make sure your server is running on http://localhost:5000
 - Check if MongoDB is connected
+- Run: `cd server && npm start`
 
 **Error: User already exists**
 - Try a different email address
@@ -121,6 +200,11 @@ Invoke-RestMethod -Uri "http://localhost:5000/api/contact" -Method Post -Body $b
 - Check that all required fields are provided
 - Ensure email format is valid
 - Password must be at least 6 characters
+
+**Error: 400 Bad Request in Postman**
+- Verify Content-Type is set to "application/json"
+- Check JSON syntax (no trailing commas, proper quotes)
+- Ensure all required fields are included
 
 ## Viewing Data in MongoDB
 
