@@ -5,6 +5,7 @@ import SignIn from './pages/SignIn'
 import ForgotPassword from './pages/ForgotPassword'
 import UserDashboard from './pages/UserDashboard'
 import AddHousehold from './pages/AddHousehold'
+import ViewHousehold from './pages/ViewHousehold'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -23,6 +24,8 @@ function App() {
         setCurrentPage('dashboard');
       } else if (hash === 'add-household') {
         setCurrentPage('add-household');
+      } else if (hash === 'view-household') {
+        setCurrentPage('view-household');
       } else {
         setCurrentPage('home');
       }
@@ -48,6 +51,8 @@ function App() {
     return <UserDashboard />;
   } else if (currentPage === 'add-household') {
     return <AddHousehold />;
+  } else if (currentPage === 'view-household') {
+    return <ViewHousehold />;
   } else {
     return <Welcome />;
   }
