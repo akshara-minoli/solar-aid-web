@@ -114,3 +114,180 @@ export const loginUser = async (req, res) => {
     });
   }
 };
+
+// @desc    Get user profile
+// @route   GET /api/users/profile
+// @access  Private
+export const getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        createdAt: user.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching user profile'
+    });
+  }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+export const updateUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update fields if provided
+    const { fullName, email, phone, password } = req.body;
+    
+    if (fullName) user.fullName = fullName;
+    if (phone) user.phone = phone;
+    
+    // Check if email is being changed and if it's already in use
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email is already in use'
+        });
+      }
+      user.email = email;
+    }
+
+    // Update password if provided
+    if (password) {
+      user.password = password; // Will be hashed by pre-save hook
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+        createdAt: user.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error updating user profile'
+    });
+  }
+};
+
+// @desc    Delete user account
+// @route   DELETE /api/users/profile
+// @access  Private
+export const deleteUserAccount = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Delete user's related data (households, consultations, assistances)
+    // Note: You may want to add cascade delete for related data
+    await User.findByIdAndDelete(req.user._id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Account deleted successfully',
+      data: {}
+    });
+
+  } catch (error) {
+    console.error('Delete account error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error deleting user account'
+    });
+  }
+};
+
+// @desc    Get all users (Admin)
+// @route   GET /api/users
+// @access  Private/Admin
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+
+  } catch (error) {
+    console.error('Get all users error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching users'
+    });
+  }
+};
+
+// @desc    Get single user by ID (Admin)
+// @route   GET /api/users/:id
+// @access  Private/Admin
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+
+  } catch (error) {
+    console.error('Get user by ID error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching user'
+    });
+  }
+};

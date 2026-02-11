@@ -34,8 +34,9 @@ const DashboardLayout = ({ children, title }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Overview', icon: '📊' },
         { id: 'view-household', label: 'Household Profile', icon: '🏠' },
-        // Reports is currently a sub-section of dashboard/household, or handled as dashboard for now
-        { id: 'reports', label: 'Solar Reports', icon: '📈', alias: 'dashboard' },
+        { id: 'solar-calculator', label: 'Solar Calculator', icon: '☀️' },
+        { id: 'solar-reports', label: 'Solar Reports', icon: '📈' },
+        { id: 'profile', label: 'My Profile', icon: '👤' },
     ];
 
     const activeId = currentHash.substring(1) || 'dashboard';
@@ -99,7 +100,10 @@ const DashboardLayout = ({ children, title }) => {
                 </nav>
 
                 {/* User Card */}
-                <div className="m-4 p-6 rounded-2xl bg-emerald-700 backdrop-blur-md border border-white/10 flex-shrink-0 hover:bg-emerald-700/80 transition-all duration-300">
+                <div 
+                    onClick={() => window.location.hash = 'profile'}
+                    className="m-4 p-6 rounded-2xl bg-emerald-700 backdrop-blur-md border border-white/10 flex-shrink-0 hover:bg-emerald-700/80 transition-all duration-300 cursor-pointer"
+                >
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-white text-emerald-600 flex items-center justify-center font-bold text-lg shadow-md flex-shrink-0">
                             {userName.charAt(0).toUpperCase()}

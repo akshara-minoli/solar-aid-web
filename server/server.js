@@ -9,6 +9,9 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import contactRoutes from './routes/contact.js';
 import householdRoutes from './routes/households.js';
+import consultationRoutes from './routes/consultations.js';
+import assistanceRoutes from './routes/assistances.js';
+import solarRoutes from './routes/solar.js';
 
 dotenv.config();
 
@@ -46,6 +49,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/households', householdRoutes);
+app.use('/api/consultations', consultationRoutes);
+app.use('/api/assistances', assistanceRoutes);
+app.use('/api/solar', solarRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

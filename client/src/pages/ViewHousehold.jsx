@@ -4,23 +4,25 @@ import DashboardLayout from '../components/DashboardLayout';
 const ViewHousehold = () => {
   const [householdData, setHouseholdData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     // Try to fetch household data
     const fetchHouseholdData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/api/users/household', {
+        const response = await fetch('/api/households', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
         const data = await response.json();
-        if (data.success && data.household) {
-          setHouseholdData(data.household);
+        if (data.success && data.households && data.households.length > 0) {
+          // Get the most recent household
+          setHouseholdData(data.households[0]);
         }
       } catch (error) {
-        console.log('No household data found');
+        console.log('No household data found:', error);
       } finally {
         setLoading(false);
       }
@@ -34,11 +36,37 @@ const ViewHousehold = () => {
   };
 
   const navigateToEdit = () => {
-    window.location.hash = 'add-household';
+    if (householdData && householdData._id) {
+      window.location.hash = `add-household?id=${householdData._id}`;
+    }
   };
 
   const navigateToRegister = () => {
     window.location.hash = 'add-household';
+  };
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/households/${householdData._id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      if (data.success) {
+        alert('Household profile deleted successfully!');
+        window.location.hash = 'dashboard';
+      } else {
+        alert(data.message || 'Failed to delete household profile');
+      }
+    } catch (error) {
+      console.error('Error deleting household:', error);
+      alert('Error deleting household profile. Please try again.');
+    }
+    setShowDeleteModal(false);
   };
 
   // Loading state
@@ -72,7 +100,7 @@ const ViewHousehold = () => {
               onClick={navigateToRegister}
               className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-md hover:shadow-lg text-lg"
             >
-              📝 Register Your Household
+              📝 Setup Your Household Profile
             </button>
           </div>
 
@@ -104,7 +132,7 @@ const ViewHousehold = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-slate-800 mb-1">Energy Tracking</h4>
-                  <p className="text-sm text-slate-600">Monitor your household&apos;s energy consumption and solar potential</p>
+                  <p className="text-sm text-slate-600">Monitor your household profile&apos;s energy consumption and solar potential</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -133,16 +161,24 @@ const ViewHousehold = () => {
             <div className="flex items-center gap-4">
               <div className="text-5xl">🏠</div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">My Household Information</h1>
+                <h1 className="text-2xl font-bold text-slate-800">My Household Profile</h1>
                 <p className="text-slate-500 text-sm">Your registered home details and solar assessment</p>
               </div>
             </div>
-            <button
-              onClick={navigateToEdit}
-              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all duration-300"
-            >
-              ✏️ Edit Details
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={navigateToEdit}
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-all duration-300"
+              >
+                ✏️ Edit Details
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300"
+              >
+                🗑️ Delete
+              </button>
+            </div>
           </div>
         </div>
 
@@ -153,7 +189,7 @@ const ViewHousehold = () => {
           <div className="grid md:grid-cols-2 gap-5">
             <div>
               <h3 className="font-semibold text-slate-500 text-sm mb-2">House Type</h3>
-              <p className="text-lg text-slate-800 bg-slate-50 p-3 rounded-lg">
+              <p className="text-lg text-slate-800 bg-slate-50 p-3 rounded-lg capitalize">
                 {householdData.houseType || 'Not specified'}
               </p>
             </div>
@@ -178,6 +214,13 @@ const ViewHousehold = () => {
                 {householdData.members || 'Not specified'}
               </p>
             </div>
+
+            <div className="md:col-span-2">
+              <h3 className="font-semibold text-slate-500 text-sm mb-2">House Address</h3>
+              <p className="text-lg text-slate-800 bg-slate-50 p-3 rounded-lg">
+                {householdData.houseAddress || 'Not specified'}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -196,14 +239,14 @@ const ViewHousehold = () => {
             <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-5 rounded-xl text-center border border-orange-200">
               <div className="text-4xl mb-3">💰</div>
               <h3 className="font-bold text-orange-800 mb-2 text-sm">Estimated Cost</h3>
-              <p className="text-3xl font-bold text-orange-700">₹{((householdData.roofArea * 0.004) * 50000).toLocaleString()}</p>
+              <p className="text-3xl font-bold text-orange-700">Rs. {((householdData.roofArea * 0.004) * 150000).toLocaleString()}</p>
               <p className="text-xs text-orange-600 mt-2">Including installation</p>
             </div>
 
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-xl text-center border border-emerald-200">
               <div className="text-4xl mb-3">📉</div>
               <h3 className="font-bold text-emerald-800 mb-2 text-sm">Monthly Savings</h3>
-              <p className="text-3xl font-bold text-emerald-700">₹{((householdData.roofArea * 0.004) * 400).toFixed(0)}</p>
+              <p className="text-3xl font-bold text-emerald-700">Rs. {((householdData.roofArea * 0.004) * 1200).toFixed(0)}</p>
               <p className="text-xs text-emerald-600 mt-2">On electricity bills</p>
             </div>
           </div>
@@ -286,6 +329,35 @@ const ViewHousehold = () => {
             </button>
           </div>
         </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl p-8 max-w-md w-full shadow-2xl">
+              <div className="text-center mb-6">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Delete Household Profile?</h3>
+                <p className="text-slate-600">
+                  This action cannot be undone. All your household data will be permanently deleted.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold rounded-lg transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
