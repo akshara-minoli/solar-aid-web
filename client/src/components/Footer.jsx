@@ -49,11 +49,6 @@ const Footer = () => {
                 </a>
               </li>
               <li className="mb-3">
-                <a href="#contact" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
-                  Cost Estimation
-                </a>
-              </li>
-              <li className="mb-3">
                 <a href="#signin" className="text-gray-300 transition-all duration-300 ease-in-out hover:text-yellow-200 hover:translate-x-1 inline-block">
                   Sign In
                 </a>

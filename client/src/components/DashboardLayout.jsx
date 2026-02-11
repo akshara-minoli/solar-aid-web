@@ -34,8 +34,6 @@ const DashboardLayout = ({ children, title }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Overview', icon: '📊' },
         { id: 'view-household', label: 'Household Profile', icon: '🏠' },
-        { id: 'solar-calculator', label: 'Solar Calculator', icon: '☀️' },
-        { id: 'solar-reports', label: 'Solar Reports', icon: '📈' },
         { id: 'profile', label: 'My Profile', icon: '👤' },
     ];
 
@@ -68,10 +66,10 @@ const DashboardLayout = ({ children, title }) => {
                             <a
                                 key={item.id}
                                 href={`#${item.id}`}
-                                style={isActive ? { 
-                                    backgroundColor: '#ffffff', 
+                                style={isActive ? {
+                                    backgroundColor: '#ffffff',
                                     color: '#065f46'
-                                } : { 
+                                } : {
                                     backgroundColor: 'transparent',
                                     color: '#ffffff'
                                 }}
@@ -100,7 +98,7 @@ const DashboardLayout = ({ children, title }) => {
                 </nav>
 
                 {/* User Card */}
-                <div 
+                <div
                     onClick={() => window.location.hash = 'profile'}
                     className="m-4 p-6 rounded-2xl bg-emerald-700 backdrop-blur-md border border-white/10 flex-shrink-0 hover:bg-emerald-700/80 transition-all duration-300 cursor-pointer"
                 >

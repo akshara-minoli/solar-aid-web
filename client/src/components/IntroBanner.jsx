@@ -35,7 +35,7 @@ const IntroBanner = () => {
               href="#contact"
               className="px-8 py-5 bg-white text-gray-900 border-2 border-gray-100 rounded-2xl font-bold text-lg transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 hover:-translate-y-1 flex items-center justify-center"
             >
-              Get Cost Estimate
+              Contact Us
             </a>
           </div>
         </div>

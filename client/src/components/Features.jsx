@@ -8,11 +8,6 @@ const Features = () => {
       description: 'Understand how solar energy works in simple language. Perfect for beginners with no technical knowledge.'
     },
     {
-      icon: '💰',
-      title: 'Estimate Your Cost',
-      description: 'Get a rough idea of how much a solar system would cost for your home based on your needs.'
-    },
-    {
       icon: '🏠',
       title: 'Register Your Home',
       description: 'Create your profile and save your information for personalized solar recommendations.'

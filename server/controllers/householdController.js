@@ -57,12 +57,14 @@ export const addHousehold = async (req, res) => {
 // @access  Private
 export const getUserHouseholds = async (req, res) => {
   try {
-    const households = await Household.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const households = await Household.find({ userId: req.user._id }).sort({ updatedAt: -1 });
+
+    console.log(`Found ${households.length} households for user ${req.user._id}`);
 
     res.status(200).json({
       success: true,
       count: households.length,
-      data: households
+      households: households
     });
   } catch (error) {
     console.error('Get households error:', error);
@@ -130,7 +132,7 @@ export const updateHousehold = async (req, res) => {
     if (district) household.district = district;
     if (houseAddress) household.houseAddress = houseAddress;
     if (appliances !== undefined) household.appliances = appliances;
-    
+
     // Handle numeric fields with conversion
     if (roofArea !== undefined) {
       const numRoofArea = Number(roofArea);
@@ -142,7 +144,7 @@ export const updateHousehold = async (req, res) => {
       }
       household.roofArea = numRoofArea;
     }
-    
+
     if (members !== undefined) {
       const numMembers = Number(members);
       if (isNaN(numMembers) || numMembers <= 0) {
@@ -155,6 +157,8 @@ export const updateHousehold = async (req, res) => {
     }
 
     await household.save();
+
+    console.log('Household updated successfully:', household._id);
 
     res.status(200).json({
       success: true,

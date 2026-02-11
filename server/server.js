@@ -11,7 +11,7 @@ import contactRoutes from './routes/contact.js';
 import householdRoutes from './routes/households.js';
 import consultationRoutes from './routes/consultations.js';
 import assistanceRoutes from './routes/assistances.js';
-import solarRoutes from './routes/solar.js';
+import weatherRoutes from './routes/weather.js';
 
 dotenv.config();
 
@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'Server is healthy',
     database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
   });
@@ -51,7 +51,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/households', householdRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/assistances', assistanceRoutes);
-app.use('/api/solar', solarRoutes);
+app.use('/api/weather', weatherRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
