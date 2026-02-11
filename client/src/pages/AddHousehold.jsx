@@ -1,15 +1,11 @@
 import { useState } from 'react';
-<<<<<<< Updated upstream
 import DashboardLayout from '../components/DashboardLayout';
-=======
->>>>>>> Stashed changes
 
 const AddHousehold = () => {
     const [formData, setFormData] = useState({
         houseType: '',
         roofArea: '',
         district: '',
-<<<<<<< Updated upstream
         members: '',
         houseAddress: ''
     });
@@ -179,144 +175,6 @@ const AddHousehold = () => {
                 </div>
             </div>
         </DashboardLayout>
-=======
-        members: ''
-    });
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        alert('Household details saved successfully! (UI Demo)');
-        console.log('Household Data:', formData);
-        // Redirect to view household
-        window.location.hash = 'view-household';
-    };
-
-    const navigateBack = () => {
-        window.location.hash = 'dashboard';
-    };
-
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white p-6 shadow-lg">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex items-center space-x-4">
-                        <button
-                            onClick={navigateBack}
-                            className="bg-orange-600 hover:bg-orange-700 p-2 rounded-lg transition duration-200"
-                        >
-                            ← Back
-                        </button>
-                        <span className="text-3xl">🏠</span>
-                        <h1 className="text-2xl font-bold">Add Household Details</h1>
-                    </div>
-                </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="max-w-4xl mx-auto p-6">
-                <div className="bg-white rounded-xl shadow-lg p-8">
-                    <div className="mb-8 text-center">
-                        <h2 className="text-2xl font-bold text-green-700 mb-2">Tell Us About Your Home</h2>
-                        <p className="text-gray-600">We need this information to calculate your solar potential</p>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-6">
-
-                        {/* House Type */}
-                        <div>
-                            <label className="block text-sm font-bold text-green-700 mb-2">
-                                House Type *
-                            </label>
-                            <select
-                                name="houseType"
-                                value={formData.houseType}
-                                onChange={handleChange}
-                                required
-                                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200 bg-white"
-                            >
-                                <option value="">Select House Type</option>
-                                <option value="pucca">Pucca House (Concrete)</option>
-                                <option value="semi-pucca">Semi-Pucca (Mixed)</option>
-                                <option value="kuccha">Kuccha House (Mud/Thatch)</option>
-                                <option value="apartment">Apartment</option>
-                            </select>
-                        </div>
-
-                        {/* Roof Area */}
-                        <div>
-                            <label className="block text-sm font-bold text-green-700 mb-2">
-                                Roof Area (sq ft) *
-                            </label>
-                            <input
-                                type="number"
-                                name="roofArea"
-                                value={formData.roofArea}
-                                onChange={handleChange}
-                                placeholder="Approximate roof area available for solar"
-                                required
-                                min="50"
-                                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200"
-                            />
-                            <p className="text-sm text-gray-500 mt-1">
-                                💡 Typically 100 sq ft is needed for 1kW solar panels
-                            </p>
-                        </div>
-
-                        {/* District */}
-                        <div>
-                            <label className="block text-sm font-bold text-green-700 mb-2">
-                                District / Location *
-                            </label>
-                            <input
-                                type="text"
-                                name="district"
-                                value={formData.district}
-                                onChange={handleChange}
-                                placeholder="Enter your district name"
-                                required
-                                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200"
-                            />
-                        </div>
-
-                        {/* Family Members */}
-                        <div>
-                            <label className="block text-sm font-bold text-green-700 mb-2">
-                                Number of Family Members
-                            </label>
-                            <input
-                                type="number"
-                                name="members"
-                                value={formData.members}
-                                onChange={handleChange}
-                                placeholder="How many people live here?"
-                                min="1"
-                                className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200"
-                            />
-                        </div>
-
-                        {/* Submit Button */}
-                        <div className="pt-4">
-                            <button
-                                type="submit"
-                                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-4 px-6 rounded-lg transition duration-200 font-bold text-lg shadow-lg"
-                            >
-                                Save Household Details
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </div>
->>>>>>> Stashed changes
     );
 };
 
