@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Welcome from './pages/Welcome'
 import Login from './pages/Login'
 import SignIn from './pages/SignIn'
-import './App.css'
+import ForgotPassword from './pages/ForgotPassword'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -15,6 +15,8 @@ function App() {
         setCurrentPage('login');
       } else if (hash === 'signin') {
         setCurrentPage('signin');
+      } else if (hash === 'forgot') {
+        setCurrentPage('forgot');
       } else {
         setCurrentPage('home');
       }
@@ -34,6 +36,8 @@ function App() {
     return <Login />;
   } else if (currentPage === 'signin') {
     return <SignIn />;
+  } else if (currentPage === 'forgot') {
+    return <ForgotPassword />;
   } else {
     return <Welcome />;
   }

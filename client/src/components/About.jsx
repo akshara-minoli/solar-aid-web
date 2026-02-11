@@ -2,53 +2,52 @@ import React from 'react';
 
 const About = () => {
   return (
-    <section className="py-16 px-8 bg-white" id="about">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="flex justify-center items-center">
-            <div className="w-60 h-60 md:w-80 md:h-80 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-400 flex justify-center items-center shadow-2xl shadow-emerald-500/30 animate-pulse-slow">
-              <span className="text-7xl md:text-9xl">🌍</span>
+    <section className="py-24 px-4 md:px-8 bg-[#fafaf9]" id="about">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-[4rem] p-10 md:p-20 shadow-2xl shadow-gray-200/50 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center border border-gray-50">
+          <div className="relative order-2 lg:order-1">
+            <div className="absolute inset-0 bg-emerald-200 rounded-full blur-3xl opacity-30 scale-110" />
+            <div className="relative w-full aspect-square rounded-[3rem] bg-gradient-to-br from-emerald-500 to-emerald-400 flex justify-center items-center shadow-2xl shadow-emerald-500/20">
+              <span className="text-[120px] md:text-[180px] drop-shadow-2xl">🌍</span>
+
+              {/* Decorative Stats Cards */}
+              <div className="absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-gray-50 hidden md:block">
+                <p className="text-sm font-bold text-gray-900">Project Mission</p>
+                <p className="text-xs text-emerald-500 font-bold">100% Educational</p>
+              </div>
             </div>
           </div>
-          <div className="text-center lg:text-left">
-            <h2 className="text-3xl md:text-4xl text-gray-800 mb-6">About Solar Aid</h2>
-            <p className="text-lg md:text-xl text-orange-400 font-semibold mb-4">
-              Solar Aid is a web-based platform developed as a university project to help rural 
-              households understand and adopt solar energy solutions.
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-gray-600 mb-4">
-              Our mission is simple: make solar energy easy to understand for everyone. We know that 
-              technical terms can be confusing, especially for people who have never used solar power before.
-            </p>
-            <p className="text-base md:text-lg leading-relaxed text-gray-600 mb-8">
-              That's why we created Solar Aid - to explain everything in simple words, help you estimate 
-              costs, and guide you step by step in choosing the right solar system for your home.
-            </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-4 justify-center lg:justify-start text-base md:text-lg text-gray-800">
-                <span className="bg-emerald-500 text-white w-8 h-8 rounded-full flex justify-center items-center font-bold flex-shrink-0">
-                  ✓
-                </span>
-                <span>Simple language, no technical jargon</span>
-              </div>
-              <div className="flex items-center gap-4 justify-center lg:justify-start text-base md:text-lg text-gray-800">
-                <span className="bg-emerald-500 text-white w-8 h-8 rounded-full flex justify-center items-center font-bold flex-shrink-0">
-                  ✓
-                </span>
-                <span>Free cost estimation tools</span>
-              </div>
-              <div className="flex items-center gap-4 justify-center lg:justify-start text-base md:text-lg text-gray-800">
-                <span className="bg-emerald-500 text-white w-8 h-8 rounded-full flex justify-center items-center font-bold flex-shrink-0">
-                  ✓
-                </span>
-                <span>Clear guidance for rural communities</span>
-              </div>
-              <div className="flex items-center gap-4 justify-center lg:justify-start text-base md:text-lg text-gray-800">
-                <span className="bg-emerald-500 text-white w-8 h-8 rounded-full flex justify-center items-center font-bold flex-shrink-0">
-                  ✓
-                </span>
-                <span>Helping make clean energy accessible</span>
-              </div>
+
+          <div className="order-1 lg:order-2 space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">About Solar Aid</h2>
+              <p className="text-xl md:text-2xl text-emerald-600 font-bold leading-relaxed">
+                A non-technical platform designed dedicated to rural empowerment.
+              </p>
+            </div>
+
+            <div className="space-y-6 text-lg text-gray-600 leading-relaxed">
+              <p>
+                Solar Aid is a university project developed with one simple goal: make solar energy easy for everyone.
+                We remove the technical jargon and provide clear, actionable guidance.
+              </p>
+              <p>
+                Whether you're estimating costs for the first time or looking for step-by-step installation help, we're here to guide you towards a brighter, cleaner future for your home.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+              {[
+                'Simple language for all',
+                'Free estimation tools',
+                'Step-by-step guidance',
+                'Sustainable focused'
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-3 text-gray-800 font-bold">
+                  <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm">✓</span>
+                  {item}
+                </div>
+              ))}
             </div>
           </div>
         </div>
