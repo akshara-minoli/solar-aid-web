@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import './Contact.css';
+import React, { useState } from 'react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -48,49 +47,49 @@ const Contact = () => {
   };
 
   return (
-    <section className="contact-section" id="contact">
-      <div className="contact-container">
-        <div className="section-header">
-          <h2>Contact Us</h2>
-          <p className="section-subtitle">Have questions? We&apos;d love to hear from you!</p>
+    <section className="py-16 px-8 bg-gradient-to-b from-green-50 to-gray-50" id="contact">
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl text-gray-800 mb-2">Contact Us</h2>
+          <p className="text-lg md:text-xl text-gray-600">Have questions? We'd love to hear from you!</p>
         </div>
 
-        <div className="contact-content">
-          <div className="contact-info">
-            <h3>Get in Touch</h3>
-            <p>
-              Whether you have questions about solar energy, need help with cost estimation,
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white p-8 md:p-12 rounded-3xl shadow-lg">
+          <div>
+            <h3 className="text-2xl md:text-3xl text-gray-800 mb-4">Get in Touch</h3>
+            <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-8">
+              Whether you have questions about solar energy, need help with cost estimation, 
               or want to learn more about our project, feel free to reach out.
             </p>
-            <div className="contact-details">
-              <div className="contact-item">
-                <span className="contact-icon">📧</span>
+            <div className="flex flex-col gap-8">
+              <div className="flex items-start gap-4">
+                <span className="text-4xl flex-shrink-0">📧</span>
                 <div>
-                  <h4>Email</h4>
-                  <p>info@solaraid.com</p>
+                  <h4 className="text-lg md:text-xl text-gray-800 mb-1">Email</h4>
+                  <p className="text-gray-600">info@solaraid.com</p>
                 </div>
               </div>
-              <div className="contact-item">
-                <span className="contact-icon">📱</span>
+              <div className="flex items-start gap-4">
+                <span className="text-4xl flex-shrink-0">📱</span>
                 <div>
-                  <h4>Phone</h4>
-                  <p>+1 (555) 123-4567</p>
+                  <h4 className="text-lg md:text-xl text-gray-800 mb-1">Phone</h4>
+                  <p className="text-gray-600">+1 (555) 123-4567</p>
                 </div>
               </div>
-              <div className="contact-item">
-                <span className="contact-icon">📍</span>
+              <div className="flex items-start gap-4">
+                <span className="text-4xl flex-shrink-0">📍</span>
                 <div>
-                  <h4>Location</h4>
-                  <p>University Campus<br />Solar Energy Department</p>
+                  <h4 className="text-lg md:text-xl text-gray-800 mb-1">Location</h4>
+                  <p className="text-gray-600">University Campus<br/>Solar Energy Department</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="contact-form-wrapper">
-            <form className="contact-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="name">Your Name</label>
+          <div>
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="name" className="text-base text-gray-800 font-semibold">Your Name</label>
                 <input
                   type="text"
                   id="name"
@@ -98,12 +97,13 @@ const Contact = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your name"
+                  className="p-4 border-2 border-gray-300 rounded-xl text-base font-inherit transition-all duration-300 ease-in-out focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                   required
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="email">Your Email</label>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className="text-base text-gray-800 font-semibold">Your Email</label>
                 <input
                   type="email"
                   id="email"
@@ -111,12 +111,13 @@ const Contact = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="Enter your email"
+                  className="p-4 border-2 border-gray-300 rounded-xl text-base font-inherit transition-all duration-300 ease-in-out focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                   required
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="message">Your Message</label>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="message" className="text-base text-gray-800 font-semibold">Your Message</label>
                 <textarea
                   id="message"
                   name="message"
@@ -124,17 +125,30 @@ const Contact = () => {
                   onChange={handleChange}
                   placeholder="Tell us how we can help you..."
                   rows="5"
+                  className="p-4 border-2 border-gray-300 rounded-xl text-base font-inherit transition-all duration-300 ease-in-out focus:outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-100 resize-vertical"
                   required
                 ></textarea>
               </div>
 
               {message && (
-                <div className={`message ${message.includes('Thank you') ? 'success' : 'error'}`}>
+                <div className={`p-4 rounded-lg text-center font-medium ${
+                  message.includes('Thank you') 
+                    ? 'bg-green-100 text-green-800 border border-green-300' 
+                    : 'bg-red-100 text-red-800 border border-red-300'
+                }`}>
                   {message}
                 </div>
               )}
 
-              <button type="submit" className="submit-btn" disabled={loading}>
+              <button 
+                type="submit" 
+                className={`py-4 px-8 bg-gradient-to-br from-orange-400 to-orange-300 text-white rounded-full text-lg font-bold cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
+                  loading 
+                    ? 'opacity-70 cursor-not-allowed' 
+                    : 'hover:-translate-y-1 hover:shadow-xl'
+                }`}
+                disabled={loading}
+              >
                 {loading ? 'Sending...' : 'Send Message'}
               </button>
             </form>
