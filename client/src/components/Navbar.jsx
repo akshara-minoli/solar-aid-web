@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -15,7 +15,7 @@ const Navbar = () => {
           <span className="logo-icon">☀️</span>
           <span className="logo-text">Solar Aid</span>
         </div>
-        
+
         <button className="menu-toggle" onClick={toggleMenu}>
           ☰
         </button>

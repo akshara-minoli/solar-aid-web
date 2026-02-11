@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './IntroBanner.css';
 
 const IntroBanner = () => {

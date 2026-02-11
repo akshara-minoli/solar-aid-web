@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './About.css';
 
 const About = () => {
@@ -14,15 +14,15 @@ const About = () => {
           <div className="about-text">
             <h2>About Solar Aid</h2>
             <p className="about-intro">
-              Solar Aid is a web-based platform developed as a university project to help rural 
+              Solar Aid is a web-based platform developed as a university project to help rural
               households understand and adopt solar energy solutions.
             </p>
             <p>
-              Our mission is simple: make solar energy easy to understand for everyone. We know that 
+              Our mission is simple: make solar energy easy to understand for everyone. We know that
               technical terms can be confusing, especially for people who have never used solar power before.
             </p>
             <p>
-              That's why we created Solar Aid - to explain everything in simple words, help you estimate 
+              That&apos;s why we created Solar Aid - to explain everything in simple words, help you estimate
               costs, and guide you step by step in choosing the right solar system for your home.
             </p>
             <div className="about-features">
