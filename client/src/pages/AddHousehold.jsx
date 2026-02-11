@@ -25,7 +25,7 @@ const AddHousehold = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/users/household', {
+            const response = await fetch('http://localhost:5000/api/households', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ const AddHousehold = () => {
             const data = await response.json();
             if (data.success) {
                 alert('Household details saved successfully!');
-                window.location.hash = 'view-household';
+                window.location.hash = 'dashboard';
             } else {
                 alert(data.message || 'Failed to save household details');
             }

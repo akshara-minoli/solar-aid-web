@@ -70,8 +70,8 @@ const UserDashboard = () => {
                                 title: 'Household Profile',
                                 desc: 'Configure your house structural details and roof area for high-precision solar mapping.',
                                 icon: '🏠',
-                                route: 'view-household',
-                                cta: 'View Profile'
+                                route: 'add-household',
+                                cta: 'Register Household'
                             },
                             {
                                 title: 'Solar Reports',
