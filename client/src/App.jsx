@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Welcome from './pages/Welcome'
 import Login from './pages/Login'
 import SignIn from './pages/SignIn'
+import UserDashboard from './pages/UserDashboard'
+import AddHousehold from './pages/AddHousehold'
+import ViewHousehold from './pages/ViewHousehold'
+import AddAppliance from './pages/AddAppliance'
+import ViewAppliances from './pages/ViewAppliances'
 import './App.css'
 
 function App() {
@@ -15,6 +20,16 @@ function App() {
         setCurrentPage('login');
       } else if (hash === 'signin') {
         setCurrentPage('signin');
+      } else if (hash === 'dashboard') {
+        setCurrentPage('dashboard');
+      } else if (hash === 'add-household') {
+        setCurrentPage('add-household');
+      } else if (hash === 'view-household') {
+        setCurrentPage('view-household');
+      } else if (hash === 'add-appliance') {
+        setCurrentPage('add-appliance');
+      } else if (hash === 'view-appliances') {
+        setCurrentPage('view-appliances');
       } else {
         setCurrentPage('home');
       }
@@ -34,6 +49,16 @@ function App() {
     return <Login />;
   } else if (currentPage === 'signin') {
     return <SignIn />;
+  } else if (currentPage === 'dashboard') {
+    return <UserDashboard />;
+  } else if (currentPage === 'add-household') {
+    return <AddHousehold />;
+  } else if (currentPage === 'view-household') {
+    return <ViewHousehold />;
+  } else if (currentPage === 'add-appliance') {
+    return <AddAppliance />;
+  } else if (currentPage === 'view-appliances') {
+    return <ViewAppliances />;
   } else {
     return <Welcome />;
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Login.css';
 
 const Login = () => {
@@ -38,7 +38,8 @@ const Login = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         setFormData({ email: '', password: '' });
-        // Redirect to dashboard or home page
+        // Redirect to dashboard
+        window.location.hash = 'dashboard';
       } else {
         setMessage(data.message || 'Login failed');
       }
@@ -109,7 +110,7 @@ const Login = () => {
             </button>
 
             <div className="form-footer">
-              <p>Don't have an account? <a href="#signin">Sign In</a></p>
+              <p>Don&apos;t have an account? <a href="#signin">Sign In</a></p>
             </div>
           </form>
 
