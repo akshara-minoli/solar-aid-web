@@ -43,10 +43,16 @@ const SignIn = () => {
       const data = await response.json();
 
       if (data.success) {
-        alert('Account created successfully! You can now login.');
-        // Optionally store token and redirect
+        // Store token and user data
         localStorage.setItem('token', data.token);
-        setFormData({ fullName: '', email: '', phone: '', password: '', confirmPassword: '' });
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+        setMessage('Account created successfully! Redirecting...');
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.hash = 'dashboard';
+        }, 1000);
       } else {
         // Check if it's a database connection error
         if (data.message && data.message.includes('Database connection error')) {

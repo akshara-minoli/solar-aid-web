@@ -8,6 +8,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import contactRoutes from './routes/contact.js';
+import householdRoutes from './routes/households.js';
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/households', householdRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
