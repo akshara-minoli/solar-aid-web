@@ -1,4 +1,4 @@
-
+import React from 'react';
 import Navbar from '../components/Navbar';
 import IntroBanner from '../components/IntroBanner';
 import Features from '../components/Features';

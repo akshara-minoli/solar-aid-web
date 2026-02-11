@@ -40,14 +40,12 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
+        alert('Login successful! Welcome back.');
         // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        setMessage('Login successful! Redirecting...');
-        // Redirect to dashboard
-        setTimeout(() => {
-          window.location.hash = 'dashboard';
-        }, 500);
+        setFormData({ email: '', password: '' });
+        // Redirect to dashboard or home page
       } else {
         setMessage(data.message || 'Login failed');
       }
