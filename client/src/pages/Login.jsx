@@ -21,6 +21,22 @@ const Login = () => {
       email: 'demo@solaraid.com',
       password: 'demo123'
     });
+    setMessage('Demo credentials loaded - click Login to test');
+  };
+
+  const testConnection = async () => {
+    try {
+      setMessage('Testing connection...');
+      const response = await fetch('http://localhost:5000/api/health');
+      const data = await response.json();
+      if (response.ok) {
+        setMessage(`✅ Server connected: ${data.status}`);
+      } else {
+        setMessage('❌ Server responded but with error');
+      }
+    } catch (error) {
+      setMessage(`❌ Connection failed: ${error.message}`);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -28,16 +44,31 @@ const Login = () => {
     setLoading(true);
     setMessage('');
 
+    console.log('Attempting login with:', { email: formData.email, password: '***' });
+
     try {
+      console.log('Sending request to: http://localhost:5000/api/auth/login');
+      
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
+      console.log('Response received:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
+      console.log('Login response data:', data);
 
       if (data.success) {
         // Store token and user data
@@ -52,8 +83,12 @@ const Login = () => {
         setMessage(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setMessage('Network error. Please check if the server is running.');
+      console.error('Login error details:', error);
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setMessage('Connection failed. Please check if server is running on port 5000.');
+      } else {
+        setMessage(`Network error: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -117,15 +152,24 @@ const Login = () => {
           <div className="bg-orange-50/50 p-6 mb-8 rounded-3xl border border-orange-100 flex items-center justify-between gap-4">
             <div className="text-left">
               <p className="text-sm font-bold text-orange-600 mb-1">Testing our demo? ✨</p>
-              <p className="text-xs text-gray-600">Instantly fill credentials for a tour.</p>
+              <p className="text-xs text-gray-600">Test connection & fill credentials for a tour.</p>
             </div>
-            <button
-              type="button"
-              onClick={fillDemoData}
-              className="px-5 py-3 bg-white text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all duration-300 font-bold text-sm shadow-sm border border-orange-100"
-            >
-              Fill Demo
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={testConnection}
+                className="px-4 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-all duration-300 font-bold text-xs shadow-sm"
+              >
+                Test Server
+              </button>
+              <button
+                type="button"
+                onClick={fillDemoData}
+                className="px-5 py-3 bg-white text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all duration-300 font-bold text-sm shadow-sm border border-orange-100"
+              >
+                Fill Demo
+              </button>
+            </div>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
