@@ -1,0 +1,132 @@
+﻿
+> solar-aid-client@1.0.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32mÔ£ô[39m 54 modules transformed.
+node.exe : 
+[31mx[39m Build 
+failed in 421ms
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: ([31mx   
+ [39m Build faile    
+d in 421ms:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+[31merror during 
+build:
+[31msrc/App.jsx 
+(6:7): "default" is 
+not exported by "src/
+pages/AddHousehold.js
+x", imported by 
+"src/App.jsx".[31m
+file: [36mC:/Users/A
+kshara/Desktop/solar-
+aid-web/client/src/Ap
+p.jsx:6:7[31m
+[33m
+4: import SignIn 
+from './pages/SignIn'
+5: import 
+UserDashboard from '.
+/pages/UserDashboard'
+6: import 
+AddHousehold from './
+pages/AddHousehold'
+          ^
+7: import 
+ViewHousehold from '.
+/pages/ViewHousehold'
+8: import 
+AddAppliance from './
+pages/AddAppliance'
+[31m
+    at 
+getRollupError (file:
+///C:/Users/Akshara/D
+esktop/solar-aid-web/
+client/node_modules/r
+ollup/dist/es/shared/
+parseAst.js:402:41)
+    at error (file://
+/C:/Users/Akshara/Des
+ktop/solar-aid-web/cl
+ient/node_modules/rol
+lup/dist/es/shared/pa
+rseAst.js:398:42)
+    at Module.error (
+file:///C:/Users/Aksh
+ara/Desktop/solar-aid
+-web/client/node_modu
+les/rollup/dist/es/sh
+ared/node-entry.js:17
+040:16)
+    at 
+Module.traceVariable 
+(file:///C:/Users/Aks
+hara/Desktop/solar-ai
+d-web/client/node_mod
+ules/rollup/dist/es/s
+hared/node-entry.js:1
+7452:29)
+    at ModuleScope.fi
+ndVariable (file:///C
+:/Users/Akshara/Deskt
+op/solar-aid-web/clie
+nt/node_modules/rollu
+p/dist/es/shared/node
+-entry.js:15070:39)
+    at FunctionScope.
+findVariable (file://
+/C:/Users/Akshara/Des
+ktop/solar-aid-web/cl
+ient/node_modules/rol
+lup/dist/es/shared/no
+de-entry.js:5673:38)
+    at FunctionBodySc
+ope.findVariable (fil
+e:///C:/Users/Akshara
+/Desktop/solar-aid-we
+b/client/node_modules
+/rollup/dist/es/share
+d/node-entry.js:5673:
+38)
+    at TrackingScope.
+findVariable (file://
+/C:/Users/Akshara/Des
+ktop/solar-aid-web/cl
+ient/node_modules/rol
+lup/dist/es/shared/no
+de-entry.js:5673:38)
+    at TrackingScope.
+findVariable (file://
+/C:/Users/Akshara/Des
+ktop/solar-aid-web/cl
+ient/node_modules/rol
+lup/dist/es/shared/no
+de-entry.js:5673:38)
+    at TrackingScope.
+findVariable (file://
+/C:/Users/Akshara/Des
+ktop/solar-aid-web/cl
+ient/node_modules/rol
+lup/dist/es/shared/no
+de-entry.js:5673:38)
+[39m

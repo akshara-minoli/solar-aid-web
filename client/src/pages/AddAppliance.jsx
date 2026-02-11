@@ -1,5 +1,8 @@
 import { useState } from 'react';
+<<<<<<< Updated upstream
 import DashboardLayout from '../components/DashboardLayout';
+=======
+>>>>>>> Stashed changes
 
 const AddAppliance = () => {
   const [formData, setFormData] = useState({
@@ -53,6 +56,7 @@ const AddAppliance = () => {
   };
 
   return (
+<<<<<<< Updated upstream
     <DashboardLayout title="Add Appliance">
       <div className="min-h-screen flex items-center justify-center py-12 px-4">
         <div className="w-full max-w-5xl space-y-10">
@@ -235,6 +239,171 @@ const AddAppliance = () => {
         </div>
       </div>
     </DashboardLayout>
+=======
+    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white p-6 shadow-lg">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={navigateBack}
+              className="bg-orange-600 hover:bg-orange-700 p-2 rounded-lg transition duration-200"
+            >
+              ← Back
+            </button>
+            <span className="text-3xl">⚡</span>
+            <h1 className="text-2xl font-bold">Add Appliance</h1>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="grid lg:grid-cols-2 gap-6">
+
+          {/* Add Appliance Form */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-bold text-green-700 mb-2">Add Your Appliance</h2>
+              <p className="text-gray-600">Help us calculate your power needs accurately</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Appliance Name */}
+              <div>
+                <label className="block text-sm font-bold text-green-700 mb-2">
+                  Appliance Name *
+                </label>
+                <input
+                  type="text"
+                  name="applianceName"
+                  value={formData.applianceName}
+                  onChange={handleInputChange}
+                  placeholder="Enter appliance name (e.g., LED Light)"
+                  required
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200"
+                />
+              </div>
+
+              {/* Power Rating */}
+              <div>
+                <label className="block text-sm font-bold text-green-700 mb-2">
+                  Power Rating (Watts) *
+                </label>
+                <input
+                  type="number"
+                  name="powerRating"
+                  value={formData.powerRating}
+                  onChange={handleInputChange}
+                  placeholder="Enter power consumption in watts"
+                  required
+                  min="1"
+                  max="5000"
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  💡 Check the label on your appliance or manual
+                </p>
+              </div>
+
+              {/* Usage Hours */}
+              <div>
+                <label className="block text-sm font-bold text-green-700 mb-2">
+                  Daily Usage Hours *
+                </label>
+                <input
+                  type="number"
+                  name="usageHours"
+                  value={formData.usageHours}
+                  onChange={handleInputChange}
+                  placeholder="How many hours per day?"
+                  required
+                  min="0.5"
+                  max="24"
+                  step="0.5"
+                  className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none transition duration-200"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  ⏰ Average hours you use this appliance daily
+                </p>
+              </div>
+
+              {/* Power Calculation Preview */}
+              {formData.powerRating && formData.usageHours && (
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h4 className="font-bold text-blue-800 mb-2">📊 Daily Energy Consumption:</h4>
+                  <p className="text-lg font-semibold text-blue-700">
+                    {(formData.powerRating * formData.usageHours / 1000).toFixed(2)} kWh per day
+                  </p>
+                  <p className="text-sm text-blue-600">
+                    Monthly: {((formData.powerRating * formData.usageHours * 30) / 1000).toFixed(2)} kWh
+                  </p>
+                </div>
+              )}
+
+              {/* Submit Buttons */}
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  onClick={navigateBack}
+                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg transition duration-200 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg transition duration-200 font-semibold shadow-lg"
+                >
+                  Add Appliance
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Common Appliances Quick Select */}
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-green-700 mb-4">Quick Select Common Appliances</h3>
+            <p className="text-gray-600 mb-4">Click on any appliance to auto-fill the form:</p>
+
+            <div className="space-y-2">
+              {commonAppliances.map((appliance, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => selectAppliance(appliance)}
+                  className="w-full text-left p-3 bg-gray-50 hover:bg-orange-50 border hover:border-orange-300 rounded-lg transition duration-200"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium text-gray-800">{appliance.name}</span>
+                    <span className="text-sm font-semibold text-orange-600">{appliance.power}W</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Help Information */}
+            <div className="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+              <h4 className="font-bold text-yellow-800 mb-2">💡 Tips for Accurate Information:</h4>
+              <ul className="text-sm text-yellow-700 space-y-1">
+                <li>• Check appliance labels for exact wattage</li>
+                <li>• Consider seasonal usage variations</li>
+                <li>• Include all appliances you plan to run on solar</li>
+                <li>• Old appliances may consume more power</li>
+              </ul>
+            </div>
+
+            {/* View Appliances Button */}
+            <button
+              onClick={() => window.location.hash = 'view-appliances'}
+              className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg transition duration-200 font-semibold"
+            >
+              📋 View All My Appliances
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+>>>>>>> Stashed changes
   );
 };
 

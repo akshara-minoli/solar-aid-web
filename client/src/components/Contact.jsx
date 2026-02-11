@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Contact.css';
 
 const Contact = () => {
@@ -52,14 +52,14 @@ const Contact = () => {
       <div className="contact-container">
         <div className="section-header">
           <h2>Contact Us</h2>
-          <p className="section-subtitle">Have questions? We'd love to hear from you!</p>
+          <p className="section-subtitle">Have questions? We&apos;d love to hear from you!</p>
         </div>
 
         <div className="contact-content">
           <div className="contact-info">
             <h3>Get in Touch</h3>
             <p>
-              Whether you have questions about solar energy, need help with cost estimation, 
+              Whether you have questions about solar energy, need help with cost estimation,
               or want to learn more about our project, feel free to reach out.
             </p>
             <div className="contact-details">
@@ -81,7 +81,7 @@ const Contact = () => {
                 <span className="contact-icon">📍</span>
                 <div>
                   <h4>Location</h4>
-                  <p>University Campus<br/>Solar Energy Department</p>
+                  <p>University Campus<br />Solar Energy Department</p>
                 </div>
               </div>
             </div>

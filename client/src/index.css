@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 @import "tailwindcss";
 
 :root {
@@ -39,3 +40,6 @@ button {
 html {
   scroll-behavior: smooth;
 }
+=======
+@import "tailwindcss";
+>>>>>>> Stashed changes

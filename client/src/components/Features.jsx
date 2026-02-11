@@ -1,4 +1,4 @@
-import React from 'react';
+
 import './Features.css';
 
 const Features = () => {
@@ -39,7 +39,7 @@ const Features = () => {
             <div className="education-card">
               <h4>🔆 What is a Solar System?</h4>
               <p>
-                A solar system is a set of special panels that you put on your roof. These panels catch sunlight 
+                A solar system is a set of special panels that you put on your roof. These panels catch sunlight
                 and turn it into electricity for your home - just like magic! No fuel needed, just the sun.
               </p>
             </div>
@@ -56,8 +56,8 @@ const Features = () => {
             <div className="education-card">
               <h4>🌾 Why Rural Homes Should Use It</h4>
               <p>
-                Many villages don't have regular electricity or it comes and goes. Solar panels give you 
-                your own power that works every day. You can charge phones, run lights, fans, and even TV - 
+                Many villages don&apos;t have regular electricity or it comes and goes. Solar panels give you
+                your own power that works every day. You can charge phones, run lights, fans, and even TV -
                 all from the sun!
               </p>
             </div>

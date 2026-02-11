@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+<<<<<<< Updated upstream
+=======
+import TailwindTest from './components/TailwindTest'
+>>>>>>> Stashed changes
 import Welcome from './pages/Welcome'
 import Login from './pages/Login'
 import SignIn from './pages/SignIn'
@@ -46,8 +50,14 @@ function App() {
 
   // Render the appropriate page based on currentPage
   if (currentPage === 'login') {
-    return <Login />;
+    return (
+      <>
+        <TailwindTest />
+        <Login />
+      </>
+    );
   } else if (currentPage === 'signin') {
+<<<<<<< Updated upstream
     return <SignIn />;
   } else if (currentPage === 'dashboard') {
     return <UserDashboard />;
@@ -59,8 +69,56 @@ function App() {
     return <AddAppliance />;
   } else if (currentPage === 'view-appliances') {
     return <ViewAppliances />;
+=======
+    return (
+      <>
+        <TailwindTest />
+        <SignIn />
+      </>
+    );
+  } else if (currentPage === 'dashboard') {
+    return (
+      <>
+        <TailwindTest />
+        <UserDashboard />
+      </>
+    );
+  } else if (currentPage === 'add-household') {
+    return (
+      <>
+        <TailwindTest />
+        <AddHousehold />
+      </>
+    );
+  } else if (currentPage === 'view-household') {
+    return (
+      <>
+        <TailwindTest />
+        <ViewHousehold />
+      </>
+    );
+  } else if (currentPage === 'add-appliance') {
+    return (
+      <>
+        <TailwindTest />
+        <AddAppliance />
+      </>
+    );
+  } else if (currentPage === 'view-appliances') {
+    return (
+      <>
+        <TailwindTest />
+        <ViewAppliances />
+      </>
+    );
+>>>>>>> Stashed changes
   } else {
-    return <Welcome />;
+    return (
+      <>
+        <TailwindTest />
+        <Welcome />
+      </>
+    );
   }
 }
 

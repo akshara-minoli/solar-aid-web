@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import DashboardLayout from '../components/DashboardLayout';
 import ConsultationCard from '../components/ConsultationCard';
 import AssistanceCard from '../components/AssistanceCard';
@@ -103,6 +104,128 @@ const UserDashboard = () => {
 
             </div>
         </DashboardLayout>
+=======
+import { useState, useEffect } from 'react';
+
+const UserDashboard = () => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        // Get user from local storage
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        } else {
+            // If no user, redirect to login
+            window.location.hash = 'login';
+        }
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.hash = 'home';
+    };
+
+    if (!user) return null;
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white p-6 shadow-lg">
+                <div className="max-w-6xl mx-auto flex justify-between items-center">
+                    <div className="flex items-center space-x-2">
+                        <span className="text-3xl">☀️</span>
+                        <h1 className="text-2xl font-bold">Solar Aid Dashboard</h1>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <span className="hidden md:inline">Welcome, {user.fullName || 'User'}</span>
+                        <button
+                            onClick={handleLogout}
+                            className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition duration-200"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="max-w-6xl mx-auto p-6">
+                <div className="mb-8">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-2">My Overview</h2>
+                    <p className="text-gray-600">Manage your household solar journey from here.</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                    {/* Household Card */}
+                    <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden cursor-pointer" onClick={() => window.location.hash = 'view-household'}>
+                        <div className="p-6">
+                            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-2xl mb-4">
+                                🏠
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">Household Profile</h3>
+                            <p className="text-gray-500 mb-4">View and update your house details, roof area, and location.</p>
+                            <span className="text-orange-600 font-semibold flex items-center">
+                                View Details →
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Appliances Card */}
+                    <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden cursor-pointer" onClick={() => window.location.hash = 'view-appliances'}>
+                        <div className="p-6">
+                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl mb-4">
+                                ⚡
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">My Appliances</h3>
+                            <p className="text-gray-500 mb-4">Manage your appliances to calculate accurate power consumption.</p>
+                            <span className="text-blue-600 font-semibold flex items-center">
+                                Manage Appliances →
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Reports Card */}
+                    <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden cursor-pointer">
+                        <div className="p-6">
+                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl mb-4">
+                                📊
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">Solar Reports</h3>
+                            <p className="text-gray-500 mb-4">View your estimated savings, solar potential, and cost breakdown.</p>
+                            <span className="text-green-600 font-semibold flex items-center">
+                                View Reports →
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                {/* Quick Actions */}
+                <div className="mt-10">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <button
+                            onClick={() => window.location.hash = 'add-appliance'}
+                            className="flex items-center justify-center space-x-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-lg hover:from-orange-600 hover:to-orange-700 transition duration-200 shadow-md font-semibold"
+                        >
+                            <span>➕</span>
+                            <span>Add New Appliance</span>
+                        </button>
+                        <button
+                            onClick={() => window.location.hash = 'add-household'}
+                            className="flex items-center justify-center space-x-2 bg-white border-2 border-orange-500 text-orange-600 px-6 py-3 rounded-lg hover:bg-orange-50 transition duration-200 font-semibold"
+                        >
+                            <span>✏️</span>
+                            <span>Update Household Info</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+>>>>>>> Stashed changes
     );
 };
 
