@@ -64,6 +64,25 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteProduct = async (id, name) => {
+    const ok = window.confirm(`Delete product "${name}"? This action cannot be undone.`);
+    if (!ok) return;
+    try {
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE', headers });
+      const data = await res.json();
+      if (data.success) {
+        setProducts(prev => prev.filter(p => p._id !== id));
+      } else {
+        alert(data.message || 'Failed to delete product');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network error');
+    }
+  };
+
   return (
     <div className="dashboard-container">
       <h2>Admin Dashboard</h2>
@@ -115,6 +134,9 @@ export default function AdminDashboard() {
                 )}
                 <h4 style={{ margin: '10px 0 5px 0', fontSize: '14px', fontWeight: 'bold' }}>{p.name}</h4>
                 <p style={{ margin: '5px 0', fontSize: '12px', color: '#666' }}>${p.price}</p>
+                <div style={{ marginTop: 8 }}>
+                  <button onClick={() => handleDeleteProduct(p._id, p.name)} style={{ background:'#d9534f', color:'#fff', border:'none', padding:'6px 10px', borderRadius:4, cursor:'pointer' }}>Delete</button>
+                </div>
               </div>
             ))}
           </div>

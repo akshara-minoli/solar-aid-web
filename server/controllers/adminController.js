@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import path from 'path';
 import Product from '../models/Product.js';
 
 // Generate JWT token for admin
@@ -63,5 +65,34 @@ export const createProduct = async (req, res) => {
   } catch (error) {
     console.error('Create product error:', error);
     res.status(500).json({ success: false, message: 'Error creating product' });
+  }
+};
+
+// @desc Delete a product by id
+// @route DELETE /api/admin/products/:id
+// @access Admin
+export const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+
+    // remove image file if present
+    if (product.imagePath) {
+      try {
+        const filePath = path.join(process.cwd(), product.imagePath);
+        fs.unlink(filePath, (err) => {
+          if (err) console.warn('Failed to unlink product image:', err);
+        });
+      } catch (err) {
+        console.warn('Error while deleting product image:', err);
+      }
+    }
+
+    await product.deleteOne();
+    res.status(200).json({ success: true, message: 'Product deleted' });
+  } catch (error) {
+    console.error('Delete product error:', error);
+    res.status(500).json({ success: false, message: 'Error deleting product' });
   }
 };
