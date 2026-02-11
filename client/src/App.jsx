@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Welcome from './pages/Welcome'
 import Login from './pages/Login'
 import SignIn from './pages/SignIn'
+import AdminLogin from './pages/AdminLogin'
+import AdminDashboard from './pages/AdminDashboard'
 import './App.css'
 
 function App() {
@@ -15,6 +17,10 @@ function App() {
         setCurrentPage('login');
       } else if (hash === 'signin') {
         setCurrentPage('signin');
+      } else if (hash === 'admin') {
+        setCurrentPage('admin');
+      } else if (hash === 'admin-dashboard') {
+        setCurrentPage('admin-dashboard');
       } else {
         setCurrentPage('home');
       }
@@ -34,6 +40,10 @@ function App() {
     return <Login />;
   } else if (currentPage === 'signin') {
     return <SignIn />;
+  } else if (currentPage === 'admin') {
+    return <AdminLogin />;
+  } else if (currentPage === 'admin-dashboard') {
+    return <AdminDashboard />;
   } else {
     return <Welcome />;
   }

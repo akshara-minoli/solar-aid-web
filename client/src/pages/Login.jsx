@@ -37,8 +37,15 @@ const Login = () => {
         // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        // If admin, redirect to admin dashboard
         setFormData({ email: '', password: '' });
-        // Redirect to dashboard or home page
+        if (data.user && data.user.role === 'admin') {
+          localStorage.setItem('adminToken', data.token);
+          window.location.hash = 'admin-dashboard';
+        } else {
+          // normal user flow (go home)
+          window.location.hash = '';
+        }
       } else {
         setMessage(data.message || 'Login failed');
       }

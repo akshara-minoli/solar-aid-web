@@ -79,6 +79,21 @@ export const login = async (req, res) => {
       });
     }
 
+    // Allow admin login using env credentials via the same user login endpoint
+    if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
+      if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+        const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET, {
+          expiresIn: process.env.JWT_EXPIRE || '7d'
+        });
+        return res.status(200).json({
+          success: true,
+          message: 'Admin login successful',
+          token,
+          user: { role: 'admin', email }
+        });
+      }
+    }
+
     // Find user and include password field
     const user = await User.findOne({ email }).select('+password');
 
