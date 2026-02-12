@@ -1,6 +1,7 @@
 import DashboardLayout from '../components/DashboardLayout';
 import ConsultationCard from '../components/ConsultationCard';
 import AssistanceCard from '../components/AssistanceCard';
+import WeatherInsights from '../components/WeatherInsights';
 
 const UserDashboard = () => {
     const navigateTo = (page) => {
@@ -28,7 +29,7 @@ const UserDashboard = () => {
                     <div className="relative z-10">
                         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Welcome back, {userName.split(' ')[0]}!</h1>
                         <p className="text-white/90 text-sm leading-relaxed">
-                            Keep your home energy-efficient. Monitor your solar potential and optimize savings with ease.
+                            Keep your home energy-efficient and optimize usage with ease.
                         </p>
                     </div>
                 </div>
@@ -36,16 +37,28 @@ const UserDashboard = () => {
                 {/* Quick Actions - 60% Neutral + 10% Accent */}
                 <div>
                     <h2 className="text-xl font-bold text-slate-800 mb-6">Quick Actions</h2>
-                    <div className="max-w-md">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <button
-                            onClick={() => navigateTo('add-household')}
+                            onClick={() => navigateTo('view-household')}
                             className="group bg-white hover:bg-slate-50 rounded-xl p-6 border border-slate-200 transition-all duration-300 cursor-pointer text-left shadow-sm hover:shadow-md"
                         >
                             <div className="flex items-center justify-center w-14 h-14 bg-orange-500 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <span className="text-3xl">🏠</span>
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800 mb-2">Update Household</h3>
+                            <h3 className="text-lg font-bold text-slate-800 mb-2">Household Profile</h3>
                             <p className="text-slate-600 text-sm">Manage your home configuration</p>
+                        </button>
+
+
+                        <button
+                            onClick={() => navigateTo('consultations')}
+                            className="group bg-white hover:bg-slate-50 rounded-xl p-6 border border-slate-200 transition-all duration-300 cursor-pointer text-left shadow-sm hover:shadow-md"
+                        >
+                            <div className="flex items-center justify-center w-14 h-14 bg-blue-600 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <span className="text-3xl">💬</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 mb-2">My Consultations</h3>
+                            <p className="text-slate-600 text-sm">View & manage your requests</p>
                         </button>
                     </div>
                 </div>
@@ -59,47 +72,8 @@ const UserDashboard = () => {
                     </div>
                 </div>
 
-                {/* Main Features Grid - 60% Neutral + 30% Primary */}
-                <div>
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-slate-800">My Solar Journey</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {[
-                            {
-                                title: 'Household Profile',
-                                desc: 'Configure your house structural details and roof area for high-precision solar mapping.',
-                                icon: '🏠',
-                                route: 'add-household',
-                                cta: 'Register Household'
-                            },
-                            {
-                                title: 'Solar Reports',
-                                desc: 'Get a 12-month projection of savings, ROI, and carbon offset statistics.',
-                                icon: '📊',
-                                route: 'reports',
-                                cta: 'View Insights'
-                            }
-                        ].map((item, i) => (
-                            <div key={i} className="group bg-white rounded-xl overflow-hidden shadow-sm border border-slate-200 hover:shadow-md transition-all duration-300 flex flex-col h-full">
-                                <div className="h-28 bg-emerald-600 flex items-center justify-center relative overflow-hidden">
-                                    <span className="text-5xl group-hover:scale-110 transition-transform duration-300 filter drop-shadow-lg">{item.icon}</span>
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300"></div>
-                                </div>
-                                <div className="p-5 flex flex-col flex-grow">
-                                    <h4 className="text-lg font-bold text-slate-800 mb-2">{item.title}</h4>
-                                    <p className="text-slate-600 text-sm leading-relaxed mb-4 flex-grow">{item.desc}</p>
-                                    <button
-                                        onClick={() => navigateTo(item.route)}
-                                        className="w-full py-2.5 rounded-lg bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 hover:shadow-md transition-all duration-300 cursor-pointer"
-                                    >
-                                        {item.cta}
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                {/* Weather Insights replacing Energy Overview */}
+                <WeatherInsights />
 
             </div>
         </DashboardLayout>

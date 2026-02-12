@@ -39,7 +39,7 @@ const About = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
               {[
                 'Simple language for all',
-                'Free estimation tools',
+                'Free expert consultation',
                 'Step-by-step guidance',
                 'Sustainable focused'
               ].map((item) => (

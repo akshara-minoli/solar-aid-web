@@ -6,6 +6,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import UserDashboard from './pages/UserDashboard'
 import AddHousehold from './pages/AddHousehold'
 import ViewHousehold from './pages/ViewHousehold'
+import ViewConsultations from './pages/ViewConsultations'
+import UserProfile from './pages/UserProfile'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -14,18 +16,25 @@ function App() {
     // Simple hash-based routing
     const handleHashChange = () => {
       const hash = window.location.hash.substring(1);
-      if (hash === 'login') {
+      // Split hash to handle query parameters
+      const hashBase = hash.split('?')[0];
+
+      if (hashBase === 'login') {
         setCurrentPage('login');
-      } else if (hash === 'signin') {
+      } else if (hashBase === 'signin') {
         setCurrentPage('signin');
-      } else if (hash === 'forgot') {
+      } else if (hashBase === 'forgot') {
         setCurrentPage('forgot');
-      } else if (hash === 'dashboard') {
+      } else if (hashBase === 'dashboard') {
         setCurrentPage('dashboard');
-      } else if (hash === 'add-household') {
+      } else if (hashBase === 'add-household') {
         setCurrentPage('add-household');
-      } else if (hash === 'view-household') {
+      } else if (hashBase === 'view-household') {
         setCurrentPage('view-household');
+      } else if (hashBase === 'consultations') {
+        setCurrentPage('consultations');
+      } else if (hashBase === 'profile') {
+        setCurrentPage('profile');
       } else {
         setCurrentPage('home');
       }
@@ -53,6 +62,10 @@ function App() {
     return <AddHousehold />;
   } else if (currentPage === 'view-household') {
     return <ViewHousehold />;
+  } else if (currentPage === 'consultations') {
+    return <ViewConsultations />;
+  } else if (currentPage === 'profile') {
+    return <UserProfile />;
   } else {
     return <Welcome />;
   }

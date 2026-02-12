@@ -129,6 +129,19 @@ chore: Update dependencies
 
 See `.env.example` for required environment variables. Create a `.env` file in both `client/` and `server/` directories with your actual values.
 
+## Weather Insight Integration
+
+This system integrates OpenWeather API to:
+- Provide real-time weather data for Colombo
+- Estimate daily solar efficiency based on cloud coverage
+- Recommend ideal days for solar installation
+- Improve overall solar assessment accuracy
+
+**Security:**
+- API key is stored securely in the backend `.env` file
+- All API calls originate from the backend to prevent key exposure
+- No sensitive keys are exposed to the frontend browser
+
 ## Contact & Support
 
 For questions or issues, please contact the project maintainers or create a GitHub issue.

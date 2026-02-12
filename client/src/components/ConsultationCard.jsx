@@ -10,6 +10,8 @@ const ConsultationCard = () => {
         description: ''
     });
     const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -17,24 +19,54 @@ const ConsultationCard = () => {
             ...prev,
             [name]: value
         }));
+        setError(''); // Clear error on input change
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission here (API call, etc.)
-        console.log('Consultation Form Data:', formData);
-        setSubmitted(true);
-        setTimeout(() => {
-            setShowForm(false);
-            setSubmitted(false);
-            setFormData({
-                fullName: '',
-                village: '',
-                phoneNumber: '',
-                consultationType: '',
-                description: ''
+        setLoading(true);
+        setError('');
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Please login to submit a consultation request');
+                setLoading(false);
+                return;
+            }
+
+            const response = await fetch('/api/consultations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
             });
-        }, 2000);
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to submit consultation request');
+            }
+
+            setSubmitted(true);
+            setTimeout(() => {
+                setShowForm(false);
+                setSubmitted(false);
+                setFormData({
+                    fullName: '',
+                    village: '',
+                    phoneNumber: '',
+                    consultationType: '',
+                    description: ''
+                });
+            }, 2000);
+        } catch (err) {
+            setError(err.message || 'Failed to submit consultation request');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (showForm) {
@@ -60,7 +92,13 @@ const ConsultationCard = () => {
                         <p className="text-emerald-800 font-semibold">Consultation request submitted successfully!</p>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <>
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                                <p className="text-red-800 text-sm">{error}</p>
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">
                                 Full Name
@@ -118,21 +156,22 @@ const ConsultationCard = () => {
                                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all bg-white"
                             >
                                 <option value="">Select consultation type</option>
-                                <option value="installation-advice">Installation Advice</option>
-                                <option value="cost-inquiry">Cost Inquiry</option>
-                                <option value="system-size-help">System Size Help</option>
+                                <option value="Solar Installation">Solar Installation</option>
+                                <option value="System Maintenance">System Maintenance</option>
+                                <option value="Energy Efficiency">Energy Efficiency</option>
+                                <option value="Financial Planning">Financial Planning</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Description
+                                Description <span className="text-slate-400 font-normal">(Optional)</span>
                             </label>
                             <textarea
                                 name="description"
                                 value={formData.description}
                                 onChange={handleChange}
-                                required
                                 rows="4"
                                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all resize-none"
                                 placeholder="Describe your consultation needs..."
@@ -142,19 +181,22 @@ const ConsultationCard = () => {
                         <div className="flex gap-3 pt-2">
                             <button
                                 type="submit"
-                                className="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-sm hover:shadow-md"
+                                disabled={loading}
+                                className="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Submit Request
+                                {loading ? 'Submitting...' : 'Submit Request'}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
-                                className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
+                                disabled={loading}
+                                className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
                         </div>
                     </form>
+                    </>
                 )}
             </div>
         );

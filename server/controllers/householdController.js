@@ -7,14 +7,32 @@ export const addHousehold = async (req, res) => {
   try {
     const { houseName, houseType, roofArea, district, members, houseAddress, appliances } = req.body;
 
+    // Validate and convert numeric fields
+    const numRoofArea = Number(roofArea);
+    const numMembers = Number(members);
+
+    if (isNaN(numRoofArea) || numRoofArea <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid roof area'
+      });
+    }
+
+    if (isNaN(numMembers) || numMembers <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a valid number of members'
+      });
+    }
+
     // Create household
     const household = await Household.create({
       userId: req.user._id,
       houseName,
       houseType,
-      roofArea,
+      roofArea: numRoofArea,
       district,
-      members,
+      members: numMembers,
       houseAddress,
       appliances
     });
@@ -28,7 +46,7 @@ export const addHousehold = async (req, res) => {
     console.error('Add household error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to add household',
+      message: error.message || 'Failed to add household',
       error: error.message
     });
   }
@@ -39,12 +57,14 @@ export const addHousehold = async (req, res) => {
 // @access  Private
 export const getUserHouseholds = async (req, res) => {
   try {
-    const households = await Household.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const households = await Household.find({ userId: req.user._id }).sort({ updatedAt: -1 });
+
+    console.log(`Found ${households.length} households for user ${req.user._id}`);
 
     res.status(200).json({
       success: true,
       count: households.length,
-      households
+      households: households
     });
   } catch (error) {
     console.error('Get households error:', error);
@@ -106,16 +126,39 @@ export const updateHousehold = async (req, res) => {
       });
     }
 
-    // Update household
-    household.houseName = houseName || household.houseName;
-    household.houseType = houseType || household.houseType;
-    household.roofArea = roofArea || household.roofArea;
-    household.district = district || household.district;
-    household.members = members || household.members;
-    household.houseAddress = houseAddress || household.houseAddress;
-    household.appliances = appliances || household.appliances;
+    // Update fields if provided
+    if (houseName !== undefined) household.houseName = houseName;
+    if (houseType) household.houseType = houseType;
+    if (district) household.district = district;
+    if (houseAddress) household.houseAddress = houseAddress;
+    if (appliances !== undefined) household.appliances = appliances;
+
+    // Handle numeric fields with conversion
+    if (roofArea !== undefined) {
+      const numRoofArea = Number(roofArea);
+      if (isNaN(numRoofArea) || numRoofArea <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide a valid roof area'
+        });
+      }
+      household.roofArea = numRoofArea;
+    }
+
+    if (members !== undefined) {
+      const numMembers = Number(members);
+      if (isNaN(numMembers) || numMembers <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Please provide a valid number of members'
+        });
+      }
+      household.members = numMembers;
+    }
 
     await household.save();
+
+    console.log('Household updated successfully:', household._id);
 
     res.status(200).json({
       success: true,
@@ -126,7 +169,7 @@ export const updateHousehold = async (req, res) => {
     console.error('Update household error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update household',
+      message: error.message || 'Failed to update household',
       error: error.message
     });
   }
