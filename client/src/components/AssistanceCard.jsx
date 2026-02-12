@@ -11,6 +11,8 @@ const AssistanceCard = () => {
         image: null
     });
     const [submitted, setSubmitted] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -18,35 +20,70 @@ const AssistanceCard = () => {
             ...prev,
             [name]: value
         }));
+        setError('');
     };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData(prev => ({
-                ...prev,
-                image: file
-            }));
+            // Convert to base64 for storage
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({
+                    ...prev,
+                    image: reader.result
+                }));
+            };
+            reader.readAsDataURL(file);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle form submission here (API call with FormData for file upload)
-        console.log('Assistance Form Data:', formData);
-        setSubmitted(true);
-        setTimeout(() => {
-            setShowForm(false);
-            setSubmitted(false);
-            setFormData({
-                fullName: '',
-                village: '',
-                phoneNumber: '',
-                assistanceType: '',
-                problemDescription: '',
-                image: null
+        setLoading(true);
+        setError('');
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Please login to submit a service request');
+                setLoading(false);
+                return;
+            }
+
+            const response = await fetch('/api/assistances', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData)
             });
-        }, 2000);
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to submit service request');
+            }
+
+            setSubmitted(true);
+            setTimeout(() => {
+                setShowForm(false);
+                setSubmitted(false);
+                setFormData({
+                    fullName: '',
+                    village: '',
+                    phoneNumber: '',
+                    assistanceType: '',
+                    problemDescription: '',
+                    image: null
+                });
+            }, 2000);
+        } catch (err) {
+            setError(err.message || 'Failed to submit service request');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (showForm) {
@@ -69,10 +106,16 @@ const AssistanceCard = () => {
                         <svg className="w-12 h-12 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <p className="text-orange-800 font-semibold">Assistance request submitted successfully!</p>
+                        <p className="text-orange-800 font-semibold">Service request submitted successfully!</p>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <>
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                                <p className="text-red-800 text-sm">{error}</p>
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">
                                 Full Name
@@ -120,7 +163,7 @@ const AssistanceCard = () => {
 
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Assistance Type
+                                Service Type
                             </label>
                             <select
                                 name="assistanceType"
@@ -129,10 +172,13 @@ const AssistanceCard = () => {
                                 required
                                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white"
                             >
-                                <option value="">Select assistance type</option>
-                                <option value="installation">Installation</option>
-                                <option value="repair">Repair</option>
-                                <option value="maintenance">Maintenance</option>
+                                <option value="">Select service type</option>
+                                <option value="Technical Support">Technical Support</option>
+                                <option value="Repair Service">Repair Service</option>
+                                <option value="Battery Replacement">Battery Replacement</option>
+                                <option value="Panel Cleaning">Panel Cleaning</option>
+                                <option value="Emergency Service">Emergency Service</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 
@@ -147,7 +193,7 @@ const AssistanceCard = () => {
                                 required
                                 rows="4"
                                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"
-                                placeholder="Describe the issue or assistance needed..."
+                                placeholder="Describe the issue or assistance needed (minimum 10 characters)..."
                             />
                         </div>
 
@@ -164,8 +210,8 @@ const AssistanceCard = () => {
                                 />
                             </div>
                             {formData.image && (
-                                <p className="text-sm text-slate-600 mt-2">
-                                    Selected: {formData.image.name}
+                                <p className="text-sm text-green-600 mt-2">
+                                    ✓ Image attached
                                 </p>
                             )}
                         </div>
@@ -173,19 +219,22 @@ const AssistanceCard = () => {
                         <div className="flex gap-3 pt-2">
                             <button
                                 type="submit"
-                                className="flex-1 bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-sm hover:shadow-md"
+                                disabled={loading}
+                                className="flex-1 bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Submit Request
+                                {loading ? 'Submitting...' : 'Submit Request'}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowForm(false)}
-                                className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
+                                disabled={loading}
+                                className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50"
                             >
                                 Cancel
                             </button>
                         </div>
                     </form>
+                    </>
                 )}
             </div>
         );

@@ -8,6 +8,9 @@ import AddHousehold from './pages/AddHousehold'
 import ViewHousehold from './pages/ViewHousehold'
 import ViewConsultations from './pages/ViewConsultations'
 import UserProfile from './pages/UserProfile'
+import ViewServiceRequests from './pages/ViewServiceRequests'
+import ManageTechnicians from './pages/ManageTechnicians'
+import ManageMaintenance from './pages/ManageMaintenance'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
@@ -35,6 +38,12 @@ function App() {
         setCurrentPage('consultations');
       } else if (hashBase === 'profile') {
         setCurrentPage('profile');
+      } else if (hashBase === 'service-requests') {
+        setCurrentPage('service-requests');
+      } else if (hashBase === 'technicians') {
+        setCurrentPage('technicians');
+      } else if (hashBase === 'maintenance') {
+        setCurrentPage('maintenance');
       } else {
         setCurrentPage('home');
       }
@@ -66,6 +75,12 @@ function App() {
     return <ViewConsultations />;
   } else if (currentPage === 'profile') {
     return <UserProfile />;
+  } else if (currentPage === 'service-requests') {
+    return <ViewServiceRequests />;
+  } else if (currentPage === 'technicians') {
+    return <ManageTechnicians />;
+  } else if (currentPage === 'maintenance') {
+    return <ManageMaintenance />;
   } else {
     return <Welcome />;
   }

@@ -34,6 +34,10 @@ const DashboardLayout = ({ children, title }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Overview', icon: '📊' },
         { id: 'view-household', label: 'Household Profile', icon: '🏠' },
+        { id: 'consultations', label: 'My Consultations', icon: '💬' },
+        { id: 'service-requests', label: 'Service Requests', icon: '🔧' },
+        { id: 'technicians', label: 'Technicians', icon: '👷' },
+        { id: 'maintenance', label: 'Maintenance', icon: '📅' },
         { id: 'profile', label: 'My Profile', icon: '👤' },
     ];
 
