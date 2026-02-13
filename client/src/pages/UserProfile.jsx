@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const UserProfile = () => {
@@ -118,12 +119,14 @@ const UserProfile = () => {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             alert('Account deleted successfully!');
-            window.location.hash = 'home';
+            navigate('/home');
         } catch (err) {
             setError(err.message);
             setShowDeleteModal(false);
         }
     };
+
+    const navigate = useNavigate();
 
     if (loading) {
         return (

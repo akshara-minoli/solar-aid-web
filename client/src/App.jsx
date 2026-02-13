@@ -1,74 +1,57 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Welcome from './pages/Welcome'
 import Login from './pages/Login'
 import SignIn from './pages/SignIn'
 import ForgotPassword from './pages/ForgotPassword'
 import UserDashboard from './pages/UserDashboard'
+import UserProfile from './pages/UserProfile'
 import AddHousehold from './pages/AddHousehold'
 import ViewHousehold from './pages/ViewHousehold'
 import ViewConsultations from './pages/ViewConsultations'
-import UserProfile from './pages/UserProfile'
+
+// Admin pages
+import AdminDashboard from './pages/AdminDashboard'
+import UsersPage from './pages/UsersPage'
+import ConsultationsPage from './pages/ConsultationsPage'
+import ProductsPage from './pages/ProductsPage'
+
+import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Welcome />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/forgot" element={<ForgotPassword />} />
 
-  useEffect(() => {
-    // Simple hash-based routing
-    const handleHashChange = () => {
-      const hash = window.location.hash.substring(1);
-      // Split hash to handle query parameters
-      const hashBase = hash.split('?')[0];
+        {/* User protected routes */}
+        <Route element={<ProtectedRoute allowedRoles={["user","admin"]} /> }>
+          <Route path="/home" element={<UserDashboard />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/view-household" element={<ViewHousehold />} />
+          <Route path="/add-household" element={<AddHousehold />} />
+          <Route path="/consultations" element={<ViewConsultations />} />
+        </Route>
 
-      if (hashBase === 'login') {
-        setCurrentPage('login');
-      } else if (hashBase === 'signin') {
-        setCurrentPage('signin');
-      } else if (hashBase === 'forgot') {
-        setCurrentPage('forgot');
-      } else if (hashBase === 'dashboard') {
-        setCurrentPage('dashboard');
-      } else if (hashBase === 'add-household') {
-        setCurrentPage('add-household');
-      } else if (hashBase === 'view-household') {
-        setCurrentPage('view-household');
-      } else if (hashBase === 'consultations') {
-        setCurrentPage('consultations');
-      } else if (hashBase === 'profile') {
-        setCurrentPage('profile');
-      } else {
-        setCurrentPage('home');
-      }
-    };
+        {/* Admin protected routes */}
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} /> }>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<UsersPage />} />
+          <Route path="/admin/consultations" element={<ConsultationsPage />} />
+          <Route path="/admin/products" element={<ProductsPage />} />
+        </Route>
 
-    // Listen for hash changes
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Initial check
+        {/* Legacy / convenience redirects */}
+        <Route path="/dashboard" element={<Navigate to="/home" replace />} />
 
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
-  }, []);
-
-  // Render the appropriate page based on currentPage
-  if (currentPage === 'login') {
-    return <Login />;
-  } else if (currentPage === 'signin') {
-    return <SignIn />;
-  } else if (currentPage === 'forgot') {
-    return <ForgotPassword />;
-  } else if (currentPage === 'dashboard') {
-    return <UserDashboard />;
-  } else if (currentPage === 'add-household') {
-    return <AddHousehold />;
-  } else if (currentPage === 'view-household') {
-    return <ViewHousehold />;
-  } else if (currentPage === 'consultations') {
-    return <ViewConsultations />;
-  } else if (currentPage === 'profile') {
-    return <UserProfile />;
-  } else {
-    return <Welcome />;
-  }
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App

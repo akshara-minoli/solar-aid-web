@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -77,7 +79,12 @@ const Login = () => {
         setMessage('Login successful! Redirecting...');
         // Redirect to dashboard
         setTimeout(() => {
-          window.location.hash = 'dashboard';
+          // Role-based redirection
+          if (data.user && data.user.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+            navigate('/home');
+          }
         }, 500);
       } else {
         setMessage(data.message || 'Login failed');
@@ -133,14 +140,14 @@ const Login = () => {
         </div>
 
         <div className="bg-white/80 backdrop-blur-xl p-10 md:p-14 rounded-[3.5rem] shadow-2xl border border-white/50 relative">
-          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center justify-between mb-10">
             <div className="flex items-center gap-2 text-2xl font-bold">
               <span className="text-3xl">☀️</span>
               <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Solar Aid</span>
             </div>
-            <a href="#home" className="text-gray-400 hover:text-orange-500 transition-colors">
+            <Link to="/" className="text-gray-400 hover:text-orange-500 transition-colors">
               ✕
-            </a>
+            </Link>
           </div>
 
           <div className="mb-10 text-center">
@@ -190,7 +197,7 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label htmlFor="password" className="text-sm text-gray-800 font-bold">Password</label>
-                <a href="#forgot" className="text-sm text-orange-500 hover:underline font-bold">Forgot?</a>
+                <Link to="/forgot" className="text-sm text-orange-500 hover:underline font-bold">Forgot?</Link>
               </div>
               <div className="relative group">
                 <input
@@ -249,8 +256,8 @@ const Login = () => {
             </button>
 
             <div className="text-center pt-4">
-              <p className="text-gray-600 font-medium">
-                New to Solar Aid? <a href="#signin" className="text-orange-500 hover:underline font-bold ml-1">Create an account</a>
+                <p className="text-gray-600 font-medium">
+                New to Solar Aid? <Link to="/signin" className="text-orange-500 hover:underline font-bold ml-1">Create an account</Link>
               </p>
             </div>
           </form>

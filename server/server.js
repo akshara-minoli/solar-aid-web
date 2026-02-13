@@ -12,6 +12,7 @@ import householdRoutes from './routes/households.js';
 import consultationRoutes from './routes/consultations.js';
 import assistanceRoutes from './routes/assistances.js';
 import weatherRoutes from './routes/weather.js';
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
@@ -30,6 +31,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve uploaded images
+import path from 'path';
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -52,6 +57,8 @@ app.use('/api/households', householdRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/assistances', assistanceRoutes);
 app.use('/api/weather', weatherRoutes);
+// Admin routes (users, consultations, products management)
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
