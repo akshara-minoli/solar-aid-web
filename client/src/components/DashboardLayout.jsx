@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const DashboardLayout = ({ children, title }) => {
     const [userName, setUserName] = useState('User');
@@ -25,16 +26,17 @@ const DashboardLayout = ({ children, title }) => {
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);
 
+    const navigate = useNavigate();
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.hash = 'home';
+        navigate('/login');
     };
 
     const menuItems = [
-        { id: 'dashboard', label: 'Overview', icon: '📊' },
-        { id: 'view-household', label: 'Household Profile', icon: '🏠' },
-        { id: 'profile', label: 'My Profile', icon: '👤' },
+        { id: 'dashboard', label: 'Overview', icon: '📊', to: '/home' },
+        { id: 'view-household', label: 'Household Profile', icon: '🏠', to: '/view-household' },
+        { id: 'profile', label: 'My Profile', icon: '👤', to: '/profile' },
     ];
 
     const activeId = currentHash.substring(1) || 'dashboard';
@@ -60,46 +62,22 @@ const DashboardLayout = ({ children, title }) => {
                 {/* Navigation */}
                 <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
                     {menuItems.map((item) => {
-                        // Check if active or alias active
-                        const isActive = activeId === item.id || (item.alias && activeId === item.alias);
                         return (
-                            <a
+                            <Link
                                 key={item.id}
-                                href={`#${item.id}`}
-                                style={isActive ? {
-                                    backgroundColor: '#ffffff',
-                                    color: '#065f46'
-                                } : {
-                                    backgroundColor: 'transparent',
-                                    color: '#ffffff'
-                                }}
+                                to={item.to}
                                 className="flex items-center gap-4 px-5 py-4 rounded-xl text-sm font-semibold group relative focus:outline-none select-none no-underline"
-                                onMouseEnter={(e) => {
-                                    if (!isActive) {
-                                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (!isActive) {
-                                        e.currentTarget.style.backgroundColor = 'transparent';
-                                    }
-                                }}
                             >
-                                <span className="text-xl">
-                                    {item.icon}
-                                </span>
+                                <span className="text-xl">{item.icon}</span>
                                 <span className="tracking-wide">{item.label}</span>
-                                {isActive && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-orange-500 rounded-r-full"></div>
-                                )}
-                            </a>
+                            </Link>
                         );
                     })}
                 </nav>
 
                 {/* User Card */}
                 <div
-                    onClick={() => window.location.hash = 'profile'}
+                    onClick={() => navigate('/profile')}
                     className="m-4 p-6 rounded-2xl bg-emerald-700 backdrop-blur-md border border-white/10 flex-shrink-0 hover:bg-emerald-700/80 transition-all duration-300 cursor-pointer"
                 >
                     <div className="flex items-center gap-4">

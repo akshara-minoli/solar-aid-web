@@ -136,7 +136,8 @@ export const getUserProfile = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         phone: user.phone,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        role: user.role
       }
     });
 
@@ -196,7 +197,8 @@ export const updateUserProfile = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         phone: user.phone,
-        createdAt: user.createdAt
+        createdAt: user.createdAt,
+        role: user.role
       }
     });
 

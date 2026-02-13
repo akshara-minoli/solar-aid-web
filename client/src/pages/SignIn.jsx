@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -51,7 +52,7 @@ const SignIn = () => {
         setMessage('Account created successfully! Redirecting...');
         // Redirect to dashboard
         setTimeout(() => {
-          window.location.hash = 'dashboard';
+          navigate('/home');
         }, 1000);
       } else {
         // Check if it's a database connection error
@@ -68,6 +69,8 @@ const SignIn = () => {
       setLoading(false);
     }
   };
+
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#fafaf9] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">

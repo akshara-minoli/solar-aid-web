@@ -2,10 +2,14 @@ import DashboardLayout from '../components/DashboardLayout';
 import ConsultationCard from '../components/ConsultationCard';
 import AssistanceCard from '../components/AssistanceCard';
 import WeatherInsights from '../components/WeatherInsights';
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
+    const navigate = useNavigate();
     const navigateTo = (page) => {
-        window.location.hash = page;
+        if (page === 'view-household') navigate('/view-household');
+        else if (page === 'consultations') navigate('/consultations');
+        else navigate('/home');
     };
 
     // Get user name from localStorage

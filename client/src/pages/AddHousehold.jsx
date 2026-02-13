@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const districts = [
@@ -21,14 +22,16 @@ const AddHousehold = () => {
     const [householdId, setHouseholdId] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const location = useLocation();
+    const navigate = useNavigate();
+
     useEffect(() => {
-        // Check if we're in edit mode by looking for ID in URL
-        const hash = window.location.hash;
-        const searchPart = hash.includes('?') ? hash.split('?')[1] : '';
+        // Check if we're in edit mode by looking for ID in query string
+        const searchPart = location.search || '';
         const urlParams = new URLSearchParams(searchPart);
         const id = urlParams.get('id');
 
-        console.log('ID from hash:', id);
+        console.log('ID from search:', id);
 
         if (id) {
             setIsEditMode(true);
@@ -37,7 +40,7 @@ const AddHousehold = () => {
         } else {
             setLoading(false);
         }
-    }, []);
+    }, [location.search]);
 
     const fetchHouseholdData = async (id) => {
         try {
@@ -110,7 +113,7 @@ const AddHousehold = () => {
                 alert(isEditMode
                     ? 'Household profile updated successfully!'
                     : 'Household profile saved successfully!');
-                window.location.hash = 'view-household';
+                navigate('/view-household');
             } else {
                 alert(data.message || 'Failed to save household profile');
             }

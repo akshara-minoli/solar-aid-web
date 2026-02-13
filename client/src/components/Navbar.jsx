@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,24 +48,24 @@ const Navbar = () => {
                 </a>
               </li>
             ))}
-            <li className="max-md:w-full md:ml-4">
-              <a
-                href="#login"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-700 font-bold transition-all duration-300 py-2 px-6 rounded-full hover:bg-gray-100 block text-center border-2 border-transparent hover:border-orange-100"
-              >
-                Login
-              </a>
-            </li>
-            <li className="max-md:w-full md:ml-2">
-              <a
-                href="#signin"
-                onClick={() => setIsMenuOpen(false)}
-                className="bg-orange-500 text-white py-2 px-6 rounded-full font-bold transition-all duration-300 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5 block text-center"
-              >
-                Get Started
-              </a>
-            </li>
+                        <li className="max-md:w-full md:ml-4">
+                          <Link
+                            to="/login"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="text-gray-700 font-bold transition-all duration-300 py-2 px-6 rounded-full hover:bg-gray-100 block text-center border-2 border-transparent hover:border-orange-100"
+                          >
+                            Login
+                          </Link>
+                        </li>
+                        <li className="max-md:w-full md:ml-2">
+                          <Link
+                            to="/signin"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="bg-orange-500 text-white py-2 px-6 rounded-full font-bold transition-all duration-300 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5 block text-center"
+                          >
+                            Get Started
+                          </Link>
+                        </li>
           </ul>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const ViewHousehold = () => {
@@ -33,18 +34,20 @@ const ViewHousehold = () => {
     fetchHouseholdData();
   }, []);
 
+  const navigate = useNavigate();
+
   const navigateBack = () => {
-    window.location.hash = 'dashboard';
+    navigate('/home');
   };
 
   const navigateToEdit = () => {
     if (householdData && householdData._id) {
-      window.location.hash = `add-household?id=${householdData._id}`;
+      navigate(`/add-household?id=${householdData._id}`);
     }
   };
 
   const navigateToRegister = () => {
-    window.location.hash = 'add-household';
+    navigate('/add-household');
   };
 
   const handleDelete = async () => {
@@ -58,10 +61,10 @@ const ViewHousehold = () => {
       });
 
       const data = await response.json();
-      if (data.success) {
-        alert('Household profile deleted successfully!');
-        window.location.hash = 'dashboard';
-      } else {
+        if (data.success) {
+          alert('Household profile deleted successfully!');
+          navigate('/home');
+        } else {
         alert(data.message || 'Failed to delete household profile');
       }
     } catch (error) {

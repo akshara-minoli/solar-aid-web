@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const ViewConsultations = () => {
@@ -8,6 +9,7 @@ const ViewConsultations = () => {
     const [editingId, setEditingId] = useState(null);
     const [editForm, setEditForm] = useState({});
     const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchConsultations();
@@ -154,7 +156,7 @@ const ViewConsultations = () => {
                         <h3 className="text-xl font-semibold text-slate-700 mb-2">No Consultations Yet</h3>
                         <p className="text-slate-500 mb-6">You haven't submitted any consultation requests yet.</p>
                         <button
-                            onClick={() => window.location.hash = 'dashboard'}
+                            onClick={() => navigate('/home')}
                             className="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
                         >
                             Go to Dashboard
