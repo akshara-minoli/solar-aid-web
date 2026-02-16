@@ -9,6 +9,7 @@ const UserDashboard = () => {
     const navigateTo = (page) => {
         if (page === 'view-household') navigate('/view-household');
         else if (page === 'consultations') navigate('/consultations');
+        else if (page === 'maintenance') navigate('/maintenance');
         else navigate('/home');
     };
 
@@ -53,7 +54,6 @@ const UserDashboard = () => {
                             <p className="text-slate-600 text-sm">Manage your home configuration</p>
                         </button>
 
-
                         <button
                             onClick={() => navigateTo('consultations')}
                             className="group bg-white hover:bg-slate-50 rounded-xl p-6 border border-slate-200 transition-all duration-300 cursor-pointer text-left shadow-sm hover:shadow-md"
@@ -63,6 +63,17 @@ const UserDashboard = () => {
                             </div>
                             <h3 className="text-lg font-bold text-slate-800 mb-2">My Consultations</h3>
                             <p className="text-slate-600 text-sm">View & manage your requests</p>
+                        </button>
+
+                        <button
+                            onClick={() => navigateTo('maintenance')}
+                            className="group bg-white hover:bg-slate-50 rounded-xl p-6 border border-slate-200 transition-all duration-300 cursor-pointer text-left shadow-sm hover:shadow-md"
+                        >
+                            <div className="flex items-center justify-center w-14 h-14 bg-purple-600 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <span className="text-3xl">🔧</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 mb-2">Maintenance & Service</h3>
+                            <p className="text-slate-600 text-sm">Request service & track schedules</p>
                         </button>
                     </div>
                 </div>

@@ -46,9 +46,10 @@ const assistanceSchema = new mongoose.Schema({
     enum: ['Low', 'Medium', 'High', 'Urgent'],
     default: 'Medium'
   },
-  assignedTo: {
-    type: String,
-    trim: true
+  assignedTechnician: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Technician',
+    default: null
   },
   scheduledDate: {
     type: Date

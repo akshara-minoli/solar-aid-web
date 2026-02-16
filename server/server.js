@@ -13,6 +13,8 @@ import consultationRoutes from './routes/consultations.js';
 import assistanceRoutes from './routes/assistances.js';
 import weatherRoutes from './routes/weather.js';
 import adminRoutes from './routes/admin.js';
+import technicianRoutes from './routes/technicians.js';
+import maintenanceScheduleRoutes from './routes/maintenance-schedules.js';
 
 dotenv.config();
 
@@ -57,6 +59,8 @@ app.use('/api/households', householdRoutes);
 app.use('/api/consultations', consultationRoutes);
 app.use('/api/assistances', assistanceRoutes);
 app.use('/api/weather', weatherRoutes);
+app.use('/api/technicians', technicianRoutes);
+app.use('/api/maintenance-schedules', maintenanceScheduleRoutes);
 // Admin routes (users, consultations, products management)
 app.use('/api/admin', adminRoutes);
 

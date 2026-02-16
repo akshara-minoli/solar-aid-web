@@ -20,6 +20,8 @@ export default function Sidebar() {
           <li><Link to="/admin/users" className="block p-2 rounded hover:bg-gray-100">Users</Link></li>
           <li><Link to="/admin/consultations" className="block p-2 rounded hover:bg-gray-100">Consultations</Link></li>
           <li><Link to="/admin/products" className="block p-2 rounded hover:bg-gray-100">Products</Link></li>
+          <li><Link to="/admin/technicians" className="block p-2 rounded hover:bg-gray-100">Technicians</Link></li>
+          <li><Link to="/admin/maintenance-schedules" className="block p-2 rounded hover:bg-gray-100">Maintenance Schedules</Link></li>
         </ul>
       </nav>
       <div className="absolute bottom-6 left-6">
