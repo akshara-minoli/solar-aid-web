@@ -9,12 +9,15 @@ import UserProfile from './pages/UserProfile'
 import AddHousehold from './pages/AddHousehold'
 import ViewHousehold from './pages/ViewHousehold'
 import ViewConsultations from './pages/ViewConsultations'
+import MaintenanceServicePage from './pages/MaintenanceServicePage'
 
 // Admin pages
 import AdminDashboard from './pages/AdminDashboard'
 import UsersPage from './pages/UsersPage'
 import ConsultationsPage from './pages/ConsultationsPage'
 import ProductsPage from './pages/ProductsPage'
+import TechnicianManagement from './pages/TechnicianManagement'
+import MaintenanceScheduleManagement from './pages/MaintenanceScheduleManagement'
 
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -34,6 +37,7 @@ function App() {
           <Route path="/view-household" element={<ViewHousehold />} />
           <Route path="/add-household" element={<AddHousehold />} />
           <Route path="/consultations" element={<ViewConsultations />} />
+          <Route path="/maintenance" element={<MaintenanceServicePage />} />
         </Route>
 
         {/* Admin protected routes */}
@@ -42,6 +46,8 @@ function App() {
           <Route path="/admin/users" element={<UsersPage />} />
           <Route path="/admin/consultations" element={<ConsultationsPage />} />
           <Route path="/admin/products" element={<ProductsPage />} />
+          <Route path="/admin/technicians" element={<TechnicianManagement />} />
+          <Route path="/admin/maintenance-schedules" element={<MaintenanceScheduleManagement />} />
         </Route>
 
         {/* Legacy / convenience redirects */}
