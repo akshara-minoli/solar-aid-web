@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
-import Navbar from '../components/Navbar'
 import api from '../api'
+import AdminProfileMenu from '../components/AdminProfileMenu'
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -17,52 +17,38 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchAllStats = async () => {
       try {
-        // Existing stats
         try {
           const users = await api.get('/api/admin/users')
           setStats(s => ({ ...s, users: users.data.count || 0 }))
-        } catch (e) {
-          console.log('Users endpoint not available')
-        }
+        } catch (e) { console.log('Users endpoint not available') }
 
         try {
           const consultations = await api.get('/api/admin/consultations')
           setStats(s => ({ ...s, consultations: consultations.data.count || 0 }))
-        } catch (e) {
-          console.log('Consultations endpoint not available')
-        }
+        } catch (e) { console.log('Consultations endpoint not available') }
 
         try {
           const products = await api.get('/api/admin/products')
           setStats(s => ({ ...s, products: products.data.count || 0 }))
-        } catch (e) {
-          console.log('Products endpoint not available')
-        }
+        } catch (e) { console.log('Products endpoint not available') }
 
-        // Member 4: Education stats
         try {
           const res = await api.get('/api/education')
           const eduCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0))
           setStats(s => ({ ...s, education: eduCount }))
-        } catch (e) {
-          console.log('Education endpoint error:', e.message)
-        }
+        } catch (e) { console.log('Education endpoint error:', e.message) }
 
         try {
           const res = await api.get('/api/notifications/all')
           const notifCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0))
           setStats(s => ({ ...s, notifications: notifCount }))
-        } catch (e) {
-          console.log('Notifications endpoint error:', e.message)
-        }
+        } catch (e) { console.log('Notifications endpoint error:', e.message) }
 
         try {
           const res = await api.get('/api/feedback')
           const feedbackCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0))
           setStats(s => ({ ...s, feedback: feedbackCount }))
-        } catch (e) {
-          console.log('Feedback endpoint error:', e.message)
-        }
+        } catch (e) { console.log('Feedback endpoint error:', e.message) }
       } finally {
         setLoading(false)
       }
@@ -71,67 +57,121 @@ export default function AdminDashboard() {
     fetchAllStats()
   }, [])
 
+  const statItems = [
+    { label: 'Users', value: stats.users, icon: '👥', color: 'text-blue-400' },
+    { label: 'Consults', value: stats.consultations, icon: '🩺', color: 'text-cyan-400' },
+    { label: 'Products', value: stats.products, icon: '☀️', color: 'text-indigo-400' },
+    { label: 'Education', value: stats.education, icon: '📚', color: 'text-teal-400' },
+    { label: 'Notifications', value: stats.notifications, icon: '🔔', color: 'text-sky-400' },
+    { label: 'Feedback', value: stats.feedback, icon: '💬', color: 'text-blue-300' },
+  ]
+
+  const quickLinks = [
+    { href: '/admin/education', label: 'Manage Education', icon: '📚' },
+    { href: '/admin/notifications', label: 'Send Notifications', icon: '🔔' },
+    { href: '/admin/feedback', label: 'View Feedback', icon: '💬' },
+    { href: '/dashboard', label: 'User Dashboard', icon: '👤' },
+  ]
+
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden bg-slate-900">
       <Sidebar />
-      <div className="flex-1 min-h-screen bg-gray-50 pl-64">
-        <Navbar title="Admin Dashboard" />
-        <main className="p-6 pt-36">
-          {loading && (
-            <div className="text-center py-8">
-              <p className="text-slate-600">Loading dashboard...</p>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col pl-64 relative bg-[#0B1120] text-slate-200 h-screen overflow-y-auto" style={{ backgroundImage: 'radial-gradient(circle at 50% 0%, #172554 0%, #0B1120 70%)' }}>
+        <AdminProfileMenu />
+        <main className="p-6 pt-24 max-w-7xl w-full mx-auto">
+          {loading ? (
+            <div className="flex items-center justify-center p-10">
+              <div className="w-8 h-8 rounded-full border-2 border-slate-600 border-t-blue-500 animate-spin"></div>
             </div>
-          )}
+          ) : (
+            <div className="flex flex-col gap-6">
 
-          {!loading && (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 bg-white rounded shadow">
-                  <h4 className="font-bold text-sm text-gray-500">Total Users</h4>
-                  <div className="text-3xl font-bold">{stats.users}</div>
+              {/* Header Title Layer */}
+              <div className="flex items-center justify-between bg-white/5 backdrop-blur-md border border-white/5 rounded-xl p-5 shadow-lg">
+                <div>
+                  <h1 className="text-2xl font-semibold text-white tracking-wide">System Overview</h1>
+                  <p className="text-slate-400 text-sm mt-1">Live metrics and administrative controls</p>
                 </div>
-                <div className="p-6 bg-white rounded shadow">
-                  <h4 className="font-bold text-sm text-gray-500">Total Consultations</h4>
-                  <div className="text-3xl font-bold">{stats.consultations}</div>
-                </div>
-                <div className="p-6 bg-white rounded shadow">
-                  <h4 className="font-bold text-sm text-gray-500">Total Products</h4>
-                  <div className="text-3xl font-bold">{stats.products}</div>
+                <div className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-lg text-xs font-medium flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+                  System Online
                 </div>
               </div>
 
-              {/* Member 4 Stats */}
-              <div className="mt-8">
-                <h2 className="text-2xl font-bold mb-4 text-blue-600">Education & Communication</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-6 bg-blue-50 rounded shadow border-2 border-blue-200 cursor-pointer hover:shadow-lg transition-shadow">
-                    <h4 className="font-bold text-sm text-blue-600">📚 Education Content</h4>
-                    <div className="text-3xl font-bold text-blue-700 mt-2">{stats.education}</div>
-                    <p className="text-xs text-blue-500 mt-2">items created</p>
+              {/* Stats Grid - Compact Space */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {statItems.map((item, idx) => (
+                  <div key={idx} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col justify-between hover:bg-white/10 transition duration-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xl">{item.icon}</span>
+                      <span className={`text-xs font-semibold uppercase tracking-wider ${item.color}`}>
+                        {item.label}
+                      </span>
+                    </div>
+                    <div className="text-3xl font-bold text-white tracking-tight">
+                      {item.value}
+                    </div>
                   </div>
-                  <div className="p-6 bg-blue-50 rounded shadow border-2 border-blue-200 cursor-pointer hover:shadow-lg transition-shadow">
-                    <h4 className="font-bold text-sm text-blue-600">🔔 Notifications</h4>
-                    <div className="text-3xl font-bold text-blue-700 mt-2">{stats.notifications}</div>
-                    <p className="text-xs text-blue-500 mt-2">sent</p>
-                  </div>
-                  <div className="p-6 bg-blue-50 rounded shadow border-2 border-blue-200 cursor-pointer hover:shadow-lg transition-shadow">
-                    <h4 className="font-bold text-sm text-blue-600">💬 Feedback</h4>
-                    <div className="text-3xl font-bold text-blue-700 mt-2">{stats.feedback}</div>
-                    <p className="text-xs text-blue-500 mt-2">received</p>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              <section className="mt-8 bg-white p-6 rounded shadow">
-                <h3 className="font-bold mb-2">Quick Links</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  <a href="/admin/education" className="p-4 bg-blue-50 text-blue-600 rounded text-center font-bold hover:bg-blue-100 transition">📚 Education</a>
-                  <a href="/admin/notifications" className="p-4 bg-blue-50 text-blue-600 rounded text-center font-bold hover:bg-blue-100 transition">🔔 Notifications</a>
-                  <a href="/admin/feedback" className="p-4 bg-blue-50 text-blue-600 rounded text-center font-bold hover:bg-blue-100 transition">💬 Feedback</a>
-                  <a href="/dashboard" className="p-4 bg-emerald-50 text-emerald-600 rounded text-center font-bold hover:bg-emerald-100 transition">👤 Dashboard</a>
+              {/* Lower Section Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                {/* Recent Activity / System Log Concept (Glassmorphism List) */}
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-5">
+                  <h2 className="text-base font-medium text-white mb-4 flex items-center gap-2 border-b border-white/5 pb-3">
+                    <span className="text-blue-400">⚡</span> Activity Summary
+                  </h2>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between text-sm bg-white/5 p-3 rounded-lg border border-white/5">
+                      <div className="flex gap-3 items-center">
+                        <span className="bg-blue-500/20 text-blue-400 p-2 rounded-md">👥</span>
+                        <span className="text-slate-300">Total active users</span>
+                      </div>
+                      <span className="font-semibold text-white">{stats.users}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm bg-white/5 p-3 rounded-lg border border-white/5">
+                      <div className="flex gap-3 items-center">
+                        <span className="bg-cyan-500/20 text-cyan-400 p-2 rounded-md">🩺</span>
+                        <span className="text-slate-300">Consultations booked</span>
+                      </div>
+                      <span className="font-semibold text-white">{stats.consultations}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm bg-white/5 p-3 rounded-lg border border-white/5">
+                      <div className="flex gap-3 items-center">
+                        <span className="bg-indigo-500/20 text-indigo-400 p-2 rounded-md">☀️</span>
+                        <span className="text-slate-300">Products deployed</span>
+                      </div>
+                      <span className="font-semibold text-white">{stats.products}</span>
+                    </div>
+                  </div>
                 </div>
-              </section>
-            </>
+
+                {/* Quick Actions (Transparent Glass buttons) */}
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-5">
+                  <h2 className="text-base font-medium text-white mb-4 flex items-center gap-2 border-b border-white/5 pb-3">
+                    <span className="text-teal-400">🚀</span> Quick Actions
+                  </h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    {quickLinks.map((link, idx) => (
+                      <a
+                        key={idx}
+                        href={link.href}
+                        className="flex flex-col items-center justify-center p-4 rounded-lg bg-white/5 border border-white/5 hover:bg-blue-500/20 hover:border-blue-500/30 transition-all text-center group"
+                      >
+                        <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{link.icon}</span>
+                        <span className="text-xs font-medium text-slate-300 group-hover:text-blue-200">{link.label}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
           )}
         </main>
       </div>

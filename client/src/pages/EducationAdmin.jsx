@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
-import Navbar from '../components/Navbar'
 import api from '../api'
+import AdminProfileMenu from '../components/AdminProfileMenu'
 
 export default function EducationAdmin() {
   const [educationContent, setEducationContent] = useState([])
@@ -27,14 +27,11 @@ export default function EducationAdmin() {
   const fetchEducation = async () => {
     try {
       setLoading(true)
-      console.log('Fetching education...')
       const res = await api.get('/api/education')
-      console.log('Got response:', res.data)
       const contentArray = res.data.data || (Array.isArray(res.data) ? res.data : [])
       setEducationContent(contentArray)
       setError('')
     } catch (error) {
-      console.error('Fetch error:', error.message)
       setError('Error: ' + error.message)
       setEducationContent([])
     } finally {
@@ -53,7 +50,6 @@ export default function EducationAdmin() {
     })
     setEditingId(content._id)
     setShowForm(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleSubmit = async (e) => {
@@ -61,10 +57,8 @@ export default function EducationAdmin() {
     try {
       if (editingId) {
         await api.put(`/api/education/${editingId}`, formData)
-        alert('Content updated successfully!')
       } else {
         await api.post('/api/education', formData)
-        alert('Education content created successfully!')
       }
 
       setFormData({
@@ -79,156 +73,74 @@ export default function EducationAdmin() {
       setShowForm(false)
       await fetchEducation()
     } catch (error) {
-      alert('Failed to process content: ' + (error.response?.data?.message || error.message))
+      setError('Failed to process content: ' + (error.response?.data?.message || error.message))
     }
   }
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure?')) {
+    if (window.confirm('Are you sure you want to delete this content?')) {
       try {
         await api.delete(`/api/education/${id}`)
         fetchEducation()
-        alert('Content deleted!')
       } catch (error) {
-        alert('Failed to delete')
+        setError('Failed to delete')
       }
     }
   }
 
-  return (
-    <div style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>
-      <Sidebar />
-      <div style={{ marginLeft: '256px', flex: 1, minHeight: '100vh', backgroundColor: '#f9fafb' }}>
-        <Navbar title="Education Content" />
-        <div style={{ padding: '24px', paddingTop: '160px', width: '100%' }}>
-          <h1 style={{ color: 'black', fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>
-            Education Management
-          </h1>
+  // Component styles for inputs
+  const inputClass = "w-full p-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors text-sm"
 
-          <button
-            onClick={() => {
-              if (showForm) {
-                setEditingId(null)
-                setFormData({
-                  title: '',
-                  category: 'Solar Basics',
-                  description: '',
-                  content: 'Default content for preview',
-                  contentType: 'Article',
-                  difficulty: 'Beginner'
-                })
-              }
-              setShowForm(!showForm)
-            }}
-            style={{
-              padding: '10px 16px',
-              backgroundColor: showForm ? '#6b7280' : '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              marginBottom: '16px',
-              fontWeight: 'bold'
-            }}
-          >
-            {showForm ? 'Cancel' : 'Add Content'}
-          </button>
+  return (
+    <div className="flex h-screen overflow-hidden bg-slate-900">
+      <Sidebar />
+      <div className="flex-1 flex flex-col pl-64 relative bg-[#0B1120] text-slate-200 h-screen overflow-y-auto" style={{ backgroundImage: 'radial-gradient(circle at 50% 0%, #172554 0%, #0B1120 70%)' }}>
+        <AdminProfileMenu />
+        <main className="p-8 pt-24 max-w-7xl w-full mx-auto">
+
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white tracking-wide">Education Management</h1>
+              <p className="text-slate-400 text-sm mt-1">Manage articles, videos, and guides</p>
+            </div>
+            {!showForm && (
+              <button onClick={() => { setEditingId(null); setFormData({ title: '', category: 'Solar Basics', description: '', content: 'Default content for preview', contentType: 'Article', difficulty: 'Beginner' }); setShowForm(true); }} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
+                <span>➕</span> Add Content
+              </button>
+            )}
+          </div>
 
           {error && (
-            <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '4px', marginBottom: '16px' }}>
-              {error}
+            <div className="bg-red-500/20 border border-red-500/30 text-red-300 px-4 py-3 rounded-lg mb-6 flex items-center gap-3">
+              <span>⚠️</span> {error}
             </div>
           )}
 
           {showForm && (
-            <div style={{ backgroundColor: '#f0f9ff', border: '2px solid #3b82f6', borderRadius: '12px', padding: '24px', marginBottom: '20px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}>
-              <h2 style={{ color: 'black', fontSize: '20px', fontWeight: 'bold', marginBottom: '20px', borderBottom: '1px solid #bfdbfe', paddingBottom: '10px' }}>
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-8 mb-8 shadow-xl">
+              <h2 className="text-xl font-semibold mb-6 text-white pb-4 border-b border-white/10">
                 {editingId ? 'Edit Education Content' : 'Create New Education Content'}
               </h2>
-              <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    placeholder="Enter descriptive title"
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box'
-                    }}
-                    required
-                  />
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Title</label>
+                  <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Enter descriptive title" className={inputClass} required />
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
-                    Description (Short Summary)
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Provide a brief summary of the content..."
-                    rows={3}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box',
-                      resize: 'vertical'
-                    }}
-                    required
-                  />
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Description (Short Summary)</label>
+                  <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Provide a brief summary of the content..." rows={3} className={`${inputClass} resize-y`} required />
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
-                    Full Content / Details
-                  </label>
-                  <textarea
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    placeholder="Write the full article content or details here..."
-                    rows={10}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
-                      fontSize: '14px',
-                      boxSizing: 'border-box',
-                      resize: 'vertical',
-                      fontFamily: 'inherit'
-                    }}
-                    required
-                  />
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Full Content / Details</label>
+                  <textarea value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} placeholder="Write the full article content or details here..." rows={6} className={`${inputClass} resize-y`} required />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label style={{ display: 'block', color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
-                      Category
-                    </label>
-                    <select
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    >
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
+                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className={`${inputClass} [&>option]:bg-slate-800`}>
                       <option>Solar Basics</option>
                       <option>Solar Installation</option>
                       <option>Maintenance Tips</option>
@@ -241,21 +153,8 @@ export default function EducationAdmin() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
-                      Content Type
-                    </label>
-                    <select
-                      value={formData.contentType}
-                      onChange={(e) => setFormData({ ...formData, contentType: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    >
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Content Type</label>
+                    <select value={formData.contentType} onChange={(e) => setFormData({ ...formData, contentType: e.target.value })} className={`${inputClass} [&>option]:bg-slate-800`}>
                       <option>Article</option>
                       <option>Video</option>
                       <option>PDF</option>
@@ -264,21 +163,8 @@ export default function EducationAdmin() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', color: 'black', fontWeight: 'bold', marginBottom: '6px' }}>
-                      Difficulty Level
-                    </label>
-                    <select
-                      value={formData.difficulty}
-                      onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        boxSizing: 'border-box'
-                      }}
-                    >
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Difficulty Level</label>
+                    <select value={formData.difficulty} onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })} className={`${inputClass} [&>option]:bg-slate-800`}>
                       <option>Beginner</option>
                       <option>Intermediate</option>
                       <option>Advanced</option>
@@ -286,101 +172,70 @@ export default function EducationAdmin() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <button type="submit" style={{ padding: '12px 24px', backgroundColor: '#059669', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <div className="flex gap-4 mt-6 pt-6 border-t border-white/10">
+                  <button type="submit" className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 px-6 py-2.5 rounded-lg font-medium transition-colors">
                     {editingId ? 'Update Content' : 'Publish Content'}
                   </button>
-                  {editingId && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingId(null)
-                        setFormData({
-                          title: '',
-                          category: 'Solar Basics',
-                          description: '',
-                          content: 'Default content for preview',
-                          contentType: 'Article',
-                          difficulty: 'Beginner'
-                        })
-                        setShowForm(false)
-                      }}
-                      style={{ padding: '12px 24px', backgroundColor: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-                      Cancel Edit
-                    </button>
-                  )}
+                  <button type="button" onClick={() => { setEditingId(null); setShowForm(false); }} className="bg-slate-500/20 hover:bg-slate-500/30 text-slate-300 border border-slate-500/30 px-6 py-2.5 rounded-lg font-medium transition-colors">
+                    Cancel
+                  </button>
                 </div>
               </form>
             </div>
           )}
 
-          <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '16px', border: '1px solid #e5e7eb' }}>
-            {loading && <p style={{ color: 'black' }}>Loading...</p>}
-
-            {!loading && educationContent.length === 0 && (
-              <p style={{ color: '#666' }}>No education content. Click "Add Content" to create.</p>
-            )}
-
-            {!loading && educationContent.length > 0 && (
-              <div>
-                <p style={{ color: 'black', marginBottom: '16px' }}>
-                  Total: {educationContent.length} items
-                </p>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl overflow-hidden">
+            {loading ? (
+              <div className="text-center py-12 flex justify-center">
+                <div className="w-8 h-8 rounded-full border-2 border-slate-600 border-t-blue-500 animate-spin"></div>
+              </div>
+            ) : educationContent.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <span className="text-4xl block mb-3 opacity-50">📚</span>
+                No education content found.
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr style={{ backgroundColor: '#f3f4f6', borderBottom: '2px solid #d1d5db' }}>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Title</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Category</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Type</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Difficulty</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Description</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Views</th>
-                      <th style={{ padding: '12px', textAlign: 'left', color: 'black', fontWeight: 'bold', fontSize: '14px' }}>Actions</th>
+                    <tr className="bg-white/5 border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider">
+                      <th className="px-6 py-4 font-semibold">Title</th>
+                      <th className="px-6 py-4 font-semibold">Type</th>
+                      <th className="px-6 py-4 font-semibold">Difficulty</th>
+                      <th className="px-6 py-4 font-semibold">Views</th>
+                      <th className="px-6 py-4 font-semibold">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {educationContent.map((content, idx) => (
-                      <tr key={content._id || idx} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                        <td style={{ padding: '12px', color: 'black' }}>{content.title}</td>
-                        <td style={{ padding: '12px', color: 'black' }}>{content.category}</td>
-                        <td style={{ padding: '12px', color: 'black' }}>
-                          <span style={{ padding: '2px 8px', backgroundColor: '#dcfce7', color: '#166534', borderRadius: '999px', fontSize: '10px', fontWeight: 'bold' }}>
+                  <tbody className="divide-y divide-white/5">
+                    {educationContent.map(content => (
+                      <tr key={content._id} className="hover:bg-white/5 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-white mb-1">{content.title}</div>
+                          <div className="text-xs text-slate-400 mb-1">{content.category}</div>
+                          <div className="text-[10px] text-slate-500 max-w-xs truncate">{content.description}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="px-2.5 py-1 text-[10px] font-semibold rounded-full uppercase tracking-wide border bg-blue-500/10 text-blue-400 border-blue-500/20">
                             {content.contentType}
                           </span>
                         </td>
-                        <td style={{ padding: '12px', color: 'black' }}>{content.difficulty}</td>
-                        <td style={{ padding: '12px', color: 'black', maxWidth: '200px', fontSize: '11px' }}>{content.description}</td>
-                        <td style={{ padding: '12px', color: 'black' }}>{content.views || 0}</td>
-                        <td style={{ padding: '12px' }}>
-                          <div style={{ display: 'flex', gap: '8px' }}>
-                            <button
-                              onClick={() => handleEdit(content)}
-                              style={{
-                                padding: '6px 12px',
-                                backgroundColor: '#2563eb',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '11px',
-                                fontWeight: 'bold'
-                              }}
-                            >
+                        <td className="px-6 py-4">
+                          <span className={`px-2.5 py-1 text-[10px] font-semibold rounded-full uppercase tracking-wide border ${content.difficulty === 'Beginner' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : content.difficulty === 'Intermediate' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                            }`}>
+                            {content.difficulty}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-300">
+                          👁️ {content.views || 0}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2">
+                            <button onClick={() => handleEdit(content)} className="px-3 py-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded border border-blue-500/30 text-xs font-medium transition-colors">
                               Edit
                             </button>
-                            <button
-                              onClick={() => handleDelete(content._id)}
-                              style={{
-                                padding: '6px 12px',
-                                backgroundColor: '#ef4444',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '11px',
-                                fontWeight: 'bold'
-                              }}
-                            >
+                            <button onClick={() => handleDelete(content._id)} className="px-3 py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 rounded border border-rose-500/30 text-xs font-medium transition-colors">
                               Delete
                             </button>
                           </div>
@@ -392,7 +247,8 @@ export default function EducationAdmin() {
               </div>
             )}
           </div>
-        </div>
+
+        </main>
       </div>
     </div>
   )

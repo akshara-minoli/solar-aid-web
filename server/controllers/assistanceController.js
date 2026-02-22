@@ -69,7 +69,7 @@ export const getUserAssistances = async (req, res) => {
 export const getAllAssistances = async (req, res) => {
   try {
     const { status, priority, assistanceType } = req.query;
-    
+
     // Build filter object
     const filter = {};
     if (status) filter.status = status;
@@ -146,8 +146,8 @@ export const updateAssistance = async (req, res) => {
       });
     }
 
-    // Check if user owns this assistance
-    if (assistance.userId.toString() !== req.user._id.toString()) {
+    // Check if user owns this assistance or is admin
+    if (assistance.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to update this assistance request'
@@ -155,20 +155,20 @@ export const updateAssistance = async (req, res) => {
     }
 
     // Update fields
-    const { 
-      fullName, 
-      village, 
-      phoneNumber, 
-      assistanceType, 
-      problemDescription, 
+    const {
+      fullName,
+      village,
+      phoneNumber,
+      assistanceType,
+      problemDescription,
       image,
-      status, 
-      priority, 
+      status,
+      priority,
       assignedTo,
-      scheduledDate, 
-      resolutionNotes 
+      scheduledDate,
+      resolutionNotes
     } = req.body;
-    
+
     const updateData = {};
     if (fullName) updateData.fullName = fullName;
     if (village) updateData.village = village;
@@ -217,8 +217,8 @@ export const deleteAssistance = async (req, res) => {
       });
     }
 
-    // Check if user owns this assistance
-    if (assistance.userId.toString() !== req.user._id.toString()) {
+    // Check if user owns this assistance or is admin
+    if (assistance.userId.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to delete this assistance request'
