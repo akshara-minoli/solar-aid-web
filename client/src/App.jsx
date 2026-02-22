@@ -10,6 +10,7 @@ import AddHousehold from './pages/AddHousehold'
 import ViewHousehold from './pages/ViewHousehold'
 import ViewConsultations from './pages/ViewConsultations'
 import MaintenanceServicePage from './pages/MaintenanceServicePage'
+import EducationDetail from './pages/EducationDetail'
 
 // Admin pages
 import AdminDashboard from './pages/AdminDashboard'
@@ -18,6 +19,10 @@ import ConsultationsPage from './pages/ConsultationsPage'
 import ProductsPage from './pages/ProductsPage'
 import TechnicianManagement from './pages/TechnicianManagement'
 import MaintenanceScheduleManagement from './pages/MaintenanceScheduleManagement'
+// Member 4: Education & Communication Admin Pages
+import EducationAdmin from './pages/EducationAdmin'
+import NotificationsAdmin from './pages/NotificationsAdmin'
+import FeedbackAdmin from './pages/FeedbackAdmin'
 
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -31,23 +36,28 @@ function App() {
         <Route path="/forgot" element={<ForgotPassword />} />
 
         {/* User protected routes */}
-        <Route element={<ProtectedRoute allowedRoles={["user","admin"]} /> }>
+        <Route element={<ProtectedRoute allowedRoles={["user", "admin"]} />}>
           <Route path="/home" element={<UserDashboard />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/view-household" element={<ViewHousehold />} />
           <Route path="/add-household" element={<AddHousehold />} />
           <Route path="/consultations" element={<ViewConsultations />} />
           <Route path="/maintenance" element={<MaintenanceServicePage />} />
+          <Route path="/education/:id" element={<EducationDetail />} />
         </Route>
 
         {/* Admin protected routes */}
-        <Route element={<ProtectedRoute allowedRoles={["admin"]} /> }>
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<UsersPage />} />
           <Route path="/admin/consultations" element={<ConsultationsPage />} />
           <Route path="/admin/products" element={<ProductsPage />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
           <Route path="/admin/maintenance-schedules" element={<MaintenanceScheduleManagement />} />
+          {/* Member 4: Education & Communication Routes */}
+          <Route path="/admin/education" element={<EducationAdmin />} />
+          <Route path="/admin/notifications" element={<NotificationsAdmin />} />
+          <Route path="/admin/feedback" element={<FeedbackAdmin />} />
         </Route>
 
         {/* Legacy / convenience redirects */}

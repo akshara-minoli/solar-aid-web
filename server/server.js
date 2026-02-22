@@ -15,6 +15,9 @@ import weatherRoutes from './routes/weather.js';
 import adminRoutes from './routes/admin.js';
 import technicianRoutes from './routes/technicians.js';
 import maintenanceScheduleRoutes from './routes/maintenance-schedules.js';
+import educationRoutes from './routes/education.js';
+import notificationRoutes from './routes/notifications.js';
+import feedbackRoutes from './routes/feedback.js';
 
 dotenv.config();
 
@@ -61,6 +64,10 @@ app.use('/api/assistances', assistanceRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/technicians', technicianRoutes);
 app.use('/api/maintenance-schedules', maintenanceScheduleRoutes);
+// Member 4: Education & Communication Routes
+app.use('/api/education', educationRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/feedback', feedbackRoutes);
 // Admin routes (users, consultations, products management)
 app.use('/api/admin', adminRoutes);
 
