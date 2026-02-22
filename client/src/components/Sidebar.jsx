@@ -22,6 +22,9 @@ export default function Sidebar() {
           <li><Link to="/admin/products" className="block p-2 rounded hover:bg-gray-100">Products</Link></li>
           <li><Link to="/admin/technicians" className="block p-2 rounded hover:bg-gray-100">Technicians</Link></li>
           <li><Link to="/admin/maintenance-schedules" className="block p-2 rounded hover:bg-gray-100">Maintenance Schedules</Link></li>
+          <li><Link to="/admin/education" className="block p-2 rounded hover:bg-gray-100">Education Content</Link></li>
+          <li><Link to="/admin/notifications" className="block p-2 rounded hover:bg-gray-100">Notifications</Link></li>
+          <li><Link to="/admin/feedback" className="block p-2 rounded hover:bg-gray-100">Feedback</Link></li>
         </ul>
       </nav>
       <div className="absolute bottom-6 left-6">

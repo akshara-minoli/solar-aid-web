@@ -3,7 +3,7 @@ import Sidebar from '../components/Sidebar'
 import Navbar from '../components/Navbar'
 import api from '../api'
 
-export default function UsersPage(){
+export default function UsersPage() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -20,7 +20,7 @@ export default function UsersPage(){
       <Sidebar />
       <div className="flex-1 min-h-screen bg-gray-50 pl-64">
         <Navbar title="Manage Users" />
-        <main className="p-6 pt-28">
+        <main className="p-6 pt-36">
           <div className="bg-white p-4 rounded shadow">
             <h3 className="font-bold mb-4">Users</h3>
             {loading ? <div>Loading...</div> : (
