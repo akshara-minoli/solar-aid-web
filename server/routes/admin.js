@@ -137,7 +137,17 @@ router.post('/products', protect, admin, upload.single('productPicture'), async 
   }
 });
 
-// GET all products
+// GET all products — accessible by any logged-in user (read-only for catalog view)
+router.get('/products/catalog', protect, async (req, res) => {
+  try {
+    const products = await Product.find().sort('-createdAt');
+    res.json({ success: true, count: products.length, products });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET all products — admin only (for management)
 router.get('/products', protect, admin, async (req, res) => {
   try {
     const products = await Product.find().sort('-createdAt');

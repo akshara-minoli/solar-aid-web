@@ -39,7 +39,7 @@ export default function UserProductsPage() {
 
     useEffect(() => {
         api
-            .get('/api/admin/products')
+            .get('/api/admin/products/catalog')
             .then((res) => setProducts(res.data.products || []))
             .catch(() => setError('Failed to load product catalog. Please try again later.'))
             .finally(() => setLoading(false));
