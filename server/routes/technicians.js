@@ -8,7 +8,7 @@ import {
   completeServiceRequest,
   updateAvailability,
   getAvailableTechnicians,
-  deactivateTechnician,
+  toggleActivation,
   deleteTechnician,
   getTechnicianStats
 } from '../controllers/technicianController.js';
@@ -55,9 +55,9 @@ router.put('/:id/assign/:assistanceId', assignServiceRequest);
 // @desc    Complete service request
 router.put('/:id/complete/:assistanceId', completeServiceRequest);
 
-// @route   PUT /api/technicians/:id/deactivate
-// @desc    Deactivate technician
-router.put('/:id/deactivate', deactivateTechnician);
+// @route   PUT /api/technicians/:id/toggle-activation
+// @desc    Toggle technician activation
+router.put('/:id/toggle-activation', toggleActivation);
 
 // @route   DELETE /api/technicians/:id
 // @desc    Delete technician

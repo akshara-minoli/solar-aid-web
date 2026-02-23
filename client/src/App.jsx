@@ -19,6 +19,7 @@ import ConsultationsPage from './pages/ConsultationsPage'
 import ProductsPage from './pages/ProductsPage'
 import TechnicianManagement from './pages/TechnicianManagement'
 import MaintenanceScheduleManagement from './pages/MaintenanceScheduleManagement'
+import ServiceRequestsAdmin from './pages/ServiceRequestsAdmin'
 // Member 4: Education & Communication Admin Pages
 import EducationAdmin from './pages/EducationAdmin'
 import NotificationsAdmin from './pages/NotificationsAdmin'
@@ -54,6 +55,7 @@ function App() {
           <Route path="/admin/products" element={<ProductsPage />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
           <Route path="/admin/maintenance-schedules" element={<MaintenanceScheduleManagement />} />
+          <Route path="/admin/requests" element={<ServiceRequestsAdmin />} />
           {/* Member 4: Education & Communication Routes */}
           <Route path="/admin/education" element={<EducationAdmin />} />
           <Route path="/admin/notifications" element={<NotificationsAdmin />} />

@@ -143,6 +143,7 @@ export const updateMaintenanceSchedule = async (req, res) => {
   try {
     const {
       serviceType,
+      technicianId,
       description,
       scheduledDate,
       estimatedDuration,
@@ -165,6 +166,7 @@ export const updateMaintenanceSchedule = async (req, res) => {
 
     // Update fields
     if (serviceType) schedule.serviceType = serviceType;
+    if (technicianId) schedule.technicianId = technicianId;
     if (description) schedule.description = description;
     if (scheduledDate) schedule.scheduledDate = scheduledDate;
     if (estimatedDuration) schedule.estimatedDuration = estimatedDuration;

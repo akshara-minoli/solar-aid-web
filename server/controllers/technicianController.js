@@ -60,10 +60,14 @@ export const createTechnician = async (req, res) => {
 // @access  Private/Admin
 export const getAllTechnicians = async (req, res) => {
   try {
-    const { availability, location, specialization } = req.query;
+    const { availability, location, specialization, includeInactive } = req.query;
 
     // Build filter object
-    const filter = { isActive: true };
+    const filter = {};
+    if (!includeInactive) {
+      // If we don't explicitly pass includeInactive, we might want only active ones in some contexts,
+      // but admin wants to see all by default. So we'll fetch all on admin side.
+    }
     if (availability) filter.availability = availability;
     if (location) filter.location = new RegExp(location, 'i');
     if (specialization) filter.specialization = specialization;
@@ -372,16 +376,12 @@ export const getAvailableTechnicians = async (req, res) => {
   }
 };
 
-// @desc    Deactivate technician
-// @route   PUT /api/technicians/:id/deactivate
+// @desc    Toggle technician activation
+// @route   PUT /api/technicians/:id/toggle-activation
 // @access  Private/Admin
-export const deactivateTechnician = async (req, res) => {
+export const toggleActivation = async (req, res) => {
   try {
-    const technician = await Technician.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
+    const technician = await Technician.findById(req.params.id);
 
     if (!technician) {
       return res.status(404).json({
@@ -390,16 +390,19 @@ export const deactivateTechnician = async (req, res) => {
       });
     }
 
+    technician.isActive = !technician.isActive;
+    await technician.save();
+
     res.status(200).json({
       success: true,
-      message: 'Technician deactivated successfully',
+      message: `Technician ${technician.isActive ? 'activated' : 'deactivated'} successfully`,
       data: technician
     });
   } catch (error) {
-    console.error('Deactivate technician error:', error);
+    console.error('Toggle activation error:', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Error deactivating technician'
+      message: error.message || 'Error toggling technician status'
     });
   }
 };
