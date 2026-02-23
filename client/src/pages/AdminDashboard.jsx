@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 
   const statItems = [
     { label: 'Users', value: stats.users, icon: '👥', color: 'text-blue-400' },
-    { label: 'Consults', value: stats.consultations, icon: '🩺', color: 'text-cyan-400' },
+    { label: 'Consultations', value: stats.consultations, icon: '🩺', color: 'text-cyan-400' },
     { label: 'Products', value: stats.products, icon: '☀️', color: 'text-indigo-400' },
     { label: 'Education', value: stats.education, icon: '📚', color: 'text-teal-400' },
     { label: 'Notifications', value: stats.notifications, icon: '🔔', color: 'text-sky-400' },

@@ -1,15 +1,13 @@
+import axios from 'axios';
+
 export const getWeatherInsights = async (req, res) => {
     try {
         const apiKey = process.env.OPENWEATHER_API_KEY;
-        const city = 'Colombo';
+        const city = req.query.city || 'Colombo';
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Failed to fetch weather data');
-        }
+        const response = await axios.get(url);
+        const data = response.data;
 
         const cloudCoverage = data.clouds.all;
         const solarEfficiencyScore = 100 - cloudCoverage;
@@ -24,6 +22,7 @@ export const getWeatherInsights = async (req, res) => {
         }
 
         const weatherInsights = {
+            city: city,
             temperature: data.main.temp,
             humidity: data.main.humidity,
             cloudCoverage: cloudCoverage,

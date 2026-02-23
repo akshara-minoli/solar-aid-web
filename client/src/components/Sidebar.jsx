@@ -8,7 +8,7 @@ export default function Sidebar() {
   const logout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
-    navigate('/login')
+    navigate('/')
   }
 
   const menuItems = [

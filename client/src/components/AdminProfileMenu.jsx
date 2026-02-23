@@ -75,7 +75,7 @@ export default function AdminProfileMenu() {
                 await api.delete('/api/users/profile');
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
-                navigate('/login');
+                navigate('/');
             } catch (err) {
                 setError(err.response?.data?.message || 'Error deleting account');
             }
@@ -139,7 +139,7 @@ export default function AdminProfileMenu() {
                             onClick={() => {
                                 localStorage.removeItem('token');
                                 localStorage.removeItem('user');
-                                navigate('/login');
+                                navigate('/');
                             }}
                             className="w-full text-left px-4 py-2.5 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors flex items-center gap-3 font-medium"
                         >

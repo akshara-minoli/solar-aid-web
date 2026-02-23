@@ -53,7 +53,7 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
       }
 
       const response = await api.post('/api/assistances', formData);
-      
+
       if (response.data.success) {
         setFormData({
           fullName: '',
@@ -75,29 +75,30 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#0B1120] border border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-emerald-700 p-6 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-white">Request Service</h2>
+        <div className="sticky top-0 bg-white/5 backdrop-blur-md border-b border-white/10 p-6 flex justify-between items-center z-10">
+          <h2 className="text-2xl font-bold text-white tracking-tight">Request Service</h2>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-lg p-2 transition-colors"
+            className="text-slate-400 hover:text-white hover:bg-white/10 rounded-xl p-2 transition-all"
           >
             ✕
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 relative z-10">
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-              {error}
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400 animate-in slide-in-from-top-2 duration-300">
+              <span className="mr-2">⚠️</span> {error}
             </div>
           )}
 
           {/* Full Name */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
               Full Name *
             </label>
             <input
@@ -106,14 +107,14 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
               value={formData.fullName}
               onChange={handleChange}
               placeholder="Enter your full name"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium"
               required
             />
           </div>
 
           {/* Village */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
               Village/Location *
             </label>
             <input
@@ -122,14 +123,14 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
               value={formData.village}
               onChange={handleChange}
               placeholder="Enter your village or location"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium"
               required
             />
           </div>
 
           {/* Phone Number */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
               Phone Number *
             </label>
             <input
@@ -138,49 +139,49 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="Enter your phone number"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium"
               required
             />
           </div>
 
           {/* Assistance Type */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
               Service Type *
             </label>
             <select
               name="assistanceType"
               value={formData.assistanceType}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium appearance-none"
               required
             >
               {assistanceTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+                <option key={type} value={type} className="bg-[#111827] text-white">{type}</option>
               ))}
             </select>
           </div>
 
           {/* Priority */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
               Priority Level
             </label>
             <select
               name="priority"
               value={formData.priority}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium appearance-none"
             >
               {priorities.map(priority => (
-                <option key={priority} value={priority}>{priority}</option>
+                <option key={priority} value={priority} className="bg-[#111827] text-white">{priority}</option>
               ))}
             </select>
           </div>
 
           {/* Problem Description */}
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
               Problem Description *
             </label>
             <textarea
@@ -189,27 +190,27 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
               onChange={handleChange}
               placeholder="Describe the problem in detail (minimum 10 characters)"
               rows="5"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium resize-none text-sm"
               required
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[10px] text-slate-500 mt-2 ml-1 font-bold">
               {formData.problemDescription.length}/10 characters minimum
             </p>
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-4 border-t border-white/5">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
+              className="flex-1 px-4 py-3.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl font-bold hover:bg-white/10 transition-all uppercase text-xs tracking-wide"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50 tracking-wide uppercase text-xs"
             >
               {loading ? 'Submitting...' : 'Submit Request'}
             </button>

@@ -69,42 +69,43 @@ const SubmitFeedback = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto pb-12">
+    <div className="max-w-2xl mx-auto pb-12 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800">Share Your Experience</h2>
-          <p className="text-slate-500 text-sm mt-1">Your feedback helps us provide better solar solutions for everyone.</p>
+          <h2 className="text-2xl font-black text-white tracking-tight uppercase">Share Your Experience</h2>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Your feedback fuels our solar innovation engine.</p>
         </div>
       </div>
 
       {submitted && (
-        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl flex items-center gap-3 animate-in slide-in-from-top duration-300">
-          <div className="bg-emerald-500 text-white p-1 rounded-full text-xs">✓</div>
-          <span className="font-medium">Thank you! Your feedback has been submitted successfully.</span>
+        <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center gap-3 animate-in slide-in-from-top duration-300">
+          <div className="bg-emerald-500 text-white p-1 rounded-full text-[10px]">✓</div>
+          <span className="font-bold text-xs uppercase tracking-wider">Transmission Successful: Thank you for your architectural insights.</span>
         </div>
       )}
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-3">
-          <div className="bg-red-500 text-white p-1 rounded-full text-xs">!</div>
-          <span className="font-medium">{error}</span>
+        <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-center gap-3">
+          <div className="bg-rose-500 text-white p-1 rounded-full text-[10px]">!</div>
+          <span className="font-bold text-xs uppercase tracking-wider">{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+      <form onSubmit={handleSubmit} className="space-y-10 bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-10 shadow-2xl relative overflow-hidden group">
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-all duration-700"></div>
 
         {/* Feedback Type */}
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider">What is this about?</label>
+        <div className="relative z-10">
+          <label className="block text-[10px] font-black text-slate-500 mb-5 uppercase tracking-[0.2em] ml-1">Classification Area</label>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
             {feedbackTypes.map((fb) => (
               <button
                 key={fb.value}
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, feedbackType: fb.value }))}
-                className={`px-4 py-3 rounded-xl transition-all text-sm font-semibold border-2 ${formData.feedbackType === fb.value
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-100'
-                  : 'bg-white text-slate-600 border-slate-100 hover:border-slate-200 hover:bg-slate-50'
+                className={`px-4 py-3 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest border ${formData.feedbackType === fb.value
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-600/20'
+                  : 'bg-white/5 text-slate-400 border-white/5 hover:border-white/10 hover:bg-white/10'
                   }`}
               >
                 {fb.label}
@@ -114,43 +115,42 @@ const SubmitFeedback = () => {
         </div>
 
         {/* Rating */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 bg-slate-50 rounded-2xl border border-slate-100">
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 bg-white/5 rounded-2xl border border-white/5">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-1 uppercase tracking-wider">Overall Rating</label>
-            <p className="text-xs text-slate-500">How would you rate your experience?</p>
+            <label className="block text-[10px] font-black text-slate-500 mb-1 uppercase tracking-[0.2em]">Overall Rating</label>
+            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">Sentiment Analysis Metric</p>
           </div>
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-3">
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
-                  onMouseEnter={() => { }} // Could add hover effect
                   onClick={() => handleRatingChange(star)}
                   className="group"
                 >
-                  <span className={`text-3xl transition-all duration-200 ${star <= formData.rating ? 'grayscale-0 scale-110 drop-shadow-sm' : 'grayscale opacity-30 hover:opacity-50'
+                  <span className={`text-3xl transition-all duration-200 ${star <= formData.rating ? 'grayscale-0 scale-110 drop-shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'grayscale opacity-20 hover:opacity-40'
                     }`}>
                     ⭐
                   </span>
                 </button>
               ))}
             </div>
-            <span className="text-sm font-bold text-emerald-600">
-              {formData.rating === 1 && 'Poor'}
-              {formData.rating === 2 && 'Fair'}
-              {formData.rating === 3 && 'Good'}
-              {formData.rating === 4 && 'Very Good'}
-              {formData.rating === 5 && 'Excellent'}
+            <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em]">
+              {formData.rating === 1 && 'Critical'}
+              {formData.rating === 2 && 'Suboptimal'}
+              {formData.rating === 3 && 'Sufficient'}
+              {formData.rating === 4 && 'Optimal'}
+              {formData.rating === 5 && 'Exemplary'}
             </span>
           </div>
         </div>
 
         {/* Title & Message */}
-        <div className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">
-              Feedback Title
+        <div className="space-y-8 relative z-10">
+          <div className="space-y-3">
+            <label htmlFor="title" className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
+              Brief Summary
             </label>
             <input
               type="text"
@@ -158,47 +158,57 @@ const SubmitFeedback = () => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              placeholder="e.g., Great service, Issues with the app..."
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+              placeholder="Primary objective of this report..."
+              className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium placeholder-slate-600"
               maxLength={100}
             />
           </div>
 
-          <div>
-            <label htmlFor="message" className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wider">
-              Detailed Message
+          <div className="space-y-3">
+            <label htmlFor="message" className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">
+              Detailed Intelligence
             </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              placeholder="Please describe your experience in detail..."
-              rows={5}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all resize-none"
-              maxLength={1000}
-            />
-            <div className="flex justify-end mt-2">
-              <span className={`text-[10px] font-bold px-2 py-1 rounded ${formData.message.length > 900 ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500'
-                }`}>
-                {formData.message.length} / 1000
-              </span>
+            <div className="relative">
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="Describe your technical experience or observations in detail..."
+                rows={5}
+                className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium resize-none placeholder-slate-600 shadow-inner"
+                maxLength={1000}
+              />
+              <div className="absolute bottom-4 right-4">
+                <span className={`text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest ${formData.message.length > 900 ? 'bg-rose-500/20 text-rose-400' : 'bg-white/5 text-slate-600'
+                  }`}>
+                  {formData.message.length} / 1000
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Anonymity & Privacy */}
-        <div className="flex items-center gap-3 p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-          <input
-            type="checkbox"
-            id="isAnonymous"
-            name="isAnonymous"
-            checked={formData.isAnonymous}
-            onChange={handleChange}
-            className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
-          />
-          <label htmlFor="isAnonymous" className="text-sm text-slate-700 cursor-pointer select-none">
-            <span className="font-bold">Submit anonymously?</span> Your name will not be shown to administrators.
+        <div className="relative z-10 flex items-center gap-4 p-5 bg-blue-500/5 border border-blue-500/10 rounded-2xl group/check transition-all hover:bg-blue-500/10">
+          <div className="relative flex items-center">
+            <input
+              type="checkbox"
+              id="isAnonymous"
+              name="isAnonymous"
+              checked={formData.isAnonymous}
+              onChange={handleChange}
+              className="w-5 h-5 appearance-none border-2 border-white/20 rounded-md checked:bg-blue-500 checked:border-blue-500 transition-all cursor-pointer"
+            />
+            {formData.isAnonymous && (
+              <svg className="w-3 h-3 text-white absolute left-1 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+          <label htmlFor="isAnonymous" className="text-xs text-slate-300 cursor-pointer select-none font-medium">
+            <span className="font-black text-white uppercase tracking-wider mr-2">Stealth Mode?</span>
+            <span className="text-slate-500 italic">Identity parameters will be obfuscated from administration.</span>
           </label>
         </div>
 
@@ -206,17 +216,19 @@ const SubmitFeedback = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-emerald-100 hover:shadow-emerald-200 flex items-center justify-center gap-2 group"
+          className="relative z-10 w-full bg-blue-600 hover:bg-blue-500 disabled:bg-white/10 disabled:text-slate-600 text-white font-black py-5 rounded-xl transition-all shadow-2xl shadow-blue-600/20 hover:shadow-blue-600/40 flex items-center justify-center gap-4 group uppercase text-xs tracking-[0.2em]"
         >
           {loading ? (
             <>
-              <span className="animate-spin text-xl">⏳</span>
-              <span>Submitting...</span>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <span>Transmitting...</span>
             </>
           ) : (
             <>
-              <span className="text-xl transition-transform group-hover:-translate-y-1">✉️</span>
-              <span>Send Feedback</span>
+              <span>Transmit Response</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
             </>
           )}
         </button>

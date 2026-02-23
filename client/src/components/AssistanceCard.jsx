@@ -51,9 +51,10 @@ const AssistanceCard = () => {
 
     if (showForm) {
         return (
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-bold text-slate-800">Request Assistance</h3>
+            <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-8 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl"></div>
+                <div className="flex items-center justify-between mb-8 relative z-10">
+                    <h3 className="text-base font-black text-white tracking-tight uppercase">Assistance Request Protocol</h3>
                     <button
                         onClick={() => setShowForm(false)}
                         className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -65,153 +66,159 @@ const AssistanceCard = () => {
                 </div>
 
                 {submitted ? (
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
-                        <svg className="w-12 h-12 text-orange-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-orange-800 font-semibold">Assistance request submitted successfully!</p>
+                    <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-6 text-center animate-in fade-in zoom-in duration-300 relative z-10">
+                        <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-500/30">
+                            <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <p className="text-orange-400 font-bold">Request submitted successfully!</p>
+                        <p className="text-slate-400 text-sm mt-1">Our team will assist you shortly.</p>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                name="fullName"
-                                value={formData.fullName}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                                placeholder="Enter your full name"
-                            />
-                        </div>
+                    <div className="relative z-10">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                        Full Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="fullName"
+                                        value={formData.fullName}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:bg-white/10 transition-all font-medium"
+                                        placeholder="Enter your full name"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Village
-                            </label>
-                            <input
-                                type="text"
-                                name="village"
-                                value={formData.village}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                                placeholder="Enter your village"
-                            />
-                        </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                        Village
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="village"
+                                        value={formData.village}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:bg-white/10 transition-all font-medium"
+                                        placeholder="Enter your village"
+                                    />
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Phone Number
-                            </label>
-                            <input
-                                type="tel"
-                                name="phoneNumber"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                                placeholder="+94 XX XXX XXXX"
-                            />
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                        Phone Number
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        name="phoneNumber"
+                                        value={formData.phoneNumber}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:bg-white/10 transition-all font-medium"
+                                        placeholder="+94 XX XXX XXXX"
+                                    />
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Assistance Type
-                            </label>
-                            <select
-                                name="assistanceType"
-                                value={formData.assistanceType}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white"
-                            >
-                                <option value="">Select assistance type</option>
-                                <option value="installation">Installation</option>
-                                <option value="repair">Repair</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                        Assistance Type
+                                    </label>
+                                    <select
+                                        name="assistanceType"
+                                        value={formData.assistanceType}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-orange-500/50 focus:bg-white/10 transition-all font-medium appearance-none"
+                                    >
+                                        <option value="" className="bg-[#111827] text-white">Select type</option>
+                                        <option value="installation" className="bg-[#111827] text-white">Installation</option>
+                                        <option value="repair" className="bg-[#111827] text-white">Repair</option>
+                                        <option value="maintenance" className="bg-[#111827] text-white">Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Problem Description
-                            </label>
-                            <textarea
-                                name="problemDescription"
-                                value={formData.problemDescription}
-                                onChange={handleChange}
-                                required
-                                rows="4"
-                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"
-                                placeholder="Describe the issue or assistance needed..."
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                Upload Image (Optional)
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                    Problem Description
+                                </label>
+                                <textarea
+                                    name="problemDescription"
+                                    value={formData.problemDescription}
+                                    onChange={handleChange}
+                                    required
+                                    rows="3"
+                                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:bg-white/10 transition-all font-medium resize-none text-sm"
+                                    placeholder="Describe the issue or assistance needed..."
                                 />
                             </div>
-                            {formData.image && (
-                                <p className="text-sm text-slate-600 mt-2">
-                                    Selected: {formData.image.name}
-                                </p>
-                            )}
-                        </div>
 
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                type="submit"
-                                className="flex-1 bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors shadow-sm hover:shadow-md"
-                            >
-                                Submit Request
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setShowForm(false)}
-                                className="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
+                            <div>
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">
+                                    Upload Image <span className="text-slate-600 font-normal normal-case ml-1">(Optional)</span>
+                                </label>
+                                <div className="relative group/file">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-400 focus:outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-orange-500/10 file:text-orange-400 hover:file:bg-orange-500/20 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 pt-4 border-t border-white/5">
+                                <button
+                                    type="submit"
+                                    className="flex-1 bg-orange-500 hover:bg-orange-400 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-orange-500/20 tracking-wide uppercase text-xs"
+                                >
+                                    Submit Request
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowForm(false)}
+                                    className="px-8 py-3.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl font-bold hover:bg-white/10 transition-all uppercase text-xs tracking-wide"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 )}
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer">
-            <div className="flex items-start gap-4">
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-orange-200 transition-colors">
-                    <svg className="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-xl hover:bg-white/10 transition-all duration-500 group cursor-pointer relative overflow-hidden text-left h-full flex flex-col justify-center">
+            <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl group-hover:bg-orange-500/10 transition-all duration-700"></div>
+
+            <div className="flex items-start gap-6 relative z-10">
+                <div className="w-16 h-16 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                    <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </div>
                 <div className="flex-1">
-                    <h3 className="text-lg font-bold text-slate-800 mb-2">Need Solar Installation or Repair Assistance?</h3>
-                    <p className="text-slate-600 text-sm mb-4 leading-relaxed">
-                        Request physical help for installing, repairing, or maintaining solar panels.
+                    <h3 className="text-lg font-black text-white mb-2 tracking-tight uppercase">Technical Assistance</h3>
+                    <p className="text-slate-400 text-sm mb-6 leading-relaxed max-w-sm">
+                        Request physical help for installing, repairing, or maintaining your solar panels.
                     </p>
                     <button
                         onClick={() => setShowForm(true)}
-                        className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-orange-600 transition-colors shadow-sm hover:shadow inline-flex items-center gap-2"
+                        className="bg-orange-500/10 border border-orange-500/20 text-orange-400 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-lg shadow-orange-500/10 inline-flex items-center gap-2 group/btn"
                     >
-                        <span>Request Assistance</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <span>Request Aid</span>
+                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </button>
                 </div>

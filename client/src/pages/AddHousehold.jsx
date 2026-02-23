@@ -133,139 +133,167 @@ const AddHousehold = () => {
                     </div>
                 </div>
             ) : (
-                <div className="min-h-screen flex items-center justify-center py-12 px-4">
-                    <div className="w-full max-w-3xl space-y-10">
-
-                        {/* Header */}
-                        <div className="text-center mb-10">
-                            <div className="text-8xl mb-6">🏠</div>
-                            <h2 className="text-5xl font-black text-slate-800 tracking-tight mb-3">
-                                {isEditMode ? 'Edit Household Profile' : 'Your Household Profile'}
+                <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-700">
+                    {/* Header Section */}
+                    <div className="relative overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl shadow-2xl group text-center">
+                        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all duration-700"></div>
+                        <div className="relative z-10">
+                            <div className="w-24 h-24 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500">
+                                <span className="text-5xl">🏠</span>
+                            </div>
+                            <h2 className="text-4xl font-black text-white tracking-tight mb-3 uppercase">
+                                {isEditMode ? 'Edit Household Profile' : 'Household Profile Setup'}
                             </h2>
-                            <p className="text-slate-500 text-xl">
-                                {isEditMode ? 'Update your home details' : 'Configure your home details for solar mapping'}
+                            <p className="text-slate-400 text-lg max-w-2xl mx-auto italic">
+                                {isEditMode ? 'Update your home details' : 'Configure your home details for intelligent solar mapping and efficiency calculation'}
                             </p>
                         </div>
+                    </div>
 
-                        {/* Form Card */}
-                        <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
-                            {/* Info Banner */}
-                            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-10 py-8 text-white">
-                                <div className="flex items-start gap-4">
-                                    <span className="text-3xl flex-shrink-0">ℹ️</span>
-                                    <div>
-                                        <p className="font-bold mb-2 text-lg">Important Information</p>
-                                        <p className="text-base text-emerald-50">
-                                            This information helps us calculate your home's solar potential,
-                                            estimated costs, and energy savings. All fields are required.
-                                        </p>
+                    {/* Form Card */}
+                    {/* Main Configuration Card */}
+                    <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl shadow-2xl overflow-hidden">
+                        {/* Info Banner */}
+                        <div className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border-b border-white/10 px-10 py-8 backdrop-blur-sm">
+                            <div className="flex items-start gap-4">
+                                <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center text-blue-400 border border-blue-500/20">
+                                    <span className="text-xl">ℹ️</span>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-bold mb-1 text-white text-lg">Detailed Analytics Data</p>
+                                    <p className="text-sm text-slate-400 leading-relaxed">
+                                        This data powers our AI engine to calculate your home's exact solar potential,
+                                        long-term ROI, and personalized energy optimization strategies.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Form Content */}
+                        <form onSubmit={handleSubmit} className="p-10 space-y-8 relative z-10">
+                            {/* Structural Type */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                        Structural Type <span className="text-blue-500">*</span>
+                                    </label>
+                                    <div className="relative group">
+                                        <select
+                                            name="houseType"
+                                            value={formData.houseType}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-4 focus:ring-blue-500/10 transition-all text-white font-medium appearance-none"
+                                        >
+                                            <option value="" className="bg-[#0B1120] text-white">Select House Type</option>
+                                            <option value="house" className="bg-[#0B1120] text-white">House (Independent)</option>
+                                            <option value="apartment" className="bg-[#0B1120] text-white">Apartment / Condo</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-blue-500 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Roof Surface */}
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                        Roof Surface (sq ft) <span className="text-blue-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="number"
+                                            name="roofArea"
+                                            value={formData.roofArea}
+                                            onChange={handleChange}
+                                            placeholder="e.g. 1500"
+                                            required
+                                            min="1"
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-4 focus:ring-blue-500/10 transition-all text-white font-medium placeholder:text-slate-600"
+                                        />
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs uppercase tracking-widest">SQ FT</span>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Form */}
-                            <form onSubmit={handleSubmit} className="p-10 space-y-8">
-                                {/* Structural Type */}
-                                <div>
-                                    <label className="block text-base font-bold text-slate-700 mb-3">
-                                        Structural Type <span className="text-red-500">*</span>
-                                    </label>
-                                    <select
-                                        name="houseType"
-                                        value={formData.houseType}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-white border-2 border-slate-200 rounded-xl px-6 py-5 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all text-slate-700 font-medium text-lg"
-                                    >
-                                        <option value="">Select House Type</option>
-                                        <option value="house">House</option>
-                                        <option value="apartment">Apartment</option>
-                                    </select>
-                                </div>
-
-                                {/* Roof Surface */}
-                                <div>
-                                    <label className="block text-base font-bold text-slate-700 mb-3">
-                                        Roof Surface (sq ft) <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="roofArea"
-                                        value={formData.roofArea}
-                                        onChange={handleChange}
-                                        placeholder="Enter roof area in square feet"
-                                        required
-                                        min="1"
-                                        className="w-full bg-white border-2 border-slate-200 rounded-xl px-6 py-5 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all text-slate-700 font-medium text-lg placeholder:text-slate-400"
-                                    />
-                                </div>
-
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Occupancy Count */}
-                                <div>
-                                    <label className="block text-base font-bold text-slate-700 mb-3">
-                                        Occupancy Count <span className="text-red-500">*</span>
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                        Occupancy Count <span className="text-blue-500">*</span>
                                     </label>
                                     <input
                                         type="number"
                                         name="members"
                                         value={formData.members}
                                         onChange={handleChange}
-                                        placeholder="Number of household members"
+                                        placeholder="Number of members"
                                         required
                                         min="1"
-                                        className="w-full bg-white border-2 border-slate-200 rounded-xl px-6 py-5 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all text-slate-700 font-medium text-lg placeholder:text-slate-400"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-4 focus:ring-blue-500/10 transition-all text-white font-medium placeholder:text-slate-600"
                                     />
                                 </div>
 
                                 {/* Geographic District */}
-                                <div>
-                                    <label className="block text-base font-bold text-slate-700 mb-3">
-                                        Geographic District <span className="text-red-500">*</span>
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                        Geographic District <span className="text-blue-500">*</span>
                                     </label>
-                                    <select
-                                        name="district"
-                                        value={formData.district}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full bg-white border-2 border-slate-200 rounded-xl px-6 py-5 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all text-slate-700 font-medium text-lg"
-                                    >
-                                        <option value="">Select District</option>
-                                        {districts.map((district) => (
-                                            <option key={district} value={district}>
-                                                {district}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative group">
+                                        <select
+                                            name="district"
+                                            value={formData.district}
+                                            onChange={handleChange}
+                                            required
+                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-4 focus:ring-blue-500/10 transition-all text-white font-medium appearance-none"
+                                        >
+                                            <option value="" className="bg-[#0B1120] text-white">Select District</option>
+                                            {districts.map((district) => (
+                                                <option key={district} value={district} className="bg-[#0B1120] text-white">
+                                                    {district}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-blue-500 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
+                            </div>
 
-                                {/* House Address */}
-                                <div>
-                                    <label className="block text-base font-bold text-slate-700 mb-3">
-                                        House Address <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="houseAddress"
-                                        value={formData.houseAddress}
-                                        onChange={handleChange}
-                                        placeholder="Enter your complete house address"
-                                        required
-                                        className="w-full bg-white border-2 border-slate-200 rounded-xl px-6 py-5 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all text-slate-700 font-medium text-lg placeholder:text-slate-400"
-                                    />
-                                </div>
+                            {/* House Address */}
+                            <div className="space-y-3">
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                    House Address <span className="text-blue-500">*</span>
+                                </label>
+                                <textarea
+                                    name="houseAddress"
+                                    value={formData.houseAddress}
+                                    onChange={handleChange}
+                                    placeholder="Enter your complete house address"
+                                    required
+                                    rows="3"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 outline-none focus:border-blue-500/50 focus:bg-white/10 focus:ring-4 focus:ring-blue-500/10 transition-all text-white font-medium placeholder:text-slate-600 resize-none"
+                                />
+                            </div>
 
-                                {/* Submit Button */}
-                                <div className="pt-6">
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-lg py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
-                                    >
-                                        <span>{isEditMode ? 'Update Household Profile' : 'Save Household Profile'}</span>
-                                        <span className="text-2xl">✓</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            {/* Submit Button */}
+                            <div className="pt-6 border-t border-white/5">
+                                <button
+                                    type="submit"
+                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-6 rounded-xl shadow-xl shadow-blue-600/20 transition-all duration-300 flex items-center justify-center gap-4 group uppercase tracking-[0.2em]"
+                                >
+                                    <span>{isEditMode ? 'Update Global Profile' : 'Initialize Household Profile'}</span>
+                                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
