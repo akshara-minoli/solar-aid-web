@@ -10,6 +10,8 @@ import AddHousehold from './pages/AddHousehold'
 import ViewHousehold from './pages/ViewHousehold'
 import ViewConsultations from './pages/ViewConsultations'
 import MaintenanceServicePage from './pages/MaintenanceServicePage'
+import CostCalculationPage from './pages/CostCalculationPage'
+import UserProductsPage from './pages/UserProductsPage'
 import EducationDetail from './pages/EducationDetail'
 
 // Admin pages
@@ -44,6 +46,8 @@ function App() {
           <Route path="/add-household" element={<AddHousehold />} />
           <Route path="/consultations" element={<ViewConsultations />} />
           <Route path="/maintenance" element={<MaintenanceServicePage />} />
+          <Route path="/cost-calculation" element={<CostCalculationPage />} />
+          <Route path="/product-prices" element={<UserProductsPage />} />
           <Route path="/education/:id" element={<EducationDetail />} />
         </Route>
 
