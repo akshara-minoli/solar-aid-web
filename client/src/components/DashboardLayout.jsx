@@ -37,6 +37,8 @@ const DashboardLayout = ({ children, title }) => {
         { id: 'dashboard', label: 'Overview', icon: '📊', to: '/home' },
         { id: 'view-household', label: 'Household Profile', icon: '🏠', to: '/view-household' },
         { id: 'maintenance', label: 'Maintenance / Service', icon: '🛠️', to: '/maintenance' },
+        { id: 'cost-calculation', label: 'Cost Calculation', icon: '💰', to: '/cost-calculation' },
+        { id: 'product-prices', label: 'Product Prices', icon: '🏷️', to: '/product-prices' },
         { id: 'profile', label: 'My Profile', icon: '👤', to: '/profile' },
     ];
 
