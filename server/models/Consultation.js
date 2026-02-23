@@ -32,7 +32,7 @@ const consultationSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'In Progress', 'Completed', 'Cancelled'],
+    enum: ['Pending', 'Accepted', 'Rejected', 'In Progress', 'Completed', 'Cancelled'],
     default: 'Pending'
   },
   priority: {
@@ -58,7 +58,7 @@ const consultationSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-consultationSchema.pre('save', function(next) {
+consultationSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });

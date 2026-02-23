@@ -65,73 +65,78 @@ const UserNotifications = () => {
   const highPriority = notifications.some(n => n.priority === 'High' && n.status === 'Sent')
 
   return (
-    <div className="max-w-3xl mx-auto pb-8">
+    <div className="max-w-3xl mx-auto pb-8 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="relative">
-            <span className="text-3xl">🔔</span>
+            <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">🔔</span>
+            </div>
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-sm ring-2 ring-white animate-bounce">
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white shadow-lg ring-2 ring-[#0B1120] animate-pulse">
                 {unreadCount}
               </span>
             )}
           </div>
           <div>
-            <h2 className="text-xl font-black text-slate-800 tracking-tight">Your Communications</h2>
-            <p className="text-xs text-slate-500 font-medium">Stay updated with service alerts and news.</p>
+            <h2 className="text-xl font-black text-white tracking-tight uppercase">Communications Hub</h2>
+            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Real-time intelligence and system alerts.</p>
           </div>
         </div>
 
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
-            className="text-[10px] font-black uppercase tracking-wider text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full transition-all"
+            className="text-[10px] font-black uppercase tracking-widest text-blue-400 hover:text-white bg-blue-500/10 px-4 py-2 rounded-xl border border-blue-500/20 transition-all hover:bg-blue-500"
           >
-            Mark all as read
+            Acknowledge All
           </button>
         )}
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-700 rounded-2xl flex items-center gap-3 text-sm font-bold animate-in slide-in-from-top duration-300">
+        <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-2xl flex items-center gap-3 text-[10px] font-black uppercase tracking-widest animate-in slide-in-from-top duration-300">
           <span className="text-lg">⚠️</span> {error}
         </div>
       )}
 
-      <div className="space-y-4">
+      <div className="vertical-timeline space-y-4 relative before:absolute before:inset-0 before:left-6 before:w-px before:bg-white/5">
         {loading && notifications.length === 0 ? (
-          <div className="flex flex-col items-center py-12 gap-3">
-            <div className="h-8 w-8 border-4 border-slate-200 border-t-emerald-500 rounded-full animate-spin"></div>
-            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Synchronizing...</p>
+          <div className="flex flex-col items-center py-16 gap-4">
+            <div className="h-10 w-10 border-2 border-white/10 border-t-blue-500 rounded-full animate-spin"></div>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Synchronizing Stream...</p>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border-2 border-dashed border-slate-100">
-            <div className="text-5xl mb-4 grayscale opacity-30">✨</div>
-            <h3 className="text-lg font-black text-slate-700">Clear Skies!</h3>
-            <p className="text-sm text-slate-400 font-medium">You have no active notifications at the moment.</p>
+          <div className="bg-white/5 backdrop-blur-md rounded-3xl p-16 text-center border border-white/5 relative overflow-hidden">
+            <div className="absolute inset-0 bg-blue-500/5 blur-3xl rounded-full"></div>
+            <div className="relative z-10">
+              <div className="text-6xl mb-6 grayscale opacity-20">📡</div>
+              <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">Signal Perfect</h3>
+              <p className="text-xs text-slate-500 font-bold uppercase tracking-widest leading-relaxed">System monitoring indicates zero pending notifications.</p>
+            </div>
           </div>
         ) : (
           notifications.map((notif) => (
             <div
               key={notif._id}
-              className={`relative overflow-hidden group bg-white rounded-2xl border transition-all duration-300 ${notif.status === 'Sent'
-                ? 'border-emerald-200 shadow-md shadow-emerald-50'
-                : 'border-slate-100 hover:border-slate-200 grayscale-[0.5] opacity-80'
+              className={`relative overflow-hidden group bg-white/5 backdrop-blur-md border transition-all duration-500 rounded-2xl ${notif.status === 'Sent'
+                ? 'border-blue-500/30 shadow-xl shadow-blue-500/10'
+                : 'border-white/5 opacity-60 grayscale-[0.3] hover:opacity-100'
                 }`}
             >
               {notif.priority === 'High' && notif.status === 'Sent' && (
-                <div className="absolute top-0 right-0 h-16 w-16 overflow-hidden">
-                  <div className="absolute top-2 -right-6 w-24 bg-red-500 text-white text-[9px] font-black py-1 text-center rotate-45 shadow-sm uppercase tracking-tighter">
-                    URGENT
+                <div className="absolute top-0 right-0 h-16 w-16 overflow-hidden pointer-events-none">
+                  <div className="absolute top-2 -right-6 w-24 bg-rose-600 text-white text-[8px] font-black py-1.5 text-center rotate-45 shadow-lg uppercase tracking-widest">
+                    PRIORITY
                   </div>
                 </div>
               )}
 
-              <div className="p-5 flex items-start gap-4">
-                <div className={`mt-1 h-10 w-10 shrink-0 rounded-2xl flex items-center justify-center text-xl shadow-sm ${notif.notificationType === 'Maintenance Reminder' ? 'bg-orange-50 text-orange-500' :
-                  notif.notificationType === 'New Subsidy' ? 'bg-emerald-50 text-emerald-500' :
-                    notif.notificationType === 'Education Alert' ? 'bg-blue-50 text-blue-500' :
-                      'bg-slate-50 text-slate-500'
+              <div className="p-6 flex items-start gap-5">
+                <div className={`mt-1 h-12 w-12 shrink-0 rounded-xl flex items-center justify-center text-2xl border transition-colors ${notif.notificationType === 'Maintenance Reminder' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400 shadow-lg shadow-orange-500/10' :
+                    notif.notificationType === 'New Subsidy' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-lg shadow-emerald-500/10' :
+                      notif.notificationType === 'Education Alert' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-lg shadow-blue-500/10' :
+                        'bg-white/5 border-white/10 text-slate-400 shadow-lg shadow-white/5'
                   }`}>
                   {notif.notificationType === 'Maintenance Reminder' ? '🛠️' :
                     notif.notificationType === 'New Subsidy' ? '💰' :
@@ -140,43 +145,52 @@ const UserNotifications = () => {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-blue-400">
                       {notif.notificationType}
                     </span>
-                    <span className="h-1 w-1 rounded-full bg-slate-200"></span>
-                    <span className="text-[10px] font-bold text-slate-400">
+                    <span className="h-1 w-1 rounded-full bg-white/10"></span>
+                    <span className="text-[9px] font-bold text-slate-500 uppercase">
                       {new Date(notif.createdAt).toLocaleDateString()}
                     </span>
                   </div>
 
-                  <h3 className={`font-black text-slate-800 leading-tight mb-1 ${notif.status === 'Sent' ? 'text-lg' : 'text-base'}`}>
+                  <h3 className={`font-black tracking-tight leading-tight mb-2 ${notif.status === 'Sent' ? 'text-white text-lg' : 'text-slate-300 text-base'}`}>
                     {notif.title}
                   </h3>
 
-                  <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                  <p className="text-sm text-slate-400 font-medium leading-relaxed italic">
                     {notif.message}
                   </p>
 
-                  <div className="mt-4 flex items-center gap-3">
+                  <div className="mt-6 flex items-center gap-4">
                     {notif.status === 'Sent' ? (
                       <button
                         onClick={() => handleMarkAsRead(notif._id)}
-                        className="px-4 py-1.5 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all active:scale-95"
+                        className="px-5 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 shadow-xl shadow-blue-600/20 transition-all active:scale-95 group"
                       >
-                        Acknowledge
+                        <span className="flex items-center gap-2">
+                          Acknowledge
+                          <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </span>
                       </button>
                     ) : (
-                      <span className="px-3 py-1 bg-slate-100 text-slate-400 rounded-xl text-[10px] font-black uppercase">
-                        Read
-                      </span>
+                      <div className="px-4 py-1.5 bg-white/5 border border-white/10 text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 bg-blue-500/30 rounded-full"></span>
+                        Archived Profile
+                      </div>
                     )}
 
                     <button
                       onClick={() => handleArchive(notif._id)}
-                      className="px-3 py-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl text-[10px] font-bold uppercase transition-all"
+                      className="text-slate-500 hover:text-rose-400 text-[10px] font-black uppercase tracking-widest transition-colors flex items-center gap-2"
                     >
-                      Archive
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Erase
                     </button>
                   </div>
                 </div>

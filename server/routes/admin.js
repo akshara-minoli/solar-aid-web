@@ -90,13 +90,15 @@ router.get('/consultations', protect, admin, async (req, res) => {
 // PUT update consultation
 router.put('/consultations/:id', protect, admin, async (req, res) => {
   try {
-    const { status, description, scheduledDate } = req.body;
+    const { status, description, scheduledDate, userName, contactInfo } = req.body;
     const consultation = await Consultation.findById(req.params.id);
     if (!consultation) return res.status(404).json({ success: false, message: 'Consultation not found' });
 
     if (status) consultation.status = status;
     if (description) consultation.description = description;
     if (scheduledDate) consultation.scheduledDate = scheduledDate;
+    if (userName) consultation.fullName = userName;
+    if (contactInfo) consultation.phoneNumber = contactInfo;
 
     await consultation.save();
     res.json({ success: true, consultation });
@@ -160,7 +162,7 @@ router.put('/products/:id', protect, admin, upload.single('productPicture'), asy
     if (req.file) {
       // delete old file if exists
       if (product.productPicture) {
-        try { fs.unlinkSync(path.join(process.cwd(), product.productPicture)); } catch (e) {}
+        try { fs.unlinkSync(path.join(process.cwd(), product.productPicture)); } catch (e) { }
       }
       product.productPicture = path.join('uploads', path.basename(req.file.path));
     }
@@ -178,7 +180,7 @@ router.delete('/products/:id', protect, admin, async (req, res) => {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
     if (product.productPicture) {
-      try { fs.unlinkSync(path.join(process.cwd(), product.productPicture)); } catch (e) {}
+      try { fs.unlinkSync(path.join(process.cwd(), product.productPicture)); } catch (e) { }
     }
 
     await Product.findByIdAndDelete(req.params.id);

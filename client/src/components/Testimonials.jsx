@@ -43,12 +43,12 @@ const Testimonials = () => {
     if (testimonials.length === 0) return null;
 
     return (
-        <section className="py-16 bg-slate-50 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-black text-slate-800 tracking-tight">Voices of Satisfaction</h2>
-                    <p className="mt-4 text-slate-600 max-w-2xl mx-auto">
-                        Real stories from our community members who have embraced the power of the sun.
+        <section className="py-16 overflow-hidden">
+            <div className="max-w-7xl mx-auto">
+                <div className="mb-12">
+                    <h2 className="text-2xl font-black text-white tracking-tight uppercase">Community Intelligence</h2>
+                    <p className="mt-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest max-w-2xl">
+                        Synthesized reports from our global network of verified solar adopters.
                     </p>
                 </div>
 
@@ -56,32 +56,33 @@ const Testimonials = () => {
                     {testimonials.map((item) => (
                         <div
                             key={item._id}
-                            className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                            className="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/5 flex flex-col justify-between hover:bg-white/10 hover:border-white/10 transition-all duration-500 group relative overflow-hidden"
                         >
-                            <div>
-                                <div className="flex gap-1 mb-4">
+                            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-all"></div>
+                            <div className="relative z-10">
+                                <div className="flex gap-1.5 mb-6">
                                     {[1, 2, 3, 4, 5].map((s) => (
-                                        <span key={s} className={`text-sm ${s <= item.rating ? 'grayscale-0' : 'grayscale opacity-30'}`}>
+                                        <span key={s} className={`text-sm ${s <= item.rating ? 'grayscale-0 drop-shadow-[0_0_8px_rgba(234,179,8,0.3)]' : 'grayscale opacity-10'}`}>
                                             ⭐
                                         </span>
                                     ))}
                                 </div>
-                                <h4 className="font-bold text-slate-800 mb-2 truncate">{item.title}</h4>
-                                <p className="text-slate-600 text-sm leading-relaxed italic line-clamp-4">
+                                <h4 className="font-black text-white mb-3 truncate uppercase tracking-tight text-sm">{item.title}</h4>
+                                <p className="text-slate-400 text-sm leading-relaxed italic line-clamp-4 font-medium">
                                     "{item.message}"
                                 </p>
                             </div>
 
-                            <div className="mt-8 flex items-center gap-4 border-t border-slate-50 pt-6">
-                                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs border-2 border-white shadow-sm">
+                            <div className="mt-8 flex items-center gap-4 border-t border-white/5 pt-6 relative z-10">
+                                <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 font-black text-xs border border-blue-500/20 shadow-lg">
                                     {item.isAnonymous ? '👤' : (item.userId?.fullName?.charAt(0) || 'U')}
                                 </div>
                                 <div>
-                                    <p className="text-sm font-bold text-slate-800">
-                                        {item.isAnonymous ? 'Anonymous Member' : (item.userId?.fullName || 'Valued User')}
+                                    <p className="text-xs font-black text-white uppercase tracking-wider">
+                                        {item.isAnonymous ? 'Anonymous Sync' : (item.userId?.fullName || 'Verified Node')}
                                     </p>
-                                    <p className="text-[10px] text-slate-400 font-medium">
-                                        Verified {item.feedbackType.replace('Feedback', '').trim()}
+                                    <p className="text-[9px] text-blue-500 font-black uppercase tracking-widest mt-0.5">
+                                        {item.feedbackType.replace('Feedback', '').trim()} Protocol
                                     </p>
                                 </div>
                             </div>

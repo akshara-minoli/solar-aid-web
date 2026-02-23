@@ -86,7 +86,7 @@ const ViewConsultations = () => {
                 throw new Error(data.message || 'Failed to update consultation');
             }
 
-            setConsultations(consultations.map(c => 
+            setConsultations(consultations.map(c =>
                 c._id === id ? data.data : c
             ));
             setEditingId(null);
@@ -121,12 +121,14 @@ const ViewConsultations = () => {
 
     const getStatusColor = (status) => {
         const colors = {
-            'Pending': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            'In Progress': 'bg-blue-100 text-blue-800 border-blue-200',
-            'Completed': 'bg-emerald-100 text-emerald-800 border-emerald-200',
-            'Cancelled': 'bg-red-100 text-red-800 border-red-200'
+            'Pending': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+            'Accepted': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+            'Rejected': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+            'In Progress': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+            'Completed': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+            'Cancelled': 'bg-white/5 text-slate-500 border-white/10'
         };
-        return colors[status] || 'bg-slate-100 text-slate-800 border-slate-200';
+        return colors[status] || 'bg-slate-500/10 text-slate-400 border-slate-500/20';
     };
 
     if (loading) {
@@ -149,196 +151,225 @@ const ViewConsultations = () => {
                 )}
 
                 {consultations.length === 0 ? (
-                    <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-                        <svg className="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        <h3 className="text-xl font-semibold text-slate-700 mb-2">No Consultations Yet</h3>
-                        <p className="text-slate-500 mb-6">You haven't submitted any consultation requests yet.</p>
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-16 text-center animate-in fade-in duration-500">
+                        <div className="w-20 h-20 bg-slate-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
+                            <svg className="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-3">No Consultations Found</h3>
+                        <p className="text-slate-400 mb-8 max-w-md mx-auto">Your consultation history is currently empty. Start your journey by requesting expert advice today.</p>
                         <button
                             onClick={() => navigate('/home')}
-                            className="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+                            className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 uppercase text-xs tracking-widest"
                         >
-                            Go to Dashboard
+                            Return to Dashboard
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-6">
                         {consultations.map((consultation) => (
-                            <div key={consultation._id} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                                {editingId === consultation._id ? (
-                                    // Edit Mode
-                                    <div className="space-y-4">
-                                        <h3 className="text-lg font-bold text-slate-800 mb-4">Edit Consultation</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                    Full Name
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="fullName"
-                                                    value={editForm.fullName}
-                                                    onChange={handleUpdateChange}
-                                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                                />
+                            <div key={consultation._id} className="bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-xl group transition-all duration-500 hover:bg-white/10 hover:border-white/10">
+                                <div className="p-8">
+                                    {editingId === consultation._id ? (
+                                        // Edit Mode
+                                        <div className="space-y-6">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <div className="w-2 h-8 bg-blue-500 rounded-full"></div>
+                                                <h3 className="text-xl font-bold text-white tracking-tight">Edit Consultation Request</h3>
                                             </div>
-                                            <div>
-                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                    Village
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="village"
-                                                    value={editForm.village}
-                                                    onChange={handleUpdateChange}
-                                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                    Phone Number
-                                                </label>
-                                                <input
-                                                    type="tel"
-                                                    name="phoneNumber"
-                                                    value={editForm.phoneNumber}
-                                                    onChange={handleUpdateChange}
-                                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                    Consultation Type
-                                                </label>
-                                                <select
-                                                    name="consultationType"
-                                                    value={editForm.consultationType}
-                                                    onChange={handleUpdateChange}
-                                                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
-                                                >
-                                                    <option value="Solar Installation">Solar Installation</option>
-                                                    <option value="System Maintenance">System Maintenance</option>
-                                                    <option value="Energy Efficiency">Energy Efficiency</option>
-                                                    <option value="Financial Planning">Financial Planning</option>
-                                                    <option value="Other">Other</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                                Description <span className="text-slate-400 font-normal">(Optional)</span>
-                                            </label>
-                                            <textarea
-                                                name="description"
-                                                value={editForm.description}
-                                                onChange={handleUpdateChange}
-                                                rows="4"
-                                                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-                                            />
-                                        </div>
-                                        <div className="flex gap-3 pt-2">
-                                            <button
-                                                onClick={() => handleUpdate(consultation._id)}
-                                                className="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
-                                            >
-                                                Save Changes
-                                            </button>
-                                            <button
-                                                onClick={handleCancelEdit}
-                                                className="px-6 py-2.5 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    // View Mode
-                                    <>
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <h3 className="text-lg font-bold text-slate-800">
-                                                        {consultation.consultationType}
-                                                    </h3>
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(consultation.status)}`}>
-                                                        {consultation.status}
-                                                    </span>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div className="space-y-2">
+                                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                        Full Name
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        name="fullName"
+                                                        value={editForm.fullName}
+                                                        onChange={handleUpdateChange}
+                                                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium"
+                                                    />
                                                 </div>
-                                                <p className="text-sm text-slate-500">
-                                                    Submitted on {new Date(consultation.createdAt).toLocaleDateString()} at {new Date(consultation.createdAt).toLocaleTimeString()}
+                                                <div className="space-y-2">
+                                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                        Village
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        name="village"
+                                                        value={editForm.village}
+                                                        onChange={handleUpdateChange}
+                                                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                        Phone Number
+                                                    </label>
+                                                    <input
+                                                        type="tel"
+                                                        name="phoneNumber"
+                                                        value={editForm.phoneNumber}
+                                                        onChange={handleUpdateChange}
+                                                        className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                        Consultation Type
+                                                    </label>
+                                                    <div className="relative">
+                                                        <select
+                                                            name="consultationType"
+                                                            value={editForm.consultationType}
+                                                            onChange={handleUpdateChange}
+                                                            className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium appearance-none"
+                                                        >
+                                                            <option value="Solar Installation" className="bg-[#0B1120] text-white">Solar Installation</option>
+                                                            <option value="System Maintenance" className="bg-[#0B1120] text-white">System Maintenance</option>
+                                                            <option value="Energy Efficiency" className="bg-[#0B1120] text-white">Energy Efficiency</option>
+                                                            <option value="Financial Planning" className="bg-[#0B1120] text-white">Financial Planning</option>
+                                                            <option value="Other" className="bg-[#0B1120] text-white">Other</option>
+                                                        </select>
+                                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                                                    Requirement Description
+                                                </label>
+                                                <textarea
+                                                    name="description"
+                                                    value={editForm.description}
+                                                    onChange={handleUpdateChange}
+                                                    rows="4"
+                                                    className="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all font-medium resize-none shadow-inner"
+                                                />
+                                            </div>
+                                            <div className="flex gap-4 pt-4 border-t border-white/5">
+                                                <button
+                                                    onClick={() => handleUpdate(consultation._id)}
+                                                    className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 uppercase text-xs tracking-widest"
+                                                >
+                                                    Update Request
+                                                </button>
+                                                <button
+                                                    onClick={handleCancelEdit}
+                                                    className="px-8 py-3.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl font-bold hover:bg-white/10 transition-all uppercase text-xs tracking-wide"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // View Mode
+                                        <>
+                                            <div className="flex items-start justify-between mb-8 pb-6 border-b border-white/5">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-4 mb-3">
+                                                        <h3 className="text-2xl font-black text-white tracking-tight">
+                                                            {consultation.consultationType}
+                                                        </h3>
+                                                        <span className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${getStatusColor(consultation.status)}`}>
+                                                            {consultation.status}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-slate-500 group-hover:text-slate-400 transition-colors">
+                                                        <span className="text-blue-500/50">🗓️</span>
+                                                        <p className="text-xs font-bold uppercase tracking-wider">
+                                                            Submitted {new Date(consultation.createdAt).toLocaleDateString()}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleEdit(consultation)}
+                                                        className="w-10 h-10 flex items-center justify-center bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white border border-blue-500/20 rounded-xl transition-all shadow-lg shadow-blue-500/10"
+                                                        title="Edit Request"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeleteConfirm(consultation._id)}
+                                                        className="w-10 h-10 flex items-center justify-center bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white border border-rose-500/20 rounded-xl transition-all shadow-lg shadow-rose-500/10"
+                                                        title="Remove Request"
+                                                    >
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Requester Name</p>
+                                                    <p className="text-sm text-white font-medium">{consultation.fullName}</p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Village/Sector</p>
+                                                    <p className="text-sm text-white font-medium">{consultation.village}</p>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Contact Identity</p>
+                                                    <p className="text-sm text-white font-medium">{consultation.phoneNumber}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-white/5 border border-white/5 rounded-xl p-6">
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                                    <span className="text-blue-500">📝</span> Requirement Analysis
+                                                </p>
+                                                <p className="text-sm text-slate-300 leading-relaxed italic">
+                                                    "{consultation.description}"
                                                 </p>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => handleEdit(consultation)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Edit"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    onClick={() => setDeleteConfirm(consultation._id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete"
-                                                >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                            <div>
-                                                <p className="text-xs font-semibold text-slate-500 mb-1">Full Name</p>
-                                                <p className="text-sm text-slate-800">{consultation.fullName}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold text-slate-500 mb-1">Village</p>
-                                                <p className="text-sm text-slate-800">{consultation.village}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold text-slate-500 mb-1">Phone Number</p>
-                                                <p className="text-sm text-slate-800">{consultation.phoneNumber}</p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-xs font-semibold text-slate-500 mb-1">Description</p>
-                                            <p className="text-sm text-slate-700 leading-relaxed">{consultation.description}</p>
-                                        </div>
-
-                                        {/* Delete Confirmation */}
-                                        {deleteConfirm === consultation._id && (
-                                            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                                                <p className="text-red-800 font-semibold mb-3">Are you sure you want to delete this consultation request?</p>
-                                                <div className="flex gap-3">
-                                                    <button
-                                                        onClick={() => handleDelete(consultation._id)}
-                                                        className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm"
-                                                    >
-                                                        Yes, Delete
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setDeleteConfirm(null)}
-                                                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-semibold hover:bg-slate-50 transition-colors text-sm"
-                                                    >
-                                                        Cancel
-                                                    </button>
+                                            {/* Delete Confirmation */}
+                                            {deleteConfirm === consultation._id && (
+                                                <div className="mt-8 p-6 bg-rose-500/10 border border-rose-500/20 rounded-2xl animate-in slide-in-from-top-4 duration-300">
+                                                    <div className="flex items-center gap-4 mb-4">
+                                                        <div className="w-10 h-10 bg-rose-500/20 rounded-lg flex items-center justify-center text-rose-400">
+                                                            <span>⚠️</span>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-white font-bold">Confirm Removal</p>
+                                                            <p className="text-xs text-rose-400 font-medium font-bold uppercase tracking-widest">This action cannot be undone</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-3">
+                                                        <button
+                                                            onClick={() => handleDelete(consultation._id)}
+                                                            className="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl font-bold transition-all text-xs uppercase tracking-widest shadow-lg shadow-rose-500/20"
+                                                        >
+                                                            Confirm Delete
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setDeleteConfirm(null)}
+                                                            className="px-6 py-2.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl font-bold hover:bg-white/10 transition-all text-xs uppercase tracking-widest"
+                                                        >
+                                                            Keep Request
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
+                                            )}
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
                 )}
             </div>
-        </DashboardLayout>
+        </DashboardLayout >
     );
 };
 
