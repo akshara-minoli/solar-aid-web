@@ -1,18 +1,64 @@
 import Technician from '../models/Technician.js';
 import Assistance from '../models/Assistance.js';
 import User from '../models/User.js';
+import axios from 'axios';
 import {
   sendServiceAssignmentSMS,
   sendServiceUpdateToUser,
   sendCompletionNotificationSMS
 } from '../services/smsService.js';
 
+// Helper: Geocode location name → lat/lng using OpenStreetMap Nominatim (FREE, no API key needed)
+const geocodeLocation = async (locationName) => {
+  try {
+    if (!locationName) return { latitude: null, longitude: null };
+
+    // Try OpenStreetMap Nominatim first (completely free, no billing)
+    const osmResponse = await axios.get('https://nominatim.openstreetmap.org/search', {
+      params: {
+        q: `${locationName}, Sri Lanka`,
+        format: 'json',
+        limit: 1,
+        countrycodes: 'lk'
+      },
+      headers: { 'User-Agent': 'SolarAidApp/1.0' } // Nominatim requires User-Agent
+    });
+
+    if (osmResponse.data && osmResponse.data.length > 0) {
+      const result = osmResponse.data[0];
+      const lat = parseFloat(result.lat);
+      const lng = parseFloat(result.lon);
+      console.log(`📍 Geocoded "${locationName}" via OpenStreetMap → lat: ${lat}, lng: ${lng}`);
+      return { latitude: lat, longitude: lng };
+    }
+
+    // Fallback: Try Google Maps Geocoding if OSM fails and key is available
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    if (apiKey) {
+      const googleResponse = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+        params: { address: `${locationName}, Sri Lanka`, key: apiKey }
+      });
+      if (googleResponse.data.status === 'OK' && googleResponse.data.results.length > 0) {
+        const loc = googleResponse.data.results[0].geometry.location;
+        console.log(`📍 Geocoded "${locationName}" via Google Maps → lat: ${loc.lat}, lng: ${loc.lng}`);
+        return { latitude: loc.lat, longitude: loc.lng };
+      }
+    }
+
+    console.warn(`⚠️ Could not geocode "${locationName}" - no results found`);
+    return { latitude: null, longitude: null };
+  } catch (err) {
+    console.warn('⚠️ Geocoding error:', err.message);
+    return { latitude: null, longitude: null };
+  }
+};
+
 // @desc    Create a new technician
 // @route   POST /api/technicians
 // @access  Private/Admin
 export const createTechnician = async (req, res) => {
   try {
-    const { fullName, email, phone, specialization, experience, certification, location } = req.body;
+    const { fullName, email, phone, specialization, experience, certification, location, latitude, longitude } = req.body;
 
     // Validate required fields
     if (!fullName || !email || !phone || !location) {
@@ -31,6 +77,12 @@ export const createTechnician = async (req, res) => {
       });
     }
 
+    // Auto-geocode location to get coordinates
+    let coords = { latitude: latitude || null, longitude: longitude || null };
+    if (location && (!latitude || !longitude)) {
+      coords = await geocodeLocation(location);
+    }
+
     const technician = await Technician.create({
       fullName,
       email,
@@ -38,7 +90,9 @@ export const createTechnician = async (req, res) => {
       specialization: specialization || ['General Maintenance'],
       experience: experience || 0,
       certification: certification || null,
-      location
+      location,
+      latitude: coords.latitude,
+      longitude: coords.longitude
     });
 
     res.status(201).json({
@@ -123,7 +177,7 @@ export const getTechnician = async (req, res) => {
 // @access  Private/Admin
 export const updateTechnician = async (req, res) => {
   try {
-    const { fullName, email, phone, specialization, experience, certification, availability, location, rating } = req.body;
+    const { fullName, email, phone, specialization, experience, certification, availability, location, rating, latitude, longitude } = req.body;
 
     let technician = await Technician.findById(req.params.id);
 
@@ -153,8 +207,26 @@ export const updateTechnician = async (req, res) => {
     if (experience !== undefined) technician.experience = experience;
     if (certification) technician.certification = certification;
     if (availability) technician.availability = availability;
-    if (location) technician.location = location;
     if (rating !== undefined) technician.rating = Math.min(rating, 5);
+
+    // Handle location update with auto-geocoding
+    if (location) {
+      // Check BEFORE overwriting (bug fix: compare old vs new location first)
+      const locationChanged = location !== technician.location;
+      const missingCoords = !technician.latitude || !technician.longitude;
+
+      technician.location = location; // Now update location
+
+      if (locationChanged || missingCoords) {
+        console.log(`📍 Geocoding triggered for: "${location}" (changed: ${locationChanged}, missingCoords: ${missingCoords})`);
+        const coords = await geocodeLocation(location);
+        technician.latitude = coords.latitude;
+        technician.longitude = coords.longitude;
+      }
+    }
+    // Allow direct coordinate override
+    if (latitude !== undefined && latitude !== null) technician.latitude = latitude;
+    if (longitude !== undefined && longitude !== null) technician.longitude = longitude;
 
     technician = await technician.save();
 

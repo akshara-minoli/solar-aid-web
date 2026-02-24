@@ -49,6 +49,14 @@ const technicianSchema = new mongoose.Schema({
     required: [true, 'Please provide service area/district'],
     trim: true
   },
+  latitude: {
+    type: Number,
+    default: null
+  },
+  longitude: {
+    type: Number,
+    default: null
+  },
   assignedRequests: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Assistance'

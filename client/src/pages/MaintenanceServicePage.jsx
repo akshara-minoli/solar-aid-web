@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import RequestServiceModal from '../components/RequestServiceModal';
 import MaintenanceScheduleList from '../components/MaintenanceScheduleList';
@@ -13,6 +13,10 @@ const MaintenanceServicePage = () => {
   const [serviceRequests, setServiceRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [technicians, setTechnicians] = useState([]);
+  const [leafletReady, setLeafletReady] = useState(false);
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
   const [stats, setStats] = useState({
     totalSchedules: 0,
     completedServices: 0,
@@ -27,18 +31,26 @@ const MaintenanceServicePage = () => {
       setSchedules(response.data.data || []);
     } catch (err) {
       console.error('Error fetching schedules:', err);
-      setError('Failed to load maintenance schedules');
     }
   };
 
-  // Fetch service requests (assistance)
+  // Fetch service requests
   const fetchServiceRequests = async () => {
     try {
       const response = await api.get('/api/assistances');
       setServiceRequests(response.data.data || []);
     } catch (err) {
       console.error('Error fetching service requests:', err);
-      setError('Failed to load service requests');
+    }
+  };
+
+  // Fetch available technicians for map
+  const fetchTechnicians = async () => {
+    try {
+      const response = await api.get('/api/technicians?availability=Available');
+      setTechnicians((response.data.data || []).filter(t => t.latitude && t.longitude && t.isActive));
+    } catch (err) {
+      console.error('Error fetching technicians:', err);
     }
   };
 
@@ -58,15 +70,64 @@ const MaintenanceServicePage = () => {
     });
   };
 
-  // Initial load
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchSchedules(), fetchServiceRequests()]);
+      await Promise.all([fetchSchedules(), fetchServiceRequests(), fetchTechnicians()]);
       setLoading(false);
     };
     loadData();
   }, []);
+
+  // Load Leaflet CSS + JS
+  useEffect(() => {
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+    if (window.L) { setLeafletReady(true); return; }
+    if (document.getElementById('leaflet-js')) return;
+    const script = document.createElement('script');
+    script.id = 'leaflet-js';
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.async = true;
+    script.onload = () => setLeafletReady(true);
+    document.head.appendChild(script);
+  }, []);
+
+  // Initialize map when technicians tab is active
+  useEffect(() => {
+    if (activeTab !== 'technicians' || !leafletReady || !mapRef.current) return;
+    if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; }
+
+    const L = window.L;
+    const map = L.map(mapRef.current, { center: [7.8731, 80.7718], zoom: 7 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors', maxZoom: 18
+    }).addTo(map);
+    mapInstanceRef.current = map;
+
+    technicians.forEach(tech => {
+      const marker = L.circleMarker([tech.latitude, tech.longitude], {
+        radius: 12, fillColor: '#10b981', fillOpacity: 0.9, color: '#ffffff', weight: 2
+      }).addTo(map);
+      marker.bindPopup(`
+        <div style="min-width:200px;font-family:system-ui,sans-serif">
+          <div style="font-weight:700;font-size:14px;color:#065f46;margin-bottom:4px">🔧 ${tech.fullName}</div>
+          <div style="font-size:12px;color:#374151;margin-bottom:4px">📍 ${tech.location}</div>
+          <div style="font-size:12px;color:#374151;margin-bottom:6px">⭐ ${tech.rating?.toFixed(1) || '0.0'} • ${tech.experience} yrs experience</div>
+          <div style="font-size:11px;color:#6b7280;margin-bottom:4px">${Array.isArray(tech.specialization) ? tech.specialization.join(', ') : tech.specialization}</div>
+          <div style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block">✅ Available</div>
+        </div>
+      `, { maxWidth: 240 });
+    });
+
+    setTimeout(() => map.invalidateSize(), 100);
+    return () => { if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; } };
+  }, [activeTab, leafletReady, technicians]);
 
   // Update stats when data changes
   useEffect(() => {
@@ -142,10 +203,11 @@ const MaintenanceServicePage = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white/5 backdrop-blur-md border border-white/5 p-1.5 rounded-2xl inline-flex max-sm:flex">
-          <div className="flex overflow-x-auto no-scrollbar gap-1">
+        <div className="bg-white/5 backdrop-blur-md border border-white/5 p-1.5 rounded-2xl inline-flex max-sm:flex overflow-x-auto no-scrollbar">
+          <div className="flex gap-1">
             {[
               { id: 'overview', label: 'Overview', icon: '📊' },
+              { id: 'technicians', label: 'Find Technicians', icon: '🗺️' },
               { id: 'schedules', label: 'Maintenance Schedule', icon: '📅' },
               { id: 'requests', label: 'Service Requests', icon: '📩' }
             ].map((tab) => (
@@ -159,6 +221,9 @@ const MaintenanceServicePage = () => {
               >
                 <span>{tab.icon}</span>
                 <span>{tab.label}</span>
+                {tab.id === 'technicians' && technicians.length > 0 && (
+                  <span className="bg-white/20 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">{technicians.length}</span>
+                )}
               </button>
             ))}
           </div>
@@ -253,6 +318,75 @@ const MaintenanceServicePage = () => {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {activeTab === 'technicians' && (
+            <div className="space-y-6 animate-in fade-in duration-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></span>
+                    Geospatial Synchronization
+                  </h2>
+                  <p className="text-slate-400 text-xs mt-2 italic">🟢 Green nodes represent active field units ready for deployment</p>
+                </div>
+                <div className="bg-blue-600/10 border border-blue-600/20 rounded-xl px-4 py-2 text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                  {technicians.length} Nodes Online
+                </div>
+              </div>
+
+              {/* Map */}
+              <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative group" style={{ height: '500px' }}>
+                <div className="absolute inset-0 bg-blue-500/5 pointer-events-none group-hover:bg-transparent transition-colors duration-700"></div>
+                {!leafletReady ? (
+                  <div className="h-full flex items-center justify-center bg-transparent">
+                    <div className="text-center">
+                      <div className="w-12 h-12 rounded-2xl border-2 border-blue-500/20 border-t-blue-500 animate-spin mx-auto mb-4"></div>
+                      <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Booting Map Subsystems...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div ref={mapRef} className="w-full h-full grayscale-[0.5] contrast-[1.2] invert-[0.05] brightness-[0.9]"></div>
+                )}
+              </div>
+
+              {/* Technician Cards below map */}
+              {technicians.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {technicians.map(tech => (
+                    <div key={tech._id} className="bg-white/5 border border-white/5 rounded-2xl p-6 hover:bg-white/10 transition-all group relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-1 h-full bg-blue-600/30"></div>
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="font-black text-white uppercase tracking-tight text-base mb-1">{tech.fullName}</h3>
+                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">📍 {tech.location}</p>
+                        </div>
+                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] px-2 py-1 rounded-lg font-black uppercase tracking-widest">Active</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
+                        <span>⭐ {tech.rating?.toFixed(1) || '0.0'} Node Metric</span>
+                        <span>{tech.experience} Cycles Exp</span>
+                      </div>
+                      <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest mb-6">
+                        {Array.isArray(tech.specialization) ? tech.specialization.slice(0, 2).join(' • ') : tech.specialization}
+                      </div>
+                      <button
+                        onClick={() => setShowRequestModal(true)}
+                        className="w-full bg-blue-600/10 border border-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                      >
+                        Deploy Unit
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white/5 border border-white/5 rounded-3xl p-16 text-center italic">
+                  <span className="text-4xl block mb-4 opacity-20 text-blue-500">📡</span>
+                  <p className="text-slate-500 font-black uppercase tracking-widest text-xs">Awaiting Unit Synchronization</p>
+                  <p className="text-slate-600 text-[10px] mt-2 font-bold uppercase tracking-widest">No field assets detected in the current sector</p>
+                </div>
+              )}
             </div>
           )}
 

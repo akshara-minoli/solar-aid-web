@@ -1,6 +1,11 @@
 import MaintenanceSchedule from '../models/MaintenanceSchedule.js';
 import Technician from '../models/Technician.js';
 import Assistance from '../models/Assistance.js';
+import User from '../models/User.js';
+import {
+  sendMaintenanceReminderSMS,
+  sendScheduleConfirmationSMS
+} from '../services/smsService.js';
 
 // @desc    Create maintenance schedule
 // @route   POST /api/maintenance-schedules
@@ -62,6 +67,21 @@ export const createMaintenanceSchedule = async (req, res) => {
       message: 'Maintenance schedule created successfully',
       data: schedule
     });
+
+    // --- Send SMS notifications after responding (non-blocking) ---
+    try {
+      // SMS to the user: maintenance reminder
+      const user = await User.findById(userId).select('phone fullName');
+      if (user?.phone) {
+        await sendMaintenanceReminderSMS(user.phone, scheduledDate, technician.fullName);
+      }
+      // SMS to technician: new schedule confirmation
+      if (technician?.phone) {
+        await sendScheduleConfirmationSMS(technician.phone, scheduledDate, serviceType);
+      }
+    } catch (smsErr) {
+      console.warn('⚠️ SMS notification failed (non-critical):', smsErr.message);
+    }
   } catch (error) {
     console.error('Create maintenance schedule error:', error);
     res.status(500).json({
