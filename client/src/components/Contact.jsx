@@ -47,18 +47,18 @@ const Contact = () => {
   };
 
   return (
-    <section className="py-16 px-8 bg-gradient-to-b from-green-50 to-gray-50" id="contact">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl text-gray-800 mb-2">Contact Us</h2>
-          <p className="text-lg md:text-xl text-gray-600">Have questions? We'd love to hear from you!</p>
+    <section className="py-24 px-4 md:px-8 bg-white" id="contact">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">We're Here to <span className="text-orange-500">Help</span></h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto font-medium">Have questions? Our friendly team is ready to guide you on your solar journey.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white p-8 md:p-12 rounded-3xl shadow-lg">
           <div>
             <h3 className="text-2xl md:text-3xl text-gray-800 mb-4">Get in Touch</h3>
             <p className="text-base md:text-lg text-gray-600 leading-relaxed mb-8">
-              Whether you have questions about solar energy, need help with cost estimation, 
+              Whether you have questions about solar energy, need help with cost estimation,
               or want to learn more about our project, feel free to reach out.
             </p>
             <div className="flex flex-col gap-8">
@@ -80,7 +80,7 @@ const Contact = () => {
                 <span className="text-4xl flex-shrink-0">📍</span>
                 <div>
                   <h4 className="text-lg md:text-xl text-gray-800 mb-1">Location</h4>
-                  <p className="text-gray-600">University Campus<br/>Solar Energy Department</p>
+                  <p className="text-gray-600">University Campus<br />Solar Energy Department</p>
                 </div>
               </div>
             </div>
@@ -131,22 +131,20 @@ const Contact = () => {
               </div>
 
               {message && (
-                <div className={`p-4 rounded-lg text-center font-medium ${
-                  message.includes('Thank you') 
-                    ? 'bg-green-100 text-green-800 border border-green-300' 
+                <div className={`p-4 rounded-lg text-center font-medium ${message.includes('Thank you')
+                    ? 'bg-green-100 text-green-800 border border-green-300'
                     : 'bg-red-100 text-red-800 border border-red-300'
-                }`}>
+                  }`}>
                   {message}
                 </div>
               )}
 
-              <button 
-                type="submit" 
-                className={`py-4 px-8 bg-gradient-to-br from-orange-400 to-orange-300 text-white rounded-full text-lg font-bold cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${
-                  loading 
-                    ? 'opacity-70 cursor-not-allowed' 
+              <button
+                type="submit"
+                className={`py-4 px-8 bg-gradient-to-br from-orange-400 to-orange-300 text-white rounded-full text-lg font-bold cursor-pointer transition-all duration-300 ease-in-out shadow-lg ${loading
+                    ? 'opacity-70 cursor-not-allowed'
                     : 'hover:-translate-y-1 hover:shadow-xl'
-                }`}
+                  }`}
                 disabled={loading}
               >
                 {loading ? 'Sending...' : 'Send Message'}

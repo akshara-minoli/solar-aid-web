@@ -13,7 +13,7 @@ export default function EducationAdmin() {
     title: '',
     category: 'Solar Basics',
     description: '',
-    content: 'Default content for preview',
+    content: '',
     contentType: 'Article',
     difficulty: 'Beginner'
   })
@@ -42,18 +42,27 @@ export default function EducationAdmin() {
     }
   }
 
-  const handleEdit = (content) => {
-    setFormData({
-      title: content.title,
-      category: content.category,
-      description: content.description,
-      content: content.content || '',
-      contentType: content.contentType,
-      difficulty: content.difficulty
-    })
-    setEditingId(content._id)
-    setShowForm(true)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const handleEdit = async (content) => {
+    try {
+      // Fetch fresh details for this specific ID to ensure all fields are present
+      const res = await api.get(`/api/education/${content._id}`)
+      const data = res.data.data
+
+      setFormData({
+        title: data.title,
+        category: data.category,
+        description: data.description,
+        content: data.content || '',
+        contentType: data.contentType,
+        difficulty: data.difficulty
+      })
+      setEditingId(data._id)
+      setShowForm(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch (err) {
+      console.error('Failed to load content for editing:', err)
+      alert('Could not load full content details. Please try again.')
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -71,7 +80,7 @@ export default function EducationAdmin() {
         title: '',
         category: 'Solar Basics',
         description: '',
-        content: 'Default content for preview',
+        content: '',
         contentType: 'Article',
         difficulty: 'Beginner'
       })
@@ -113,7 +122,7 @@ export default function EducationAdmin() {
                   title: '',
                   category: 'Solar Basics',
                   description: '',
-                  content: 'Default content for preview',
+                  content: '',
                   contentType: 'Article',
                   difficulty: 'Beginner'
                 })
@@ -299,7 +308,7 @@ export default function EducationAdmin() {
                           title: '',
                           category: 'Solar Basics',
                           description: '',
-                          content: 'Default content for preview',
+                          content: '',
                           contentType: 'Article',
                           difficulty: 'Beginner'
                         })

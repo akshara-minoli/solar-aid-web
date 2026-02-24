@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const IntroBanner = () => {
   return (
@@ -25,36 +26,51 @@ const IntroBanner = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
-            <a
-              href="#features"
+            <Link
+              to="/signin"
               className="px-8 py-5 bg-orange-500 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl shadow-orange-500/20 hover:bg-orange-600 hover:-translate-y-1 hover:shadow-2xl flex items-center justify-center gap-2"
             >
               Start Learning Now <span>→</span>
-            </a>
+            </Link>
             <a
-              href="#contact"
+              href="#features"
               className="px-8 py-5 bg-white text-gray-900 border-2 border-gray-100 rounded-2xl font-bold text-lg transition-all duration-300 hover:border-orange-200 hover:bg-orange-50 hover:-translate-y-1 flex items-center justify-center"
             >
-              Contact Us
+              See How It Works
             </a>
           </div>
         </div>
 
         <div className="flex justify-center items-center lg:justify-end">
-          <div className="relative">
-            {/* Animated Sun Glow */}
-            <div className="absolute inset-0 bg-yellow-200 rounded-full blur-3xl scale-125 animate-pulse-slow opacity-60" />
+          <div className="relative group">
+            {/* Animated Glow */}
+            <div className="absolute inset-0 bg-orange-400 rounded-[3rem] blur-3xl scale-110 animate-pulse-slow opacity-20 group-hover:opacity-30 transition-opacity" />
 
-            <div className="relative w-72 h-72 md:w-[450px] md:h-[450px] rounded-[3rem] bg-gradient-to-br from-yellow-200 via-orange-300 to-orange-400 p-1 flex justify-center items-center shadow-[0_32px_64px_-16px_rgba(251,146,60,0.3)] animate-float overflow-hidden">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
-              <span className="text-[120px] md:text-[220px] animate-spin-slow drop-shadow-2xl">☀️</span>
+            <div className="relative w-full max-w-[500px] aspect-[4/3] rounded-[3rem] overflow-hidden border-8 border-white shadow-[0_32px_64px_-16px_rgba(251,146,60,0.3)] transform transition-transform duration-500 group-hover:scale-[1.02]">
+              <img
+                src="/src/assets/photo/hero_solar.png"
+                alt="Solar Powered Home"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-bottom p-8">
+                <p className="text-white font-bold text-xl mt-auto">A brighter future for your family</p>
+              </div>
             </div>
 
             {/* Floating Info Cards */}
-            <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 bg-white p-6 rounded-2xl shadow-2xl animate-float [animation-delay:-1s] border border-gray-50 max-w-[200px]">
-              <div className="text-emerald-500 text-2xl mb-1">🌿</div>
-              <p className="text-sm font-bold text-gray-900">100% Clean Energy</p>
-              <p className="text-xs text-gray-500">Free from nature</p>
+            <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 bg-white p-6 rounded-2xl shadow-2xl animate-float border border-gray-50 max-w-[220px]">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-emerald-500 text-2xl">🌿</span>
+                <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Sustainable</span>
+              </div>
+              <p className="text-sm font-bold text-gray-900 line-clamp-2">Providing clean energy to rural communities since 2024.</p>
+            </div>
+
+            <div className="absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-xl animate-float [animation-delay:-2s] border border-gray-50">
+              <div className="flex items-center gap-2">
+                <span className="flex h-3 w-3 rounded-full bg-emerald-500"></span>
+                <p className="text-sm font-bold text-gray-900">Live Support Ready</p>
+              </div>
             </div>
           </div>
         </div>

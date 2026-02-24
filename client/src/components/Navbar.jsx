@@ -37,35 +37,45 @@ const Navbar = () => {
               : 'max-md:hidden'
             }
           `}>
-            {['Home', 'About', 'Features', 'Contact'].map((item) => (
+            {['Home', 'About', 'Learning Hub', 'Features', 'Contact'].map((item) => (
               <li key={item} className="max-md:w-full">
-                <a
-                  href={`#${item.toLowerCase()}`}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-gray-700 font-semibold transition-all duration-300 py-2 px-5 rounded-full hover:bg-orange-500 hover:text-white block text-center"
-                >
-                  {item}
-                </a>
+                {item === 'Learning Hub' ? (
+                  <Link
+                    to="/education"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-gray-700 font-semibold transition-all duration-300 py-2 px-5 rounded-full hover:bg-orange-500 hover:text-white block text-center no-underline"
+                  >
+                    {item}
+                  </Link>
+                ) : (
+                  <a
+                    href={`#${item.toLowerCase()}`}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-gray-700 font-semibold transition-all duration-300 py-2 px-5 rounded-full hover:bg-orange-500 hover:text-white block text-center no-underline"
+                  >
+                    {item}
+                  </a>
+                )}
               </li>
             ))}
-                        <li className="max-md:w-full md:ml-4">
-                          <Link
-                            to="/login"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="text-gray-700 font-bold transition-all duration-300 py-2 px-6 rounded-full hover:bg-gray-100 block text-center border-2 border-transparent hover:border-orange-100"
-                          >
-                            Login
-                          </Link>
-                        </li>
-                        <li className="max-md:w-full md:ml-2">
-                          <Link
-                            to="/signin"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="bg-orange-500 text-white py-2 px-6 rounded-full font-bold transition-all duration-300 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5 block text-center"
-                          >
-                            Get Started
-                          </Link>
-                        </li>
+            <li className="max-md:w-full md:ml-4">
+              <Link
+                to="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-gray-700 font-bold transition-all duration-300 py-2 px-6 rounded-full hover:bg-gray-100 block text-center border-2 border-transparent hover:border-orange-100"
+              >
+                Login
+              </Link>
+            </li>
+            <li className="max-md:w-full md:ml-2">
+              <Link
+                to="/signin"
+                onClick={() => setIsMenuOpen(false)}
+                className="bg-orange-500 text-white py-2 px-6 rounded-full font-bold transition-all duration-300 hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5 block text-center"
+              >
+                Get Started
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

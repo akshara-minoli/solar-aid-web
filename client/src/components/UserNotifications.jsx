@@ -65,7 +65,7 @@ const UserNotifications = () => {
   const highPriority = notifications.some(n => n.priority === 'High' && n.status === 'Sent')
 
   return (
-    <div className="max-w-3xl mx-auto pb-8">
+    <div className="w-full pb-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-3">
           <div className="relative">

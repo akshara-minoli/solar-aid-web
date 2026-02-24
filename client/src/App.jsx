@@ -11,6 +11,8 @@ import ViewHousehold from './pages/ViewHousehold'
 import ViewConsultations from './pages/ViewConsultations'
 import MaintenanceServicePage from './pages/MaintenanceServicePage'
 import EducationDetail from './pages/EducationDetail'
+import EducationHubPage from './pages/EducationHubPage'
+import NotificationsPage from './pages/NotificationsPage'
 
 // Admin pages
 import AdminDashboard from './pages/AdminDashboard'
@@ -44,6 +46,8 @@ function App() {
           <Route path="/consultations" element={<ViewConsultations />} />
           <Route path="/maintenance" element={<MaintenanceServicePage />} />
           <Route path="/education/:id" element={<EducationDetail />} />
+          <Route path="/education" element={<EducationHubPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
 
         {/* Admin protected routes */}

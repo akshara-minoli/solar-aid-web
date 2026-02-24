@@ -7,8 +7,12 @@ const About = () => {
         <div className="bg-white rounded-[4rem] p-10 md:p-20 shadow-2xl shadow-gray-200/50 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center border border-gray-50">
           <div className="relative order-2 lg:order-1">
             <div className="absolute inset-0 bg-emerald-200 rounded-full blur-3xl opacity-30 scale-110" />
-            <div className="relative w-full aspect-square rounded-[3rem] bg-gradient-to-br from-emerald-500 to-emerald-400 flex justify-center items-center shadow-2xl shadow-emerald-500/20">
-              <span className="text-[120px] md:text-[180px] drop-shadow-2xl">🌍</span>
+            <div className="relative w-full aspect-square rounded-[3rem] overflow-hidden shadow-2xl shadow-emerald-500/20">
+              <img
+                src="/src/assets/photo/roof_suitability.png"
+                alt="Solar Suitable Home"
+                className="w-full h-full object-cover"
+              />
 
               {/* Decorative Stats Cards */}
               <div className="absolute -top-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-gray-50 hidden md:block">

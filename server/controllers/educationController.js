@@ -49,24 +49,27 @@ export const createEducationContent = async (req, res) => {
 export const getAllEducationContent = async (req, res) => {
   try {
     const { category, difficulty, contentType, search } = req.query;
-    
-    // Build filter object
-    const filter = { isPublished: true };
+
+    // Build filter object - Admins can see unpublished content
+    const filter = {};
+    if (req.user?.role !== 'admin') {
+      filter.isPublished = true;
+    }
+
     if (category) filter.category = category;
     if (difficulty) filter.difficulty = difficulty;
     if (contentType) filter.contentType = contentType;
     if (search) {
       filter.$or = [
         { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tags: { $in: [new RegExp(search, 'i')] } }
+        { description: { $regex: search, $options: 'i' } }
       ];
     }
 
     const content = await EducationContent.find(filter)
       .populate('author', 'fullName email')
       .sort({ createdAt: -1 })
-      .select('-content'); // Don't send full content in list view
+      .select('+content'); // Force inclusion of content field
 
     res.status(200).json({
       success: true,
