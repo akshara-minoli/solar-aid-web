@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import api from '../api'
 import AdminProfileMenu from '../components/AdminProfileMenu'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 export default function UsersPage() {
   const [users, setUsers] = useState([])
+  const [filteredUsers, setFilteredUsers] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [roleFilter, setRoleFilter] = useState('')
   const [loading, setLoading] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
   const [editFormData, setEditFormData] = useState({
@@ -18,7 +23,11 @@ export default function UsersPage() {
   const fetchUsers = () => {
     setLoading(true)
     api.get('/api/admin/users')
-      .then(res => setUsers(res.data.users || []))
+      .then(res => {
+        const userList = res.data.users || []
+        setUsers(userList)
+        setFilteredUsers(userList)
+      })
       .catch(err => console.error(err))
       .finally(() => setLoading(false))
   }
@@ -27,6 +36,103 @@ export default function UsersPage() {
     fetchUsers()
   }, [])
 
+  // Filter users based on search and role
+  useEffect(() => {
+    let filtered = users
+    
+    if (searchTerm) {
+      filtered = filtered.filter(user => 
+        user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    
+    if (roleFilter) {
+      filtered = filtered.filter(user => user.role === roleFilter)
+    }
+    
+    setFilteredUsers(filtered)
+  }, [users, searchTerm, roleFilter])
+
+  const exportToPDF = () => {
+    try {
+      console.log('Starting PDF export for users...');
+      console.log('Data to export:', filteredUsers);
+      
+      const doc = new jsPDF()
+      
+      // Title
+      doc.setFontSize(20)
+      doc.setTextColor(40, 40, 40)
+      doc.text('Users Report', 20, 20)
+      
+      // Date
+      doc.setFontSize(10)
+      doc.setTextColor(100, 100, 100)
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30)
+      doc.text(`Total Records: ${filteredUsers.length}`, 20, 35)
+      
+      // Table data
+      const tableData = filteredUsers.map(user => [
+        user.fullName || 'N/A',
+        user.email || 'N/A',
+        user.phone || 'N/A',
+        (user.role || 'user').toUpperCase()
+      ])
+      
+      console.log('Table data prepared:', tableData);
+      
+      // Check if autoTable is available
+      if (typeof doc.autoTable === 'function') {
+        // Table
+        doc.autoTable({
+          startY: 45,
+          head: [['Name', 'Email', 'Phone', 'Role']],
+          body: tableData,
+          theme: 'striped',
+          styles: {
+            fontSize: 9,
+            cellPadding: 4
+          },
+          headStyles: {
+            fillColor: [59, 130, 246],
+            textColor: 255,
+            fontStyle: 'bold'
+          },
+          columnStyles: {
+            1: { cellWidth: 60 }, // Email column wider
+          }
+        })
+      } else {
+        // Fallback: just add text if autoTable fails
+        let y = 50;
+        doc.setFontSize(12);
+        doc.text('Name\t\tEmail\t\tPhone\t\tRole', 20, y);
+        y += 10;
+        
+        tableData.forEach(row => {
+          if (y > 280) { // New page if needed
+            doc.addPage();
+            y = 20;
+          }
+          doc.setFontSize(8);
+          doc.text(row.join('\t'), 20, y);
+          y += 8;
+        });
+      }
+      
+      console.log('PDF generated successfully, saving...');
+      
+      // Save the PDF
+      doc.save('users-report.pdf')
+      
+      console.log('PDF saved successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF: ' + error.message);
+    }
+  }
   const handleDelete = async (id) => {
     if (!window.confirm('Critical Protocol: Are you sure you want to purge this user from the registry? All associated data will be lost.')) return
     try {
@@ -75,6 +181,59 @@ export default function UsersPage() {
               <h1 className="text-3xl font-bold text-white tracking-wide">Manage Users</h1>
               <p className="text-slate-400 text-sm mt-1">View and manage all registered accounts</p>
             </div>
+            <button
+              onClick={exportToPDF}
+              className="bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 px-6 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2"
+            >
+              <span>📄</span>
+              Export PDF
+            </button>
+          </div>
+
+          {/* Search and Filter Controls */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 mb-6 shadow-xl">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Search Users</label>
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or phone..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50"
+                />
+              </div>
+              <div className="w-full md:w-48">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Filter by Role</label>
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/50"
+                >
+                  <option value="" className="bg-slate-800 text-white">All Roles</option>
+                  <option value="user" className="bg-slate-800 text-white">User</option>
+                  <option value="admin" className="bg-slate-800 text-white">Admin</option>
+                </select>
+              </div>
+              {(searchTerm || roleFilter) && (
+                <div className="flex items-end">
+                  <button
+                    onClick={() => {
+                      setSearchTerm('')
+                      setRoleFilter('')
+                    }}
+                    className="bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 border border-gray-500/30 px-4 py-2.5 rounded-lg font-medium transition-all"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+            {(searchTerm || roleFilter) && (
+              <div className="mt-3 text-sm text-slate-400">
+                Showing {filteredUsers.length} of {users.length} users
+              </div>
+            )}
           </div>
 
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl">
@@ -95,7 +254,7 @@ export default function UsersPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((u, i) => (
+                    {filteredUsers.map((u, i) => (
                       <tr key={u._id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="p-4 text-white font-medium">{u.fullName}</td>
                         <td className="p-4 text-slate-300">{u.email}</td>
@@ -123,9 +282,11 @@ export default function UsersPage() {
                         </td>
                       </tr>
                     ))}
-                    {users.length === 0 && (
+                    {filteredUsers.length === 0 && (
                       <tr>
-                        <td colSpan="5" className="p-8 text-center text-slate-500 font-bold uppercase tracking-widest italic">No users found in registry.</td>
+                        <td colSpan="5" className="p-8 text-center text-slate-500 font-bold uppercase tracking-widest italic">
+                          {searchTerm || roleFilter ? 'No users match your search criteria.' : 'No users found in registry.'}
+                        </td>
                       </tr>
                     )}
                   </tbody>
@@ -180,8 +341,8 @@ export default function UsersPage() {
                   onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-medium appearance-none"
                 >
-                  <option value="user" className="bg-[#111827]">USER (Standard Access)</option>
-                  <option value="admin" className="bg-[#111827]">ADMIN (Restricted Authority)</option>
+                  <option value="user" className="bg-[#111827] text-white">USER (Standard Access)</option>
+                  <option value="admin" className="bg-[#111827] text-white">ADMIN (Restricted Authority)</option>
                 </select>
               </div>
 

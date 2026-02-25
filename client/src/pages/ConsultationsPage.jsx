@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import api from '../api'
 import AdminProfileMenu from '../components/AdminProfileMenu'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 
 export default function ConsultationsPage() {
   const [consults, setConsults] = useState([])
+  const [filteredConsults, setFilteredConsults] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(false)
   const [editingConsult, setEditingConsult] = useState(null)
   const [editFormData, setEditFormData] = useState({
@@ -17,7 +22,11 @@ export default function ConsultationsPage() {
   const fetchConsultations = () => {
     setLoading(true)
     api.get('/api/admin/consultations')
-      .then(res => setConsults(res.data.consultations || []))
+      .then(res => {
+        const consultations = res.data.consultations || []
+        setConsults(consultations)
+        setFilteredConsults(consultations)
+      })
       .catch(err => console.error(err))
       .finally(() => setLoading(false))
   }
@@ -26,6 +35,104 @@ export default function ConsultationsPage() {
     fetchConsultations()
   }, [])
 
+  // Filter consultations based on search and status
+  useEffect(() => {
+    let filtered = consults
+    
+    if (searchTerm) {
+      filtered = filtered.filter(consult => 
+        consult.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        consult.contactInfo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        consult.message?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+    
+    if (statusFilter) {
+      filtered = filtered.filter(consult => consult.status === statusFilter)
+    }
+    
+    setFilteredConsults(filtered)
+  }, [consults, searchTerm, statusFilter])
+
+  const exportToPDF = () => {
+    try {
+      console.log('Starting PDF export for consultations...');
+      console.log('Data to export:', filteredConsults);
+      
+      const doc = new jsPDF()
+      
+      // Title
+      doc.setFontSize(20)
+      doc.setTextColor(40, 40, 40)
+      doc.text('Consultations Report', 20, 20)
+      
+      // Date
+      doc.setFontSize(10)
+      doc.setTextColor(100, 100, 100)
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30)
+      doc.text(`Total Records: ${filteredConsults.length}`, 20, 35)
+      
+      // Table data
+      const tableData = filteredConsults.map(consult => [
+        consult.userName || 'N/A',
+        consult.contactInfo || 'N/A',
+        (consult.message || '').substring(0, 50) + (consult.message?.length > 50 ? '...' : ''),
+        consult.date ? new Date(consult.date).toLocaleDateString() : 'N/A',
+        consult.status || 'Pending'
+      ])
+      
+      console.log('Table data prepared:', tableData);
+      
+      // Check if autoTable is available
+      if (typeof doc.autoTable === 'function') {
+        // Table
+        doc.autoTable({
+          startY: 45,
+          head: [['User', 'Contact', 'Message', 'Date', 'Status']],
+          body: tableData,
+          theme: 'striped',
+          styles: {
+            fontSize: 8,
+            cellPadding: 3
+          },
+          headStyles: {
+            fillColor: [59, 130, 246],
+            textColor: 255,
+            fontStyle: 'bold'
+          },
+          columnStyles: {
+            2: { cellWidth: 60 }, // Message column wider
+          }
+        })
+      } else {
+        // Fallback: just add text if autoTable fails
+        let y = 50;
+        doc.setFontSize(12);
+        doc.text('User\t\tContact\t\tMessage\t\tDate\t\tStatus', 20, y);
+        y += 10;
+        
+        tableData.forEach(row => {
+          if (y > 280) { // New page if needed
+            doc.addPage();
+            y = 20;
+          }
+          doc.setFontSize(8);
+          doc.text(row.join('\t'), 20, y);
+          y += 8;
+        });
+      }
+      
+      console.log('PDF generated successfully, saving...');
+      
+      // Save the PDF
+      doc.save('consultations-report.pdf')
+      
+      console.log('PDF saved successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF: ' + error.message);
+    }
+  }
   const handleStatusChange = async (id, newStatus) => {
     try {
       await api.put(`/api/admin/consultations/${id}`, { status: newStatus })
@@ -92,6 +199,63 @@ export default function ConsultationsPage() {
               <h1 className="text-3xl font-bold text-white tracking-wide">Manage Consultations</h1>
               <p className="text-slate-400 text-sm mt-1">View user consultation requests</p>
             </div>
+            <button
+              onClick={exportToPDF}
+              className="bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-500/30 px-6 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2"
+            >
+              <span>📄</span>
+              Export PDF
+            </button>
+          </div>
+
+          {/* Search and Filter Controls */}
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 mb-6 shadow-xl">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Search Consultations</label>
+                <input
+                  type="text"
+                  placeholder="Search by user name, contact, or message..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50"
+                />
+              </div>
+              <div className="w-full md:w-48">
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-2">Filter by Status</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-blue-500/50"
+                >
+                  <option value="" className="bg-slate-800 text-white">All Statuses</option>
+                  <option value="Pending" className="bg-slate-800 text-white">Pending</option>
+                  <option value="Accepted" className="bg-slate-800 text-white">Accepted</option>
+                  <option value="Rejected" className="bg-slate-800 text-white">Rejected</option>
+                  <option value="In Progress" className="bg-slate-800 text-white">In Progress</option>
+                  <option value="Completed" className="bg-slate-800 text-white">Completed</option>
+                  <option value="Cancelled" className="bg-slate-800 text-white">Cancelled</option>
+                </select>
+              </div>
+              {(searchTerm || statusFilter) && (
+                <div className="flex items-end">
+                  <button
+                    onClick={() => {
+                      setSearchTerm('')
+                      setStatusFilter('')
+                    }}
+                    className="bg-gray-600/20 hover:bg-gray-600/30 text-gray-400 border border-gray-500/30 px-4 py-2.5 rounded-lg font-medium transition-all"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+            {(searchTerm || statusFilter) && (
+              <div className="mt-3 text-sm text-slate-400">
+                Showing {filteredConsults.length} of {consults.length} consultations
+              </div>
+            )}
           </div>
 
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-xl">
@@ -113,7 +277,7 @@ export default function ConsultationsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {consults.map((c, i) => (
+                    {filteredConsults.map((c, i) => (
                       <tr key={c.id || i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="p-4 text-white font-medium">{c.userName}</td>
                         <td className="p-4 text-slate-300">{c.contactInfo}</td>
@@ -125,12 +289,12 @@ export default function ConsultationsPage() {
                             onChange={(e) => handleStatusChange(c.id, e.target.value)}
                             className="bg-slate-800 border border-white/10 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                           >
-                            <option value="Pending">PENDING</option>
-                            <option value="Accepted">ACCEPTED</option>
-                            <option value="Rejected">REJECTED</option>
-                            <option value="In Progress">IN PROGRESS</option>
-                            <option value="Completed">COMPLETED</option>
-                            <option value="Cancelled">CANCELLED</option>
+                            <option value="Pending" className="bg-slate-800 text-white">PENDING</option>
+                            <option value="Accepted" className="bg-slate-800 text-white">ACCEPTED</option>
+                            <option value="Rejected" className="bg-slate-800 text-white">REJECTED</option>
+                            <option value="In Progress" className="bg-slate-800 text-white">IN PROGRESS</option>
+                            <option value="Completed" className="bg-slate-800 text-white">COMPLETED</option>
+                            <option value="Cancelled" className="bg-slate-800 text-white">CANCELLED</option>
                           </select>
                         </td>
                         <td className="p-4 flex items-center gap-3">
@@ -149,9 +313,11 @@ export default function ConsultationsPage() {
                         </td>
                       </tr>
                     ))}
-                    {consults.length === 0 && (
+                    {filteredConsults.length === 0 && (
                       <tr>
-                        <td colSpan="6" className="p-8 text-center text-slate-500">No consultations found.</td>
+                        <td colSpan="6" className="p-8 text-center text-slate-500">
+                          {searchTerm || statusFilter ? 'No consultations match your search criteria.' : 'No consultations found.'}
+                        </td>
                       </tr>
                     )}
                   </tbody>

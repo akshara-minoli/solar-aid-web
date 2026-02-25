@@ -47,6 +47,18 @@ const householdSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  },
+  // Admin tracking fields
+  adminRemarks: {
+    type: String,
+    trim: true
+  },
+  lastModifiedByAdmin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  adminActionDate: {
+    type: Date
   }
 });
 

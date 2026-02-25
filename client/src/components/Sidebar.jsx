@@ -14,6 +14,7 @@ export default function Sidebar() {
   const menuItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: '📊' },
     { name: 'Users', path: '/admin/users', icon: '👥' },
+    { name: 'Households', path: '/admin/households', icon: '🏠' },
     { name: 'Consultations', path: '/admin/consultations', icon: '🩺' },
     { name: 'Products', path: '/admin/products', icon: '☀️' },
     { name: 'Service Requests', path: '/admin/requests', icon: '🛠️' },
