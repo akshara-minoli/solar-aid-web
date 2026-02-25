@@ -6,6 +6,7 @@ import AdminProfileMenu from '../components/AdminProfileMenu'
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
     users: 0,
+    households: 0,
     consultations: 0,
     products: 0,
     education: 0,
@@ -21,6 +22,11 @@ export default function AdminDashboard() {
           const users = await api.get('/api/admin/users')
           setStats(s => ({ ...s, users: users.data.count || 0 }))
         } catch (e) { console.log('Users endpoint not available') }
+
+        try {
+          const households = await api.get('/api/admin/households')
+          setStats(s => ({ ...s, households: households.data.count || 0 }))
+        } catch (e) { console.log('Households endpoint not available') }
 
         try {
           const consultations = await api.get('/api/admin/consultations')
@@ -59,6 +65,7 @@ export default function AdminDashboard() {
 
   const statItems = [
     { label: 'Users', value: stats.users, icon: '👥', color: 'text-blue-400' },
+    { label: 'Households', value: stats.households, icon: '🏠', color: 'text-orange-400' },
     { label: 'Consultations', value: stats.consultations, icon: '🩺', color: 'text-cyan-400' },
     { label: 'Products', value: stats.products, icon: '☀️', color: 'text-indigo-400' },
     { label: 'Education', value: stats.education, icon: '📚', color: 'text-teal-400' },
@@ -67,6 +74,7 @@ export default function AdminDashboard() {
   ]
 
   const quickLinks = [
+    { href: '/admin/households', label: 'Manage Households', icon: '🏠' },
     { href: '/admin/education', label: 'Manage Education', icon: '📚' },
     { href: '/admin/notifications', label: 'Send Notifications', icon: '🔔' },
     { href: '/admin/feedback', label: 'View Feedback', icon: '💬' },
@@ -101,7 +109,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Stats Grid - Compact Space */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
                 {statItems.map((item, idx) => (
                   <div key={idx} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col justify-between hover:bg-white/10 transition duration-200">
                     <div className="flex items-center justify-between mb-3">
@@ -132,6 +140,13 @@ export default function AdminDashboard() {
                         <span className="text-slate-300">Total active users</span>
                       </div>
                       <span className="font-semibold text-white">{stats.users}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm bg-white/5 p-3 rounded-lg border border-white/5">
+                      <div className="flex gap-3 items-center">
+                        <span className="bg-orange-500/20 text-orange-400 p-2 rounded-md">🏠</span>
+                        <span className="text-slate-300">Household profiles</span>
+                      </div>
+                      <span className="font-semibold text-white">{stats.households}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm bg-white/5 p-3 rounded-lg border border-white/5">
                       <div className="flex gap-3 items-center">

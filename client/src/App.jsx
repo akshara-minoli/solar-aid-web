@@ -22,6 +22,7 @@ import ProductsPage from './pages/ProductsPage'
 import TechnicianManagement from './pages/TechnicianManagement'
 import MaintenanceScheduleManagement from './pages/MaintenanceScheduleManagement'
 import ServiceRequestsAdmin from './pages/ServiceRequestsAdmin'
+import HouseholdProfilesAdmin from './pages/HouseholdProfilesAdmin'
 // Member 4: Education & Communication Admin Pages
 import EducationAdmin from './pages/EducationAdmin'
 import NotificationsAdmin from './pages/NotificationsAdmin'
@@ -55,6 +56,7 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<UsersPage />} />
+          <Route path="/admin/households" element={<HouseholdProfilesAdmin />} />
           <Route path="/admin/consultations" element={<ConsultationsPage />} />
           <Route path="/admin/products" element={<ProductsPage />} />
           <Route path="/admin/technicians" element={<TechnicianManagement />} />
