@@ -38,7 +38,7 @@ const assistanceSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Assigned', 'In Progress', 'Resolved', 'Cancelled'],
+    enum: ['Pending', 'Assigned', 'In Progress', 'Resolved', 'Closed', 'Cancelled'],
     default: 'Pending'
   },
   priority: {
@@ -69,7 +69,7 @@ const assistanceSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt timestamp before saving
-assistanceSchema.pre('save', function(next) {
+assistanceSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });

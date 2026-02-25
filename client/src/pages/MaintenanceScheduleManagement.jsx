@@ -12,6 +12,7 @@ const MaintenanceScheduleManagement = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [formData, setFormData] = useState({
     assistanceId: '',
@@ -139,7 +140,57 @@ const MaintenanceScheduleManagement = () => {
     setShowForm(false);
   };
 
+  const downloadPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const doc = new jsPDF();
+    const tableColumn = ["Technician", "Service Type", "Description", "Date", "Duration", "Status", "Priority"];
+    const filteredSchedules = schedules.filter(s =>
+      (s.technicianId?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.serviceType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const tableRows = [];
+
+    filteredSchedules.forEach(s => {
+      const rowData = [
+        s.technicianId?.fullName || 'N/A',
+        s.serviceType,
+        s.description,
+        new Date(s.scheduledDate).toLocaleDateString(),
+        `${s.estimatedDuration} hrs`,
+        s.status,
+        s.priority
+      ];
+      tableRows.push(rowData);
+    });
+
+    doc.setFontSize(18);
+    doc.text("Solar Aid - Maintenance Schedules Report", 14, 15);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Report Generated: ${new Date().toLocaleString()}`, 14, 22);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: 'grid',
+      headStyles: { fillColor: [51, 65, 85], textColor: [255, 255, 255] },
+      alternateRowStyles: { fillColor: [241, 245, 249] }
+    });
+
+    doc.save(`Maintenance_Schedules_Report_${new Date().getTime()}.pdf`);
+  };
+
   const inputClass = "w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors"
+
+  const filteredSchedules = schedules.filter(s =>
+    (s.technicianId?.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.serviceType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-900">
@@ -153,11 +204,16 @@ const MaintenanceScheduleManagement = () => {
               <h1 className="text-3xl font-bold text-white tracking-wide">Maintenance Schedules</h1>
               <p className="text-slate-400 text-sm mt-1">Manage and assign service appointments</p>
             </div>
-            {!showForm && (
-              <button onClick={() => { resetForm(); setShowForm(true); }} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
-                <span>➕</span> Schedule Maintenance
+            <div className="flex gap-4">
+              <button onClick={downloadPDF} className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 px-6 py-2.5 font-medium rounded-lg border border-white/10 transition-all flex items-center gap-2 text-sm">
+                <span>📄</span> Export PDF
               </button>
-            )}
+              {!showForm && (
+                <button onClick={() => { resetForm(); setShowForm(true); }} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
+                  <span>➕</span> Schedule Maintenance
+                </button>
+              )}
+            </div>
           </div>
 
           {error && (
@@ -222,12 +278,27 @@ const MaintenanceScheduleManagement = () => {
             </div>
           )}
 
-          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-8 shadow-xl">
-            <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Filter by Status</label>
-            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`${inputClass} md:w-64 [&>option]:bg-slate-800`}>
-              <option value="">All Statuses</option>
-              {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
+          <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-8 shadow-xl flex flex-col md:flex-row gap-6">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Search Schedules</label>
+              <div className="relative">
+                <span className="absolute left-3 top-2.5 text-slate-500 text-sm">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search by technician or service type..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`${inputClass} !pl-10`}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Filter by Status</label>
+              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`${inputClass} md:w-64 [&>option]:bg-slate-800`}>
+                <option value="">All Statuses</option>
+                {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
           </div>
 
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl overflow-hidden">
@@ -251,7 +322,7 @@ const MaintenanceScheduleManagement = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {schedules.map(s => (
+                    {filteredSchedules.map(s => (
                       <tr key={s._id} className="hover:bg-white/5 transition-colors">
                         <td className="px-6 py-4 text-white font-medium">{s.technicianId?.fullName || 'N/A'}</td>
                         <td className="px-6 py-4 text-slate-300 text-sm">{s.serviceType}</td>

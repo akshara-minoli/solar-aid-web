@@ -8,6 +8,7 @@ const ServiceRequestsAdmin = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     const token = localStorage.getItem('token');
@@ -56,7 +57,60 @@ const ServiceRequestsAdmin = () => {
         }
     };
 
+    const downloadPDF = async () => {
+        const { default: jsPDF } = await import('jspdf');
+        const { default: autoTable } = await import('jspdf-autotable');
+
+        const doc = new jsPDF();
+        const tableColumn = ["User Name", "Phone", "Village", "Type", "Problem", "Status", "Priority", "Date"];
+        const filteredRequests = requests.filter(r =>
+            r.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.village.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            r.problemDescription.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        const tableRows = [];
+
+        filteredRequests.forEach(r => {
+            const rowData = [
+                r.fullName,
+                r.phoneNumber,
+                r.village,
+                r.assistanceType,
+                r.problemDescription,
+                r.status,
+                r.priority,
+                new Date(r.createdAt).toLocaleDateString()
+            ];
+            tableRows.push(rowData);
+        });
+
+        doc.setFontSize(18);
+        doc.text("Solar Aid - Service Requests Report", 14, 15);
+        doc.setFontSize(11);
+        doc.setTextColor(100);
+        doc.text(`Report Generated: ${new Date().toLocaleString()}`, 14, 22);
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 30,
+            theme: 'grid',
+            headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255] },
+            alternateRowStyles: { fillColor: [241, 245, 249] }
+        });
+
+        doc.save(`Service_Requests_Report_${new Date().getTime()}.pdf`);
+    };
+
     const inputClass = "w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors [&>option]:bg-slate-800";
+
+    const filteredRequests = requests.filter(r =>
+        r.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.phoneNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.village.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.problemDescription.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="flex h-screen overflow-hidden bg-slate-900">
@@ -70,6 +124,9 @@ const ServiceRequestsAdmin = () => {
                             <h1 className="text-3xl font-bold text-white tracking-wide">Service Requests</h1>
                             <p className="text-slate-400 text-sm mt-1">Manage, update progress, and close user requests</p>
                         </div>
+                        <button onClick={downloadPDF} className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 px-6 py-2.5 font-medium rounded-lg border border-white/10 transition-all flex items-center gap-2 text-sm">
+                            <span>📄</span> Export PDF
+                        </button>
                     </div>
 
                     {error && (
@@ -78,12 +135,27 @@ const ServiceRequestsAdmin = () => {
                         </div>
                     )}
 
-                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-8 shadow-xl">
-                        <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Filter by Status</label>
-                        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`md:w-64 ${inputClass}`}>
-                            <option value="">All Statuses</option>
-                            {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
+                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-8 shadow-xl flex flex-col md:flex-row gap-6 ">
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Search Requests</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-2.5 text-slate-500 text-sm">🔍</span>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name, village, phone or problem..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className={`${inputClass} !pl-10`}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Filter by Status</label>
+                            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className={`md:w-64 ${inputClass}`}>
+                                <option value="">All Statuses</option>
+                                {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
                     </div>
 
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl overflow-hidden">
@@ -105,7 +177,7 @@ const ServiceRequestsAdmin = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white/5">
-                                        {requests.map(r => (
+                                        {filteredRequests.map(r => (
                                             <tr key={r._id} className="hover:bg-white/5 transition-colors">
                                                 <td className="px-6 py-4">
                                                     <div className="font-medium text-white">{r.fullName}</div>
@@ -122,9 +194,9 @@ const ServiceRequestsAdmin = () => {
                                                 <td className="px-6 py-4">
                                                     <div className="flex flex-col gap-2 items-start">
                                                         <span className={`px-2.5 py-1 text-xs font-semibold rounded uppercase tracking-wide border ${r.status === 'Closed' || r.status === 'Resolved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                                r.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                                                                    r.status === 'Assigned' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                                        'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                                                            r.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                                                r.status === 'Assigned' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                                    'bg-purple-500/10 text-purple-400 border-purple-500/20'
                                                             }`}>
                                                             {r.status}
                                                         </span>

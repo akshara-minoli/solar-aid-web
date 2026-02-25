@@ -11,6 +11,7 @@ const TechnicianManagement = () => {
   const [editingId, setEditingId] = useState(null);
   const [filterAvailability, setFilterAvailability] = useState('');
   const [filterSpecialization, setFilterSpecialization] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('list');
   const [leafletReady, setLeafletReady] = useState(false);
 
@@ -151,10 +152,7 @@ const TechnicianManagement = () => {
   const handleSpecializationChange = (e) => {
     const { value, checked } = e.target;
     setFormData(prev => ({
-      ...prev,
-      specialization: checked
-        ? [...prev.specialization, value]
-        : prev.specialization.filter(s => s !== value)
+      ...prev, specialization: checked ? [...prev.specialization, value] : prev.specialization.filter(s => s !== value)
     }));
   };
 
@@ -207,7 +205,7 @@ const TechnicianManagement = () => {
       fetchTechnicians();
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || `Error ${tech.isActive ? 'deactivating' : 'activating'} technician`);
+      setError(err.response?.data?.message || `Error status update`);
     }
   };
 
@@ -217,13 +215,65 @@ const TechnicianManagement = () => {
     setShowForm(false);
   };
 
+  const downloadPDF = async () => {
+    const { default: jsPDF } = await import('jspdf');
+    const { default: autoTable } = await import('jspdf-autotable');
+
+    const doc = new jsPDF();
+    const tableColumn = ["Full Name", "Email", "Phone", "Location", "Specialization", "Experience", "Status", "Rating"];
+    const filteredTechs = technicians.filter(tech =>
+      tech.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tech.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tech.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const tableRows = [];
+
+    filteredTechs.forEach(tech => {
+      const techData = [
+        tech.fullName,
+        tech.email,
+        tech.phone,
+        tech.location,
+        tech.specialization.join(', '),
+        `${tech.experience} yrs`,
+        tech.isActive ? tech.availability : 'Disabled',
+        tech.rating?.toFixed(1) || '0.0'
+      ];
+      tableRows.push(techData);
+    });
+
+    doc.setFontSize(18);
+    doc.text("Solar Aid - Technician Management Report", 14, 15);
+    doc.setFontSize(11);
+    doc.setTextColor(100);
+    doc.text(`Report Generated: ${new Date().toLocaleString()}`, 14, 22);
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 30,
+      theme: 'grid',
+      headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255] },
+      alternateRowStyles: { fillColor: [241, 245, 249] }
+    });
+
+    doc.save(`Technicians_Report_${new Date().getTime()}.pdf`);
+  };
+
   const specializations = [
     'Solar Panel Installation', 'Battery Replacement', 'Inverter Repair',
     'Wiring & Maintenance', 'Panel Cleaning', 'General Maintenance'
   ];
 
   const inputClass = "w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors";
-  const techsWithCoords = technicians.filter(t => t.latitude && t.longitude).length;
+
+  const filteredTechnicians = technicians.filter(tech =>
+    tech.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tech.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tech.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const techsWithCoords = filteredTechnicians.filter(t => t.latitude && t.longitude).length;
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-900">
@@ -238,11 +288,16 @@ const TechnicianManagement = () => {
               <h1 className="text-3xl font-bold text-white tracking-wide">Technician Management</h1>
               <p className="text-slate-400 text-sm mt-1">Manage field engineers and track their locations on map</p>
             </div>
-            {!showForm && (
-              <button onClick={() => { resetForm(); setShowForm(true); }} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
-                <span>➕</span> Add Technician
+            <div className="flex gap-4">
+              <button onClick={downloadPDF} className="bg-slate-700/50 hover:bg-slate-600/50 text-slate-200 px-6 py-2.5 font-medium rounded-lg border border-white/10 transition-all flex items-center gap-2 text-sm">
+                <span>📄</span> Export PDF
               </button>
-            )}
+              {!showForm && (
+                <button onClick={() => { resetForm(); setShowForm(true); }} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
+                  <span>➕</span> Add Technician
+                </button>
+              )}
+            </div>
           </div>
 
           {error && (
@@ -279,11 +334,13 @@ const TechnicianManagement = () => {
                   <input type="text" name="certification" value={formData.certification} onChange={handleInputChange} placeholder="e.g., Solar PV Certification" className={inputClass} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Service Area / District
-                    <span className="ml-2 text-xs text-blue-400">📍 Auto-pinned on map</span>
-                  </label>
-                  <input type="text" name="location" value={formData.location} onChange={handleInputChange} required className={inputClass} placeholder="e.g., Colombo, Kandy, Galle, Matara" />
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-slate-300">Service Area / District</label>
+                    <span className="text-[10px] font-bold text-blue-400 flex items-center gap-1 animate-pulse">
+                      📍 Auto-pinned on map
+                    </span>
+                  </div>
+                  <input type="text" name="location" value={formData.location} onChange={handleInputChange} required className={inputClass} placeholder="e.g., Colombo, Matara, Kandy" />
                 </div>
 
                 <div className="md:col-span-2">
@@ -298,7 +355,7 @@ const TechnicianManagement = () => {
                   </div>
                 </div>
 
-                <div className="md:col-span-2 flex gap-4 mt-4 pt-6 border-t border-white/10">
+                <div className="md:col-span-2 flex gap-4 mt-8 pt-8 border-t border-white/10">
                   <button type="submit" className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 px-6 py-2.5 rounded-lg font-medium transition-colors">
                     {editingId ? 'Update Technician' : 'Confirm Creation'}
                   </button>
@@ -310,8 +367,21 @@ const TechnicianManagement = () => {
             </div>
           )}
 
-          {/* Filters */}
+          {/* Filters & Search */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-6 flex flex-col md:flex-row gap-6 shadow-xl">
+            <div className="flex-[2]">
+              <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Search Technicians</label>
+              <div className="relative">
+                <span className="absolute left-3 top-2.5 text-slate-500 text-sm">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search by name, location or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`${inputClass} !pl-10`}
+                />
+              </div>
+            </div>
             <div className="flex-1">
               <label className="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wide">Availability Filter</label>
               <select value={filterAvailability} onChange={(e) => setFilterAvailability(e.target.value)} className={`${inputClass} [&>option]:bg-slate-800`}>
@@ -343,115 +413,116 @@ const TechnicianManagement = () => {
             </button>
           </div>
 
-          {/* LIST VIEW */}
-          {activeTab === 'list' && (
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl overflow-hidden">
-              {loading ? (
-                <div className="text-center py-12 flex justify-center">
-                  <div className="w-8 h-8 rounded-full border-2 border-slate-600 border-t-blue-500 animate-spin"></div>
-                </div>
-              ) : technicians.length === 0 ? (
-                <div className="text-center py-12 text-slate-400">
-                  <span className="text-4xl block mb-3 opacity-50">🔧</span>
-                  No technicians found matching criteria.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-white/5 border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider">
-                        <th className="px-6 py-4 font-semibold">Name / Contact</th>
-                        <th className="px-6 py-4 font-semibold">Location</th>
-                        <th className="px-6 py-4 font-semibold">Experience</th>
-                        <th className="px-6 py-4 font-semibold">Status</th>
-                        <th className="px-6 py-4 font-semibold">Rating</th>
-                        <th className="px-6 py-4 font-semibold">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {technicians.map(tech => (
-                        <tr key={tech._id} className={`hover:bg-white/5 transition-colors ${!tech.isActive ? 'opacity-60' : ''}`}>
-                          <td className="px-6 py-4">
-                            <div className="font-medium text-white">{tech.fullName}</div>
-                            <div className="text-sm text-slate-400">{tech.email}</div>
-                            <div className="text-xs text-slate-500 mt-0.5">{tech.phone}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-1 text-sm text-slate-300">📍 {tech.location}</div>
-                            {tech.latitude && tech.longitude
-                              ? <div className="text-xs text-emerald-400 mt-1">✅ On map</div>
-                              : <div className="text-xs text-amber-400 mt-1">⚠️ No coordinates (edit to fix)</div>
-                            }
-                          </td>
-                          <td className="px-6 py-4 text-sm text-slate-300">{tech.experience} yrs</td>
-                          <td className="px-6 py-4">
-                            <span className={`px-2.5 py-1 text-xs font-semibold rounded-full uppercase tracking-wide border ${!tech.isActive ? 'bg-slate-500/10 text-slate-400 border-slate-500/20' :
+          {/* Tab Content */}
+          <div className="min-h-96">
+            {activeTab === 'list' && (
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl shadow-xl overflow-hidden">
+                {loading ? (
+                  <div className="text-center py-12 flex justify-center">
+                    <div className="w-8 h-8 rounded-full border-2 border-slate-600 border-t-blue-500 animate-spin"></div>
+                  </div>
+                ) : filteredTechnicians.length === 0 ? (
+                  <div className="text-center py-12 text-slate-400">
+                    <span className="text-4xl block mb-3 opacity-50">🔧</span>
+                    No technicians found matching criteria.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider">
+                          <th className="px-6 py-4 font-semibold">Name / Contact</th>
+                          <th className="px-6 py-4 font-semibold">Location</th>
+                          <th className="px-6 py-4 font-semibold">Experience</th>
+                          <th className="px-6 py-4 font-semibold">Status</th>
+                          <th className="px-6 py-4 font-semibold">Rating</th>
+                          <th className="px-6 py-4 font-semibold">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {filteredTechnicians.map(tech => (
+                          <tr key={tech._id} className={`hover:bg-white/5 transition-colors ${!tech.isActive ? 'opacity-60' : ''}`}>
+                            <td className="px-6 py-4">
+                              <div className="font-medium text-white">{tech.fullName}</div>
+                              <div className="text-sm text-slate-400">{tech.email}</div>
+                              <div className="text-xs text-slate-500 mt-0.5">{tech.phone}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-1 text-sm text-slate-300">📍 {tech.location}</div>
+                              {tech.latitude && tech.longitude
+                                ? <div className="text-xs text-emerald-400 mt-1">✅ On map</div>
+                                : <div className="text-xs text-amber-400 mt-1">⚠️ No coordinates (edit to fix)</div>
+                              }
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-300">{tech.experience} yrs</td>
+                            <td className="px-6 py-4">
+                              <span className={`px-2.5 py-1 text-xs font-semibold rounded-full uppercase tracking-wide border ${!tech.isActive ? 'bg-slate-500/10 text-slate-400 border-slate-500/20' :
                                 tech.availability === 'Available' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                                   tech.availability === 'Busy' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
                                     'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                              }`}>
-                              {!tech.isActive ? 'Disabled' : tech.availability}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-amber-400 font-medium">⭐ {tech.rating?.toFixed(1) || '0.0'}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-2">
-                              <button onClick={() => handleEdit(tech)} className="px-3 py-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded border border-blue-500/30 text-xs font-medium transition-colors">Edit</button>
-                              <button onClick={() => handleToggleActivation(tech)} className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors ${tech.isActive ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border-emerald-500/30'}`}>
-                                {tech.isActive ? 'Deactivate' : 'Activate'}
-                              </button>
-                              <button onClick={() => handleDelete(tech._id)} className="px-3 py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 rounded border border-rose-500/30 text-xs font-medium transition-colors">Delete</button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* MAP VIEW — Leaflet + OpenStreetMap (free, no billing) */}
-          {activeTab === 'map' && (
-            <div className="space-y-4">
-              {/* Legend */}
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-wrap gap-4 items-center">
-                <span className="text-slate-400 text-sm font-medium">📌 Legend:</span>
-                <div className="flex items-center gap-1.5 text-xs text-emerald-400"><span className="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>Available</div>
-                <div className="flex items-center gap-1.5 text-xs text-amber-400"><span className="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>Busy</div>
-                <div className="flex items-center gap-1.5 text-xs text-rose-400"><span className="w-3 h-3 rounded-full bg-rose-400 inline-block"></span>On Leave</div>
-                <div className="flex items-center gap-1.5 text-xs text-slate-400"><span className="w-3 h-3 rounded-full bg-slate-400 inline-block"></span>Disabled</div>
-                <span className="ml-auto text-xs text-slate-500">{techsWithCoords} of {technicians.length} technicians mapped • Click pin for details</span>
-              </div>
-
-              {/* Leaflet Map */}
-              <div className="border border-white/10 rounded-xl overflow-hidden shadow-xl" style={{ height: '500px' }}>
-                {!leafletReady ? (
-                  <div className="h-full flex items-center justify-center bg-[#0d1929] text-slate-400">
-                    <div className="text-center">
-                      <div className="w-8 h-8 rounded-full border-2 border-slate-600 border-t-blue-500 animate-spin mx-auto mb-3"></div>
-                      <p>Loading Map...</p>
-                    </div>
+                                }`}>
+                                {!tech.isActive ? 'Disabled' : tech.availability}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm text-amber-400 font-medium">⭐ {tech.rating?.toFixed(1) || '0.0'}</td>
+                            <td className="px-6 py-4">
+                              <div className="flex flex-wrap gap-2">
+                                <button onClick={() => handleEdit(tech)} className="px-3 py-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded border border-blue-500/30 text-xs font-medium transition-colors">Edit</button>
+                                <button onClick={() => handleToggleActivation(tech)} className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors ${tech.isActive ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border-emerald-500/30'}`}>
+                                  {tech.isActive ? 'Deactivate' : 'Activate'}
+                                </button>
+                                <button onClick={() => handleDelete(tech._id)} className="px-3 py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 rounded border border-rose-500/30 text-xs font-medium transition-colors">Delete</button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                ) : (
-                  <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
                 )}
               </div>
+            )}
 
-              {/* Warning for techs without coords */}
-              {technicians.filter(t => !t.latitude || !t.longitude).length > 0 && (
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-300 text-sm flex items-start gap-3">
-                  <span>⚠️</span>
-                  <div>
-                    <strong>{technicians.filter(t => !t.latitude || !t.longitude).length} technician(s)</strong> are missing coordinates.
-                    To pin them: click <strong>Edit</strong> → click <strong>Update Technician</strong> → coordinates will be auto-fetched.
-                    <div className="mt-1 text-xs text-amber-400">Missing: {technicians.filter(t => !t.latitude || !t.longitude).map(t => t.fullName).join(', ')}</div>
-                  </div>
+            {activeTab === 'map' && (
+              <div className="space-y-4">
+                {/* Legend */}
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-wrap gap-4 items-center">
+                  <span className="text-slate-400 text-sm font-medium">📌 Legend:</span>
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-400"><span className="w-3 h-3 rounded-full bg-emerald-400 inline-block"></span>Available</div>
+                  <div className="flex items-center gap-1.5 text-xs text-amber-400"><span className="w-3 h-3 rounded-full bg-amber-400 inline-block"></span>Busy</div>
+                  <div className="flex items-center gap-1.5 text-xs text-rose-400"><span className="w-3 h-3 rounded-full bg-rose-400 inline-block"></span>On Leave</div>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-400"><span className="w-3 h-3 rounded-full bg-slate-400 inline-block"></span>Disabled</div>
+                  <span className="ml-auto text-xs text-slate-500">{techsWithCoords} of {technicians.length} technicians mapped • Click pin for details</span>
                 </div>
-              )}
-            </div>
-          )}
+
+                {/* Leaflet Map */}
+                <div className="border border-white/10 rounded-xl overflow-hidden shadow-xl" style={{ height: '500px' }}>
+                  {!leafletReady ? (
+                    <div className="h-full flex items-center justify-center bg-[#0d1929] text-slate-400">
+                      <div className="text-center">
+                        <div className="w-8 h-8 rounded-full border-2 border-slate-600 border-t-blue-500 animate-spin mx-auto mb-3"></div>
+                        <p>Loading Map...</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div ref={mapRef} style={{ width: '100%', height: '100%' }}></div>
+                  )}
+                </div>
+
+                {/* Warning for techs without coords */}
+                {technicians.filter(t => !t.latitude || !t.longitude).length > 0 && (
+                  <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-amber-300 text-sm flex items-start gap-3">
+                    <span>⚠️</span>
+                    <div>
+                      <strong>{technicians.filter(t => !t.latitude || !t.longitude).length} technician(s)</strong> are missing coordinates.
+                      To pin them: click <strong>Edit</strong> → click <strong>Update Technician</strong> → coordinates will be auto-fetched.
+                      <div className="mt-1 text-xs text-amber-400">Missing: {technicians.filter(t => !t.latitude || !t.longitude).map(t => t.fullName).join(', ')}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
         </main>
       </div>
