@@ -9,6 +9,7 @@ import api from '../api';
 const MaintenanceServicePage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const [selectedTechnician, setSelectedTechnician] = useState(null);
   const [schedules, setSchedules] = useState([]);
   const [serviceRequests, setServiceRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -114,15 +115,37 @@ const MaintenanceServicePage = () => {
       const marker = L.circleMarker([tech.latitude, tech.longitude], {
         radius: 12, fillColor: '#10b981', fillOpacity: 0.9, color: '#ffffff', weight: 2
       }).addTo(map);
-      marker.bindPopup(`
-        <div style="min-width:200px;font-family:system-ui,sans-serif">
-          <div style="font-weight:700;font-size:14px;color:#065f46;margin-bottom:4px">🔧 ${tech.fullName}</div>
-          <div style="font-size:12px;color:#374151;margin-bottom:4px">📍 ${tech.location}</div>
-          <div style="font-size:12px;color:#374151;margin-bottom:6px">⭐ ${tech.rating?.toFixed(1) || '0.0'} • ${tech.experience} yrs experience</div>
-          <div style="font-size:11px;color:#6b7280;margin-bottom:4px">${Array.isArray(tech.specialization) ? tech.specialization.join(', ') : tech.specialization}</div>
-          <div style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block">✅ Available</div>
-        </div>
-      `, { maxWidth: 240 });
+
+      const popupContent = document.createElement('div');
+      popupContent.style.minWidth = '200px';
+      popupContent.style.fontFamily = 'system-ui,sans-serif';
+      popupContent.innerHTML = `
+        <div style="font-weight:700;font-size:14px;color:#065f46;margin-bottom:4px">🔧 ${tech.fullName}</div>
+        <div style="font-size:12px;color:#374151;margin-bottom:4px">📍 ${tech.location}</div>
+        <div style="font-size:12px;color:#374151;margin-bottom:6px">⭐ ${tech.rating?.toFixed(1) || '0.0'} • ${tech.experience} yrs experience</div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:4px">${Array.isArray(tech.specialization) ? tech.specialization.join(', ') : tech.specialization}</div>
+        <div style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block;margin-bottom:10px">✅ Available</div>
+      `;
+
+      const btn = document.createElement('button');
+      btn.innerText = 'Request This Technician';
+      btn.style.width = '100%';
+      btn.style.background = '#059669';
+      btn.style.color = '#fff';
+      btn.style.border = 'none';
+      btn.style.padding = '8px';
+      btn.style.borderRadius = '8px';
+      btn.style.fontSize = '10px';
+      btn.style.fontWeight = '800';
+      btn.style.textTransform = 'uppercase';
+      btn.style.cursor = 'pointer';
+      btn.onclick = () => {
+        setSelectedTechnician(tech);
+        setShowRequestModal(true);
+      };
+
+      popupContent.appendChild(btn);
+      marker.bindPopup(popupContent, { maxWidth: 240 });
     });
 
     setTimeout(() => map.invalidateSize(), 100);
@@ -137,6 +160,7 @@ const MaintenanceServicePage = () => {
   // Handle new service request
   const handleServiceRequestCreated = async () => {
     setShowRequestModal(false);
+    setSelectedTechnician(null);
     await fetchServiceRequests();
   };
 
@@ -356,26 +380,34 @@ const MaintenanceServicePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {technicians.map(tech => (
                     <div key={tech._id} className="bg-white/5 border border-white/5 rounded-2xl p-6 hover:bg-white/10 transition-all group relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-1 h-full bg-blue-600/30"></div>
+                      <div className="absolute top-0 right-0 w-1.5 h-full bg-emerald-500/20"></div>
                       <div className="flex items-start justify-between mb-4">
                         <div>
-                          <h3 className="font-black text-white uppercase tracking-tight text-base mb-1">{tech.fullName}</h3>
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">📍 {tech.location}</p>
+                          <h3 className="font-black text-white lowercase tracking-tight text-lg mb-1">{tech.fullName}</h3>
+                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center gap-1">
+                            <span className="text-rose-500 text-xs">📍</span> {tech.location}
+                          </p>
                         </div>
-                        <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] px-2 py-1 rounded-lg font-black uppercase tracking-widest">Active</span>
+                        <div className="flex flex-col items-end gap-2">
+                          <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] px-2 py-1 rounded-lg font-black uppercase tracking-widest flex items-center gap-1">
+                            <span className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></span> Available
+                          </span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">
-                        <span>⭐ {tech.rating?.toFixed(1) || '0.0'} Node Metric</span>
-                        <span>{tech.experience} Cycles Exp</span>
+                        <span className="flex items-center gap-1">⭐ {tech.rating?.toFixed(1) || '0.0'} • {tech.experience} yrs exp</span>
                       </div>
-                      <div className="text-[10px] text-slate-600 font-bold uppercase tracking-widest mb-6">
-                        {Array.isArray(tech.specialization) ? tech.specialization.slice(0, 2).join(' • ') : tech.specialization}
+                      <div className="text-[10px] text-slate-500 font-medium tracking-wide mb-6 line-clamp-1">
+                        {Array.isArray(tech.specialization) ? tech.specialization.join(', ') : tech.specialization}
                       </div>
                       <button
-                        onClick={() => setShowRequestModal(true)}
-                        className="w-full bg-blue-600/10 border border-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                        onClick={() => {
+                          setSelectedTechnician(tech);
+                          setShowRequestModal(true);
+                        }}
+                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-emerald-900/20 mt-4"
                       >
-                        Deploy Unit
+                        Request This Technician
                       </button>
                     </div>
                   ))}
@@ -412,8 +444,12 @@ const MaintenanceServicePage = () => {
         {/* Request Service Modal */}
         {showRequestModal && (
           <RequestServiceModal
-            onClose={() => setShowRequestModal(false)}
+            onClose={() => {
+              setShowRequestModal(false);
+              setSelectedTechnician(null);
+            }}
             onSuccess={handleServiceRequestCreated}
+            selectedTechnician={selectedTechnician}
           />
         )}
 

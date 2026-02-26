@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import api from '../api';
 
-const RequestServiceModal = ({ onClose, onSuccess }) => {
+const RequestServiceModal = ({ onClose, onSuccess, selectedTechnician }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     village: '',
     phoneNumber: '',
     assistanceType: 'Technical Support',
     problemDescription: '',
-    priority: 'Medium'
+    priority: 'Medium',
+    preferredTechnician: selectedTechnician ? selectedTechnician._id : null
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -61,7 +62,8 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
           phoneNumber: '',
           assistanceType: 'Technical Support',
           problemDescription: '',
-          priority: 'Medium'
+          priority: 'Medium',
+          preferredTechnician: null
         });
         onSuccess();
       }
@@ -79,7 +81,14 @@ const RequestServiceModal = ({ onClose, onSuccess }) => {
         <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
         {/* Header */}
         <div className="sticky top-0 bg-white/5 backdrop-blur-md border-b border-white/10 p-6 flex justify-between items-center z-10">
-          <h2 className="text-2xl font-bold text-white tracking-tight">Request Service</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Request Service</h2>
+            {selectedTechnician && (
+              <p className="text-emerald-400 text-xs font-bold uppercase tracking-widest mt-1">
+                Preferred: {selectedTechnician.fullName} ({selectedTechnician.location})
+              </p>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white hover:bg-white/10 rounded-xl p-2 transition-all"

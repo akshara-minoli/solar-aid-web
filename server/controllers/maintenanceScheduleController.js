@@ -103,7 +103,13 @@ export const getAllMaintenanceSchedules = async (req, res) => {
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
     if (technicianId) filter.technicianId = technicianId;
-    if (userId) filter.userId = userId;
+
+    // Safety: If not admin, force filter by user's own ID
+    if (req.user.role !== 'admin') {
+      filter.userId = req.user.id;
+    } else if (userId) {
+      filter.userId = userId;
+    }
 
     const schedules = await MaintenanceSchedule.find(filter)
       .populate('technicianId', 'fullName phone email')

@@ -12,7 +12,7 @@ import {
   getSchedulesByTechnician,
   deleteMaintenanceSchedule
 } from '../controllers/maintenanceScheduleController.js';
-import { protect } from '../middleware/auth.js';
+import { protect, admin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.use(protect);
 
 // @route   POST /api/maintenance-schedules
 // @desc    Create maintenance schedule
-router.post('/', createMaintenanceSchedule);
+router.post('/', admin, createMaintenanceSchedule);
 
 // @route   GET /api/maintenance-schedules
 // @desc    Get all maintenance schedules
@@ -29,7 +29,7 @@ router.get('/', getAllMaintenanceSchedules);
 
 // @route   GET /api/maintenance-schedules/upcoming/:days
 // @desc    Get upcoming schedules (next N days)
-router.get('/upcoming/:days', getUpcomingSchedules);
+router.get('/upcoming/:days', admin, getUpcomingSchedules);
 
 // @route   GET /api/maintenance-schedules/technician/:technicianId
 // @desc    Get schedules by technician
@@ -41,19 +41,19 @@ router.get('/:id', getMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id
 // @desc    Update maintenance schedule
-router.put('/:id', updateMaintenanceSchedule);
+router.put('/:id', admin, updateMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id/complete
 // @desc    Complete maintenance schedule
-router.put('/:id/complete', completeMaintenanceSchedule);
+router.put('/:id/complete', admin, completeMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id/cancel
 // @desc    Cancel maintenance schedule
-router.put('/:id/cancel', cancelMaintenanceSchedule);
+router.put('/:id/cancel', admin, cancelMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id/reschedule
 // @desc    Reschedule maintenance
-router.put('/:id/reschedule', rescheduleMaintenanceSchedule);
+router.put('/:id/reschedule', admin, rescheduleMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id/confirm
 // @desc    Confirm schedule (by technician or user)
@@ -61,6 +61,6 @@ router.put('/:id/confirm', confirmMaintenanceSchedule);
 
 // @route   DELETE /api/maintenance-schedules/:id
 // @desc    Delete maintenance schedule
-router.delete('/:id', deleteMaintenanceSchedule);
+router.delete('/:id', admin, deleteMaintenanceSchedule);
 
 export default router;

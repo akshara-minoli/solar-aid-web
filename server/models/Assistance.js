@@ -51,6 +51,11 @@ const assistanceSchema = new mongoose.Schema({
     ref: 'Technician',
     default: null
   },
+  preferredTechnician: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Technician',
+    default: null
+  },
   scheduledDate: {
     type: Date
   },
