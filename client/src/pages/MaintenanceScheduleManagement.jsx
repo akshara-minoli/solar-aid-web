@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import AdminProfileMenu from '../components/AdminProfileMenu';
+import CompleteMaintenanceModal from '../components/CompleteMaintenanceModal';
 
 const MaintenanceScheduleManagement = () => {
   const [schedules, setSchedules] = useState([]);
@@ -13,6 +14,7 @@ const MaintenanceScheduleManagement = () => {
   const [editingId, setEditingId] = useState(null);
   const [filterStatus, setFilterStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSchedule, setSelectedSchedule] = useState(null); // For completion modal
 
   const [formData, setFormData] = useState({
     assistanceId: '',
@@ -115,10 +117,11 @@ const MaintenanceScheduleManagement = () => {
     setShowForm(true);
   };
 
-  const handleAction = async (id, actionStr, payloadStr, payloadData) => {
+  const handleAction = async (id, actionStr, payloadData) => {
     try {
       await axios.put(`${API_URL}/maintenance-schedules/${id}/${actionStr}`, payloadData, { headers: { Authorization: `Bearer ${token}` } });
       fetchSchedules();
+      setSelectedSchedule(null);
     } catch (err) {
       setError(err.response?.data?.message || `Error ${actionStr} schedule`);
     }
@@ -345,10 +348,10 @@ const MaintenanceScheduleManagement = () => {
                           <div className="flex flex-wrap gap-2 min-w-[200px]">
                             <button onClick={() => handleEdit(s)} className="px-3 py-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded border border-blue-500/30 text-xs font-medium transition-colors">Edit</button>
                             {s.status !== 'Completed' && (
-                              <button onClick={() => handleAction(s._id, 'complete', 'notes', { completionNotes: 'Completed' })} className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded border border-emerald-500/30 text-xs font-medium transition-colors">Done</button>
+                              <button onClick={() => setSelectedSchedule(s)} className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 rounded border border-emerald-500/30 text-xs font-medium transition-colors">Done</button>
                             )}
                             {s.status !== 'Cancelled' && (
-                              <button onClick={() => handleAction(s._id, 'cancel', 'reason', { reason: 'Cancelled by admin' })} className="px-3 py-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded border border-amber-500/30 text-xs font-medium transition-colors">Cancel</button>
+                              <button onClick={() => handleAction(s._id, 'cancel', { reason: 'Cancelled by admin' })} className="px-3 py-1.5 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded border border-amber-500/30 text-xs font-medium transition-colors">Cancel</button>
                             )}
                             <button onClick={() => handleDelete(s._id)} className="px-3 py-1.5 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 rounded border border-rose-500/30 text-xs font-medium transition-colors">Delete</button>
                           </div>
@@ -362,6 +365,13 @@ const MaintenanceScheduleManagement = () => {
           </div>
         </main>
       </div>
+      {selectedSchedule && (
+        <CompleteMaintenanceModal
+          schedule={selectedSchedule}
+          onClose={() => setSelectedSchedule(null)}
+          onSuccess={(id, data) => handleAction(id, 'complete', data)}
+        />
+      )}
     </div>
   );
 };

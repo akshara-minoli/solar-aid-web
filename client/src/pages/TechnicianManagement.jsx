@@ -172,6 +172,8 @@ const TechnicianManagement = () => {
     }
   };
 
+  const mainContentRef = useRef(null);
+
   const handleEdit = (technician) => {
     setFormData({
       fullName: technician.fullName,
@@ -186,6 +188,11 @@ const TechnicianManagement = () => {
     });
     setEditingId(technician._id);
     setShowForm(true);
+
+    // Scroll to top so user sees the form immediately
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleDelete = async (id) => {
@@ -278,7 +285,7 @@ const TechnicianManagement = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-900">
       <Sidebar />
-      <div className="flex-1 flex flex-col pl-64 relative bg-[#0B1120] text-slate-200 h-screen overflow-y-auto" style={{ backgroundImage: 'radial-gradient(circle at 50% 0%, #172554 0%, #0B1120 70%)' }}>
+      <div ref={mainContentRef} className="flex-1 flex flex-col pl-64 relative bg-[#0B1120] text-slate-200 h-screen overflow-y-auto" style={{ backgroundImage: 'radial-gradient(circle at 50% 0%, #172554 0%, #0B1120 70%)' }}>
         <AdminProfileMenu />
         <main className="p-8 pt-24 max-w-7xl w-full mx-auto">
 
@@ -293,7 +300,14 @@ const TechnicianManagement = () => {
                 <span>📄</span> Export PDF
               </button>
               {!showForm && (
-                <button onClick={() => { resetForm(); setShowForm(true); }} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm">
+                <button
+                  onClick={() => {
+                    resetForm();
+                    setShowForm(true);
+                    if (mainContentRef.current) mainContentRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 font-medium rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 text-sm"
+                >
                   <span>➕</span> Add Technician
                 </button>
               )}

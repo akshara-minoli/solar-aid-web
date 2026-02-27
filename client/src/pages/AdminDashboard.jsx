@@ -18,59 +18,60 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchAllStats = async () => {
       try {
+        setLoading(true);
+        // Use the new consolidated stats endpoint
+        const response = await api.get('/api/admin/stats');
+        if (response.data.success) {
+          const { stats: s } = response.data;
+          setStats(prev => ({
+            ...prev,
+            users: s.users,
+            households: s.households,
+            consultations: s.consultations,
+            products: s.products,
+            technicians: s.technicians,
+            requests: s.requests,
+            schedules: s.schedules
+          }));
+        }
+
+        // Still fetch Member 4 stats individually as they are in separate modules
         try {
-          const users = await api.get('/api/admin/users')
-          setStats(s => ({ ...s, users: users.data.count || 0 }))
-        } catch (e) { console.log('Users endpoint not available') }
+          const res = await api.get('/api/education');
+          const eduCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0));
+          setStats(s => ({ ...s, education: eduCount }));
+        } catch (e) { console.log('Education endpoint error') }
 
         try {
-          const households = await api.get('/api/admin/households')
-          setStats(s => ({ ...s, households: households.data.count || 0 }))
-        } catch (e) { console.log('Households endpoint not available') }
+          const res = await api.get('/api/notifications/all');
+          const notifCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0));
+          setStats(s => ({ ...s, notifications: notifCount }));
+        } catch (e) { console.log('Notifications endpoint error') }
 
         try {
-          const consultations = await api.get('/api/admin/consultations')
-          setStats(s => ({ ...s, consultations: consultations.data.count || 0 }))
-        } catch (e) { console.log('Consultations endpoint not available') }
+          const res = await api.get('/api/feedback');
+          const feedbackCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0));
+          setStats(s => ({ ...s, feedback: feedbackCount }));
+        } catch (e) { console.log('Feedback endpoint error') }
 
-        try {
-          const products = await api.get('/api/admin/products')
-          setStats(s => ({ ...s, products: products.data.count || 0 }))
-        } catch (e) { console.log('Products endpoint not available') }
-
-        try {
-          const res = await api.get('/api/education')
-          const eduCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0))
-          setStats(s => ({ ...s, education: eduCount }))
-        } catch (e) { console.log('Education endpoint error:', e.message) }
-
-        try {
-          const res = await api.get('/api/notifications/all')
-          const notifCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0))
-          setStats(s => ({ ...s, notifications: notifCount }))
-        } catch (e) { console.log('Notifications endpoint error:', e.message) }
-
-        try {
-          const res = await api.get('/api/feedback')
-          const feedbackCount = res.data.data ? res.data.data.length : (Array.isArray(res.data) ? res.data.length : (res.data.count || 0))
-          setStats(s => ({ ...s, feedback: feedbackCount }))
-        } catch (e) { console.log('Feedback endpoint error:', e.message) }
+      } catch (err) {
+        console.error('Error fetching admin stats:', err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchAllStats()
-  }, [])
+    fetchAllStats();
+  }, []);
 
   const statItems = [
     { label: 'Users', value: stats.users, icon: '👥', color: 'text-blue-400' },
     { label: 'Households', value: stats.households, icon: '🏠', color: 'text-orange-400' },
-    { label: 'Consultations', value: stats.consultations, icon: '🩺', color: 'text-cyan-400' },
-    { label: 'Products', value: stats.products, icon: '☀️', color: 'text-indigo-400' },
+    { label: 'Service Reqs', value: stats.requests, icon: '🔧', color: 'text-rose-400' },
+    { label: 'Technicians', value: stats.technicians, icon: '🛠️', color: 'text-emerald-400' },
     { label: 'Education', value: stats.education, icon: '📚', color: 'text-teal-400' },
-    { label: 'Notifications', value: stats.notifications, icon: '🔔', color: 'text-sky-400' },
     { label: 'Feedback', value: stats.feedback, icon: '💬', color: 'text-blue-300' },
+    { label: 'Notices', value: stats.notifications, icon: '🔔', color: 'text-sky-400' },
   ]
 
   const quickLinks = [

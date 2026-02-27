@@ -7,7 +7,7 @@ import {
   updateAssistance,
   deleteAssistance
 } from '../controllers/assistanceController.js';
-import { protect } from '../middleware/auth.js';
+import { protect, admin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ router.get('/', getUserAssistances);
 
 // @route   GET /api/assistances/all
 // @desc    Get all assistance requests (Admin)
-router.get('/all', getAllAssistances);
+router.get('/all', admin, getAllAssistances);
 
 // @route   GET /api/assistances/:id
 // @desc    Get single assistance request

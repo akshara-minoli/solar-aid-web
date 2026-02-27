@@ -12,7 +12,7 @@ import {
   deleteTechnician,
   getTechnicianStats
 } from '../controllers/technicianController.js';
-import { protect } from '../middleware/auth.js';
+import { protect, admin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.use(protect);
 
 // @route   POST /api/technicians
 // @desc    Create new technician
-router.post('/', createTechnician);
+router.post('/', admin, createTechnician);
 
 // @route   GET /api/technicians
 // @desc    Get all technicians
@@ -41,26 +41,26 @@ router.get('/:id/stats', getTechnicianStats);
 
 // @route   PUT /api/technicians/:id
 // @desc    Update technician
-router.put('/:id', updateTechnician);
+router.put('/:id', admin, updateTechnician);
 
 // @route   PUT /api/technicians/:id/availability
 // @desc    Update technician availability
-router.put('/:id/availability', updateAvailability);
+router.put('/:id/availability', admin, updateAvailability);
 
 // @route   PUT /api/technicians/:id/assign/:assistanceId
 // @desc    Assign service request to technician
-router.put('/:id/assign/:assistanceId', assignServiceRequest);
+router.put('/:id/assign/:assistanceId', admin, assignServiceRequest);
 
 // @route   PUT /api/technicians/:id/complete/:assistanceId
 // @desc    Complete service request
-router.put('/:id/complete/:assistanceId', completeServiceRequest);
+router.put('/:id/complete/:assistanceId', admin, completeServiceRequest);
 
 // @route   PUT /api/technicians/:id/toggle-activation
 // @desc    Toggle technician activation
-router.put('/:id/toggle-activation', toggleActivation);
+router.put('/:id/toggle-activation', admin, toggleActivation);
 
 // @route   DELETE /api/technicians/:id
 // @desc    Delete technician
-router.delete('/:id', deleteTechnician);
+router.delete('/:id', admin, deleteTechnician);
 
 export default router;

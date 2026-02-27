@@ -7,6 +7,9 @@ import User from '../models/User.js';
 import Consultation from '../models/Consultation.js';
 import Product from '../models/Product.js';
 import Household from '../models/Household.js';
+import Technician from '../models/Technician.js';
+import Assistance from '../models/Assistance.js';
+import MaintenanceSchedule from '../models/MaintenanceSchedule.js';
 
 const router = express.Router();
 
@@ -209,13 +212,13 @@ router.get('/households', protect, admin, async (req, res) => {
     const households = await Household.find()
       .populate('userId', 'fullName email phone')
       .sort({ createdAt: -1 });
-    
+
     console.log(`Found ${households.length} households`);
-    
-    res.json({ 
-      success: true, 
-      count: households.length, 
-      households 
+
+    res.json({
+      success: true,
+      count: households.length,
+      households
     });
   } catch (err) {
     console.error('Error fetching households:', err);
@@ -232,7 +235,7 @@ router.put('/households/:id', protect, admin, async (req, res) => {
     }
 
     const { houseName, houseType, roofArea, district, members, houseAddress, appliances, remarks } = req.body;
-    
+
     // Update household fields
     if (houseName !== undefined) household.houseName = houseName;
     if (houseType !== undefined) household.houseType = houseType;
@@ -241,17 +244,17 @@ router.put('/households/:id', protect, admin, async (req, res) => {
     if (members !== undefined) household.members = members;
     if (houseAddress !== undefined) household.houseAddress = houseAddress;
     if (appliances !== undefined) household.appliances = appliances;
-    
+
     // Add admin remarks (you might want to create a separate model for admin actions)
     household.adminRemarks = remarks || 'Updated by admin';
     household.lastModifiedByAdmin = req.user.id;
     household.adminActionDate = new Date();
 
     await household.save();
-    
+
     const updatedHousehold = await Household.findById(req.params.id)
       .populate('userId', 'fullName email phone');
-    
+
     res.json({ success: true, household: updatedHousehold });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -267,12 +270,43 @@ router.delete('/households/:id', protect, admin, async (req, res) => {
     }
 
     const { remarks } = req.body;
-    
+
     // Log the deletion (you might want to create a separate audit log model)
     console.log(`Admin ${req.user.fullName} (${req.user.email}) deleted household ${household._id} - Remarks: ${remarks || 'No remarks provided'}`);
-    
+
     await Household.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Household deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// ---------- Statistics ----------
+// GET all system stats
+router.get('/stats', protect, admin, async (req, res) => {
+  try {
+    const [users, households, consultations, products, technicians, requests, schedules] = await Promise.all([
+      User.countDocuments(),
+      Household.countDocuments(),
+      Consultation.countDocuments(),
+      Product.countDocuments(),
+      Technician.countDocuments(),
+      Assistance.countDocuments(),
+      MaintenanceSchedule.countDocuments()
+    ]);
+
+    res.json({
+      success: true,
+      stats: {
+        users,
+        households,
+        consultations,
+        products,
+        technicians,
+        requests,
+        schedules
+      }
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

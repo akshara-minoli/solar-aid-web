@@ -10,6 +10,18 @@ const fromPhone = process.env.TWILIO_PHONE;
 // Initialize Twilio client
 let client;
 
+/**
+ * Helper to clean phone numbers for Twilio (E.164 format)
+ */
+const formatPhone = (phone) => {
+  if (!phone) return phone;
+  // Remove spaces, dashes, parentheses
+  let cleaned = phone.replace(/[\s()-]/g, '');
+  // If it doesn't start with +, Twilio might need it depending on account settings
+  // But for now, we just return the cleaned version
+  return cleaned;
+};
+
 try {
   if (accountSid && authToken) {
     client = twilio(accountSid, authToken);
@@ -37,9 +49,9 @@ export const sendServiceAssignmentSMS = async (technicianPhone, serviceName, use
     }
 
     const message = await client.messages.create({
-      body: `Solar Aid: New service request assigned - ${serviceName}. User Phone: ${userPhone}. Please confirm ASAP.`,
+      body: `Solar Aid: New service request assigned - ${serviceName}. User Phone: ${formatPhone(userPhone)}. Please confirm ASAP.`,
       from: fromPhone,
-      to: technicianPhone
+      to: formatPhone(technicianPhone)
     });
 
     console.log(`✅ SMS sent to technician (${technicianPhone}): ${message.sid}`);
@@ -65,7 +77,7 @@ export const sendServiceUpdateToUser = async (userPhone, technicianName, status)
     const message = await client.messages.create({
       body: `Solar Aid: Your service request is ${status}. Technician: ${technicianName}. We'll keep you updated.`,
       from: fromPhone,
-      to: userPhone
+      to: formatPhone(userPhone)
     });
 
     console.log(`✅ SMS sent to user (${userPhone}): ${message.sid}`);
@@ -92,7 +104,7 @@ export const sendMaintenanceReminderSMS = async (userPhone, scheduledDate, techn
     const message = await client.messages.create({
       body: `Solar Aid: Maintenance reminder! Your scheduled maintenance is on ${formattedDate}. ${technicianName} will contact you soon.`,
       from: fromPhone,
-      to: userPhone
+      to: formatPhone(userPhone)
     });
 
     console.log(`✅ Maintenance reminder SMS sent to user (${userPhone}): ${message.sid}`);
@@ -118,7 +130,7 @@ export const sendCompletionNotificationSMS = async (userPhone, completionNotes =
     const message = await client.messages.create({
       body: `Solar Aid: Service completed by ${technicianName}! ${completionNotes}. Thank you for choosing Solar Aid!`,
       from: fromPhone,
-      to: userPhone
+      to: formatPhone(userPhone)
     });
 
     console.log(`✅ Completion SMS sent to user (${userPhone}): ${message.sid}`);
@@ -145,7 +157,7 @@ export const sendScheduleConfirmationSMS = async (technicianPhone, scheduledDate
     const message = await client.messages.create({
       body: `Solar Aid: ${serviceType} scheduled for ${formattedDate}. Please confirm your availability.`,
       from: fromPhone,
-      to: technicianPhone
+      to: formatPhone(technicianPhone)
     });
 
     console.log(`✅ Schedule confirmation SMS sent to technician (${technicianPhone}): ${message.sid}`);

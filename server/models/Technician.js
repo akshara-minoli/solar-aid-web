@@ -19,7 +19,7 @@ const technicianSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide phone number'],
     trim: true,
-    match: [/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number']
+    match: [/^\+?[0-9\s-]{9,15}$/, 'Please provide a valid phone number (e.g., +94724055431)']
   },
   specialization: {
     type: [String],
@@ -92,7 +92,7 @@ const technicianSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-technicianSchema.pre('save', function(next) {
+technicianSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });

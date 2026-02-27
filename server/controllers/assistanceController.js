@@ -5,7 +5,7 @@ import Assistance from '../models/Assistance.js';
 // @access  Private
 export const createAssistance = async (req, res) => {
   try {
-    const { fullName, village, phoneNumber, assistanceType, problemDescription, image } = req.body;
+    const { fullName, village, phoneNumber, assistanceType, problemDescription, image, preferredTechnician } = req.body;
 
     // Validate required fields
     if (!fullName || !village || !phoneNumber || !assistanceType || !problemDescription) {
@@ -22,7 +22,8 @@ export const createAssistance = async (req, res) => {
       phoneNumber,
       assistanceType,
       problemDescription,
-      image: image || null
+      image: image || null,
+      preferredTechnician: preferredTechnician || null
     });
 
     res.status(201).json({

@@ -3,6 +3,15 @@ import axios from 'axios';
 export const getWeatherInsights = async (req, res) => {
     try {
         const apiKey = process.env.OPENWEATHER_API_KEY;
+
+        if (!apiKey) {
+            console.warn('⚠️ OpenWeather API Key is missing - skipping weather fetch');
+            return res.status(200).json({
+                success: false,
+                message: 'Weather API key not configured'
+            });
+        }
+
         const city = req.query.city || 'Colombo';
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
