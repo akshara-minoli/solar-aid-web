@@ -10,24 +10,27 @@ const fromPhone = process.env.TWILIO_PHONE;
 // Initialize Twilio client
 let client;
 
-/**
- * Helper to clean phone numbers for Twilio (E.164 format)
- */
+// Modified for WhatsApp Sandbox (Trial Account Friendly)
 const formatPhone = (phone) => {
   if (!phone) return phone;
-  // Remove spaces, dashes, parentheses
-  let cleaned = phone.replace(/[\s()-]/g, '');
-  // If it doesn't start with +, Twilio might need it depending on account settings
-  // But for now, we just return the cleaned version
-  return cleaned;
+  let cleaned = phone.toString().replace(/[^\d+]/g, '');
+  if (!cleaned.startsWith('+')) {
+    if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
+    if (!cleaned.startsWith('94')) cleaned = '94' + cleaned;
+    cleaned = '+' + cleaned;
+  }
+  // For WhatsApp, we MUST prefix with 'whatsapp:'
+  return `whatsapp:${cleaned}`;
 };
+
+const whatsappFrom = 'whatsapp:+14155238886'; // Your Sandbox WhatsApp Number
 
 try {
   if (accountSid && authToken) {
     client = twilio(accountSid, authToken);
-    console.log('✅ Twilio client initialized successfully');
+    console.log('✅ Twilio WhatsApp Client initialized successfully');
   } else {
-    console.warn('⚠️ Twilio credentials missing - SMS notifications will be skipped');
+    console.warn('⚠️ Twilio credentials missing - WhatsApp notifications will be skipped');
     client = null;
   }
 } catch (error) {
@@ -36,134 +39,99 @@ try {
 }
 
 /**
- * Send SMS notification when service is assigned to technician
- * @param {string} technicianPhone - Technician's phone number
- * @param {string} serviceName - Type of service
- * @param {string} userPhone - User's phone number
+ * Send WhatsApp notification when service is assigned
  */
 export const sendServiceAssignmentSMS = async (technicianPhone, serviceName, userPhone) => {
   try {
-    if (!client) {
-      console.log('📱 SMS Service: Twilio not configured. Skipping SMS to technician.');
-      return;
-    }
-
+    if (!client) return;
+    const to = formatPhone(technicianPhone);
     const message = await client.messages.create({
-      body: `Solar Aid: New service request assigned - ${serviceName}. User Phone: ${formatPhone(userPhone)}. Please confirm ASAP.`,
-      from: fromPhone,
-      to: formatPhone(technicianPhone)
+      body: `Solar Aid: New service assigned - ${serviceName}. User Phone: ${userPhone}. Confirm ASAP!`,
+      from: whatsappFrom,
+      to: to
     });
-
-    console.log(`✅ SMS sent to technician (${technicianPhone}): ${message.sid}`);
+    console.log(`✅ WhatsApp sent: ${message.sid}`);
     return message.sid;
   } catch (error) {
-    console.error('❌ Error sending SMS to technician:', error.message);
+    console.error('❌ WhatsApp Error (Assign):', error.message);
   }
 };
 
 /**
- * Send SMS notification to user about service update
- * @param {string} userPhone - User's phone number
- * @param {string} technicianName - Assigned technician name
- * @param {string} status - Current status (Assigned/In Progress/Completed)
+ * Send WhatsApp notification to user about status
  */
 export const sendServiceUpdateToUser = async (userPhone, technicianName, status) => {
   try {
-    if (!client) {
-      console.log('📱 SMS Service: Twilio not configured. Skipping SMS to user.');
-      return;
-    }
-
+    if (!client) return;
+    const to = formatPhone(userPhone);
     const message = await client.messages.create({
-      body: `Solar Aid: Your service request is ${status}. Technician: ${technicianName}. We'll keep you updated.`,
-      from: fromPhone,
-      to: formatPhone(userPhone)
+      body: `Solar Aid: Your service request is ${status}. Tech: ${technicianName}`,
+      from: whatsappFrom,
+      to: to
     });
-
-    console.log(`✅ SMS sent to user (${userPhone}): ${message.sid}`);
+    console.log(`✅ WhatsApp sent: ${message.sid}`);
     return message.sid;
   } catch (error) {
-    console.error('❌ Error sending SMS to user:', error.message);
+    console.error('❌ WhatsApp Error (Update):', error.message);
   }
 };
 
 /**
- * Send maintenance reminder SMS to user
- * @param {string} userPhone - User's phone number
- * @param {string} scheduledDate - Scheduled maintenance date
- * @param {string} technicianName - Assigned technician name
+ * Send maintenance reminder WhatsApp
  */
 export const sendMaintenanceReminderSMS = async (userPhone, scheduledDate, technicianName = 'Your technician') => {
   try {
-    if (!client) {
-      console.log('📱 SMS Service: Twilio not configured. Skipping reminder SMS.');
-      return;
-    }
-
+    if (!client) return;
+    const to = formatPhone(userPhone);
     const formattedDate = new Date(scheduledDate).toLocaleDateString();
     const message = await client.messages.create({
-      body: `Solar Aid: Maintenance reminder! Your scheduled maintenance is on ${formattedDate}. ${technicianName} will contact you soon.`,
-      from: fromPhone,
-      to: formatPhone(userPhone)
+      body: `Solar Aid: Maintenance reminder! Scheduled for ${formattedDate}. ${technicianName} will contact you soon.`,
+      from: whatsappFrom,
+      to: to
     });
-
-    console.log(`✅ Maintenance reminder SMS sent to user (${userPhone}): ${message.sid}`);
+    console.log(`✅ WhatsApp sent: ${message.sid}`);
     return message.sid;
   } catch (error) {
-    console.error('❌ Error sending reminder SMS:', error.message);
+    console.error('❌ WhatsApp Error (Reminder):', error.message);
   }
 };
 
 /**
- * Send service completion notification to user
- * @param {string} userPhone - User's phone number
- * @param {string} completionNotes - Notes about the completed service
- * @param {string} technicianName - Technician who completed service
+ * Send service completion WhatsApp
  */
-export const sendCompletionNotificationSMS = async (userPhone, completionNotes = 'Service completed successfully', technicianName = 'Your technician') => {
+export const sendCompletionNotificationSMS = async (userPhone, completionNotes = 'Success', technicianName = 'Your technician') => {
   try {
-    if (!client) {
-      console.log('📱 SMS Service: Twilio not configured. Skipping completion SMS.');
-      return;
-    }
-
+    if (!client) return;
+    const to = formatPhone(userPhone);
     const message = await client.messages.create({
-      body: `Solar Aid: Service completed by ${technicianName}! ${completionNotes}. Thank you for choosing Solar Aid!`,
-      from: fromPhone,
-      to: formatPhone(userPhone)
+      body: `Solar Aid: Service completed by ${technicianName}! ${completionNotes}`,
+      from: whatsappFrom,
+      to: to
     });
-
-    console.log(`✅ Completion SMS sent to user (${userPhone}): ${message.sid}`);
+    console.log(`✅ WhatsApp sent: ${message.sid}`);
     return message.sid;
   } catch (error) {
-    console.error('❌ Error sending completion SMS:', error.message);
+    console.error('❌ WhatsApp Error (Complete):', error.message);
   }
 };
 
 /**
- * Send SMS to technician about maintenance schedule confirmation
- * @param {string} technicianPhone - Technician's phone number
- * @param {string} scheduledDate - Scheduled date
- * @param {string} serviceType - Type of service
+ * Send WhatsApp schedule confirmation to technician
  */
 export const sendScheduleConfirmationSMS = async (technicianPhone, scheduledDate, serviceType = 'Maintenance') => {
   try {
-    if (!client) {
-      console.log('📱 SMS Service: Twilio not configured. Skipping confirmation SMS.');
-      return;
-    }
-
+    if (!client) return;
+    const to = formatPhone(technicianPhone);
     const formattedDate = new Date(scheduledDate).toLocaleDateString();
     const message = await client.messages.create({
-      body: `Solar Aid: ${serviceType} scheduled for ${formattedDate}. Please confirm your availability.`,
-      from: fromPhone,
-      to: formatPhone(technicianPhone)
+      body: `Solar Aid: ${serviceType} scheduled for ${formattedDate}. Confirm availability.`,
+      from: whatsappFrom,
+      to: to
     });
-
-    console.log(`✅ Schedule confirmation SMS sent to technician (${technicianPhone}): ${message.sid}`);
+    console.log(`✅ WhatsApp sent: ${message.sid}`);
     return message.sid;
   } catch (error) {
-    console.error('❌ Error sending schedule confirmation SMS:', error.message);
+    console.error('❌ WhatsApp Error (Confirm):', error.message);
   }
 };
 

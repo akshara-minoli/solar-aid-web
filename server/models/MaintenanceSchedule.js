@@ -37,10 +37,12 @@ const maintenanceScheduleSchema = new mongoose.Schema({
     type: Date,
     required: [true, 'Please provide scheduled date'],
     validate: {
-      validator: function(v) {
-        return v >= new Date();
+      validator: function (v) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return v >= today;
       },
-      message: 'Scheduled date must be in the future'
+      message: 'Scheduled date must be in the future or today'
     }
   },
   estimatedDuration: {
@@ -104,7 +106,7 @@ const maintenanceScheduleSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-maintenanceScheduleSchema.pre('save', function(next) {
+maintenanceScheduleSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
