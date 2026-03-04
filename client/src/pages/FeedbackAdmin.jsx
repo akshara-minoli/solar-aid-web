@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import api from '../api'
 import AdminProfileMenu from '../components/AdminProfileMenu'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export default function FeedbackAdmin() {
   const [feedbacks, setFeedbacks] = useState([])
@@ -28,13 +30,14 @@ export default function FeedbackAdmin() {
       ])
 
       if (fbRes.data && fbRes.data.success) {
-        setFeedbacks(fbRes.data.data)
+        setFeedbacks(fbRes.data.data || [])
       }
       if (statsRes.data && statsRes.data.success) {
         setStats(statsRes.data.stats)
       }
       setError('')
     } catch (error) {
+      console.error('Fetch error:', error)
       setError('Failed to load feedback data')
     } finally {
       setLoading(false)
@@ -62,6 +65,92 @@ export default function FeedbackAdmin() {
     }
   }
 
+  const generateReport = () => {
+    try {
+      console.log('Generating Enhanced Feedback PDF report...');
+      if (!feedbacks || feedbacks.length === 0) {
+        alert('No feedback data available for the report');
+        return;
+      }
+
+      const doc = new jsPDF()
+
+      // ─── Header Section ──────────────────────────────────────────
+      // Blue Header Bar (Slate-800 style)
+      doc.setFillColor(30, 41, 59);
+      doc.rect(0, 0, 210, 40, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Solar Aid', 14, 20);
+
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'normal');
+      doc.text('User Feedback & Satisfaction Report', 14, 30);
+
+      doc.setFontSize(10);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 150, 25);
+
+      // ─── Summary Stats ──────────────────────────────────────────
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Executive Summary', 14, 55);
+
+      // Draw 3 Stat Boxes
+      const drawStatBox = (x, y, label, value, color) => {
+        doc.setFillColor(color[0], color[1], color[2]);
+        doc.roundedRect(x, y, 60, 25, 3, 3, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(9);
+        doc.text(label, x + 5, y + 8);
+        doc.setFontSize(14);
+        doc.text(String(value), x + 5, y + 18);
+      };
+
+      drawStatBox(14, 60, 'Total Feedback', feedbacks.length, [59, 130, 246]); // Blue
+      drawStatBox(79, 60, 'Avg. Rating', `${stats?.averageRating ? Number(stats.averageRating).toFixed(1) : 0} / 5.0`, [245, 158, 11]); // Amber
+      drawStatBox(144, 60, 'Approval Rate', `${stats?.totalFeedback ? Math.round((stats.approvedFeedback / stats.totalFeedback) * 100) : 0}%`, [16, 185, 129]); // Emerald
+
+      // ─── Table Section ──────────────────────────────────────────
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Detailed Feedback Entries', 14, 100);
+
+      const tableColumn = ["User", "Type", "Rating", "Status", "Date"]
+      const tableRows = feedbacks.map(item => [
+        item.isAnonymous ? 'Anonymous' : (item.userId?.fullName || 'N/A'),
+        item.feedbackType,
+        `${item.rating} Stars`,
+        item.status,
+        item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'
+      ])
+
+      // ─── Table Rendering ──────────────────────────────────────────
+      autoTable(doc, {
+        startY: 105,
+        head: [tableColumn],
+        body: tableRows,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [30, 41, 59],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold'
+        },
+        styles: { fontSize: 9 },
+        margin: { top: 105 }
+      });
+
+      doc.save(`Feedback_Report_${new Date().getTime()}.pdf`);
+      console.log('PDF generation successful');
+    } catch (err) {
+      console.error('Report Generation Error:', err);
+      alert('Error generating PDF: ' + err.message);
+    }
+  }
+
   const selectClass = "px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors [&>option]:bg-slate-800"
 
   return (
@@ -76,6 +165,12 @@ export default function FeedbackAdmin() {
               <h1 className="text-3xl font-bold text-white tracking-wide">Feedback Center</h1>
               <p className="text-slate-400 text-sm mt-1">Review and manage user feedback & ratings</p>
             </div>
+            <button
+              onClick={generateReport}
+              className="bg-white/10 hover:bg-white/20 text-white px-6 py-2.5 font-medium rounded-lg border border-white/10 transition-all flex items-center gap-2 text-sm shadow-xl"
+            >
+              <span>📊</span> Generate Report
+            </button>
           </div>
 
           {error && (
