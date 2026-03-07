@@ -134,9 +134,9 @@ const UserNotifications = () => {
 
               <div className="p-6 flex items-start gap-5">
                 <div className={`mt-1 h-12 w-12 shrink-0 rounded-xl flex items-center justify-center text-2xl border transition-colors ${notif.notificationType === 'Maintenance Reminder' ? 'bg-orange-500/10 border-orange-500/20 text-orange-400 shadow-lg shadow-orange-500/10' :
-                    notif.notificationType === 'New Subsidy' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-lg shadow-emerald-500/10' :
-                      notif.notificationType === 'Education Alert' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-lg shadow-blue-500/10' :
-                        'bg-white/5 border-white/10 text-slate-400 shadow-lg shadow-white/5'
+                  notif.notificationType === 'New Subsidy' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-lg shadow-emerald-500/10' :
+                    notif.notificationType === 'Education Alert' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-lg shadow-blue-500/10' :
+                      'bg-white/5 border-white/10 text-slate-400 shadow-lg shadow-white/5'
                   }`}>
                   {notif.notificationType === 'Maintenance Reminder' ? '🛠️' :
                     notif.notificationType === 'New Subsidy' ? '💰' :
