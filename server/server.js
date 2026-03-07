@@ -19,7 +19,12 @@ import educationRoutes from './routes/education.js';
 import notificationRoutes from './routes/notifications.js';
 import feedbackRoutes from './routes/feedback.js';
 
+import initializeFirebase from './config/firebase.js';
+
 dotenv.config();
+
+// Initialize Firebase Admin
+initializeFirebase();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
