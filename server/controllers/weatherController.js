@@ -1,18 +1,32 @@
 import axios from 'axios';
 
+const buildFallbackWeather = (city) => ({
+    city,
+    temperature: 29,
+    humidity: 70,
+    cloudCoverage: 35,
+    sunrise: Math.floor(Date.now() / 1000) - 21600,
+    sunset: Math.floor(Date.now() / 1000) + 21600,
+    solarEfficiencyScore: 65,
+    installationRecommendation: 'Moderate solar efficiency',
+    icon: '02d',
+    condition: 'Partly Cloudy'
+});
+
 export const getWeatherInsights = async (req, res) => {
     try {
         const apiKey = process.env.OPENWEATHER_API_KEY;
+        const city = req.query.city || 'Colombo';
 
         if (!apiKey) {
-            console.warn('⚠️ OpenWeather API Key is missing - skipping weather fetch');
+            console.warn('⚠️ OpenWeather API Key is missing - using fallback weather data');
             return res.status(200).json({
-                success: false,
-                message: 'Weather API key not configured'
+                success: true,
+                data: buildFallbackWeather(city),
+                source: 'fallback'
             });
         }
 
-        const city = req.query.city || 'Colombo';
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
         const response = await axios.get(url);
@@ -45,10 +59,23 @@ export const getWeatherInsights = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            data: weatherInsights
+            data: weatherInsights,
+            source: 'openweather'
         });
     } catch (error) {
-        console.error('Weather Insights Error:', error);
+        const statusCode = error?.response?.status;
+
+        if (statusCode === 401 || statusCode === 403) {
+            const city = req.query.city || 'Colombo';
+            console.warn('⚠️ OpenWeather API key is invalid or unauthorized - using fallback weather data');
+            return res.status(200).json({
+                success: true,
+                data: buildFallbackWeather(city),
+                source: 'fallback'
+            });
+        }
+
+        console.error('Weather Insights Error:', error.message || error);
         res.status(500).json({
             success: false,
             message: error.message || 'Internal Server Error'
