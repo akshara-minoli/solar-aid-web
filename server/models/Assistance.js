@@ -1,3 +1,4 @@
+//service request form model
 import mongoose from 'mongoose';
 
 const assistanceSchema = new mongoose.Schema({

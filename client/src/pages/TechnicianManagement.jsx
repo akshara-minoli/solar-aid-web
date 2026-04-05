@@ -26,6 +26,8 @@ const TechnicianManagement = () => {
     latitude: null, longitude: null
   });
 
+  const [submitting, setSubmitting] = useState(false);
+
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const token = localStorage.getItem('token');
 
@@ -158,6 +160,8 @@ const TechnicianManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return; // Prevent multiple clicks
+    setSubmitting(true);
     try {
       if (editingId) {
         await axios.put(`${API_URL}/technicians/${editingId}`, formData, { headers: { Authorization: `Bearer ${token}` } });
@@ -169,6 +173,8 @@ const TechnicianManagement = () => {
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Error saving technician');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -370,8 +376,19 @@ const TechnicianManagement = () => {
                 </div>
 
                 <div className="md:col-span-2 flex gap-4 mt-8 pt-8 border-t border-white/10">
-                  <button type="submit" className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 px-6 py-2.5 rounded-lg font-medium transition-colors">
-                    {editingId ? 'Update Technician' : 'Confirm Creation'}
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className={`${submitting ? 'bg-emerald-500/10 text-emerald-500/50 cursor-not-allowed border-emerald-500/10' : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border-emerald-500/30'} px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2`}
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                        {editingId ? 'Updating...' : 'Creating...'}
+                      </>
+                    ) : (
+                      editingId ? 'Update Technician' : 'Confirm Creation'
+                    )}
                   </button>
                   <button type="button" onClick={resetForm} className="bg-slate-500/20 hover:bg-slate-500/30 text-slate-300 border border-slate-500/30 px-6 py-2.5 rounded-lg font-medium transition-colors">
                     Cancel

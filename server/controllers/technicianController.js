@@ -21,7 +21,8 @@ const geocodeLocation = async (locationName) => {
         limit: 1,
         countrycodes: 'lk'
       },
-      headers: { 'User-Agent': 'SolarAidApp/1.0' } // Nominatim requires User-Agent
+      headers: { 'User-Agent': 'SolarAidApp-ResearchProject/1.0' }, // Improved User-Agent
+      timeout: 8000 // 8 second timeout
     });
 
     if (osmResponse.data && osmResponse.data.length > 0) {
