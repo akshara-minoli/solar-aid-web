@@ -114,7 +114,7 @@ const Welcome = () => {
       </section>
 
       {/* Interactive Solar System Section */}
-      <section id="explore-section" className="py-20 relative bg-slate-900 border-t border-slate-800">
+      <section id="features" className="py-20 relative bg-slate-900 border-t border-slate-800">
         <div className="container mx-auto px-4 text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Interactive System Flow</h2>
           <p className="text-slate-400 text-lg max-w-3xl mx-auto">
@@ -199,7 +199,7 @@ const Welcome = () => {
       </section>
 
       {/* How To Setup Section */}
-      <section className="py-24 bg-slate-950">
+      <section id="about" className="py-24 bg-slate-950">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">How to Set Up a Basic System</h2>
@@ -368,6 +368,7 @@ const Welcome = () => {
         </div>
       </section>
 
+      <Contact />
       <Footer />
     </div>
   );
