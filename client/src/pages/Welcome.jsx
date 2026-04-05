@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
+import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import './Welcome.css';
 
@@ -79,7 +80,7 @@ const Welcome = () => {
   const [selectedComp, setSelectedComp] = useState(solarComponents[0]);
 
   const handleScrollToExplore = () => {
-    document.getElementById('explore-section').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -87,7 +88,7 @@ const Welcome = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-4 overflow-hidden energy-bg pb-12">
+      <section id="home" className="relative min-h-screen flex flex-col justify-center items-center text-center px-4 overflow-hidden energy-bg pb-12">
         <div className="sun-glow"></div>
 
         <div className="relative z-10 max-w-5xl pt-32">
