@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import api from '../api'
 import AdminProfileMenu from '../components/AdminProfileMenu'
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([])
@@ -84,6 +86,114 @@ export default function ProductsPage() {
     } catch (err) { console.error(err) }
   }
 
+  // Generate PDF Report
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+
+    // ── Header background ──
+    doc.setFillColor(11, 17, 32)
+    doc.rect(0, 0, 297, 42, 'F')
+
+    // ── Solar Aid branding ──
+    // Logo circle
+    doc.setFillColor(37, 99, 235)
+    doc.circle(18, 18, 10, 'F')
+    doc.setFontSize(11)
+    doc.setTextColor(255, 255, 255)
+    doc.setFont('helvetica', 'bold')
+    doc.text('SA', 18, 21, { align: 'center' })
+
+    // Title
+    doc.setFontSize(20)
+    doc.setTextColor(255, 255, 255)
+    doc.setFont('helvetica', 'bold')
+    doc.text('Solar Aid', 32, 16)
+    doc.setFontSize(9)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(148, 163, 184)
+    doc.text('Admin Panel  ·  Inventory Report', 32, 23)
+
+    // Report title (right side)
+    doc.setFontSize(14)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(255, 255, 255)
+    doc.text('Product Inventory Report', 297 - 14, 15, { align: 'right' })
+    const now = new Date()
+    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'normal')
+    doc.setTextColor(148, 163, 184)
+    doc.text(`Generated: ${dateStr}  ${timeStr}`, 297 - 14, 23, { align: 'right' })
+    doc.text(`Total Products: ${products.length}`, 297 - 14, 30, { align: 'right' })
+
+    // Separator line
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(0.5)
+    doc.line(0, 42, 297, 42)
+
+    // ── Table ──
+    const tableRows = products.map((p, idx) => [
+      idx + 1,
+      p.productName || '—',
+      p.productBrand || '—',
+      p.productCategory || '—',
+      p._id,
+      `$${Number(p.productPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    ])
+
+    autoTable(doc, {
+      startY: 48,
+      head: [['#', 'Product Name', 'Brand', 'Category', 'Product ID', 'Price']],
+      body: tableRows,
+      theme: 'grid',
+      styles: {
+        font: 'helvetica',
+        fontSize: 9,
+        cellPadding: 4,
+        textColor: [30, 41, 59],
+        lineColor: [203, 213, 225],
+        lineWidth: 0.3,
+        overflow: 'linebreak',
+      },
+      headStyles: {
+        fillColor: [37, 99, 235],
+        textColor: [255, 255, 255],
+        fontStyle: 'bold',
+        fontSize: 9,
+        halign: 'left',
+      },
+      alternateRowStyles: {
+        fillColor: [241, 245, 249],
+      },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 10 },
+        1: { cellWidth: 60 },
+        2: { cellWidth: 40 },
+        3: { cellWidth: 38 },
+        4: { cellWidth: 70, fontSize: 7, textColor: [100, 116, 139] },
+        5: { halign: 'right', cellWidth: 30, fontStyle: 'bold', textColor: [5, 150, 105] },
+      },
+      margin: { left: 14, right: 14 },
+    })
+
+    // ── Footer ──
+    const pageCount = doc.internal.getNumberOfPages()
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i)
+      doc.setFontSize(7)
+      doc.setTextColor(148, 163, 184)
+      doc.text(
+        `Solar Aid Admin Panel  ·  Confidential  ·  Page ${i} of ${pageCount}`,
+        297 / 2,
+        doc.internal.pageSize.height - 6,
+        { align: 'center' }
+      )
+    }
+
+    doc.save(`solar-aid-inventory-${now.toISOString().slice(0, 10)}.pdf`)
+  }
+
   // Component styles for inputs
   const inputClass = "w-full p-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-colors"
 
@@ -94,10 +204,27 @@ export default function ProductsPage() {
         <AdminProfileMenu />
         <main className="p-8 pt-24 max-w-7xl w-full mx-auto">
 
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-start justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-white tracking-wide">Manage Products</h1>
               <p className="text-slate-400 text-sm mt-1">Add, edit, and organize store inventory</p>
+            </div>
+            <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={handleGeneratePDF}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:shadow-blue-500/40 hover:scale-105 active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%)' }}
+              >
+                {/* PDF download icon */}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 flex-shrink-0">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="12" y1="18" x2="12" y2="12" />
+                  <line x1="9" y1="15" x2="15" y2="15" />
+                </svg>
+                Generate Inventory Report (PDF)
+              </button>
+              <p className="text-xs text-slate-500 pr-1">Includes names, brands, categories, IDs, and prices. No product images.</p>
             </div>
           </div>
 

@@ -36,6 +36,8 @@ export default function UserProductsPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [priceRange, setPriceRange] = useState(0);
 
     useEffect(() => {
         api
@@ -45,15 +47,37 @@ export default function UserProductsPage() {
             .finally(() => setLoading(false));
     }, []);
 
-    // Group products by category, preserving CATEGORY_ORDER
+    // ── Filter state derived values ──
+    const maxPrice = products.length
+        ? Math.max(...products.map((p) => Number(p.productPrice) || 0))
+        : 0;
+
+    // Initialise slider ceiling whenever products first load
+    const [sliderMax, setSliderMax] = useState(0);
+    React.useEffect(() => {
+        if (maxPrice > 0 && sliderMax === 0) setSliderMax(maxPrice);
+    }, [maxPrice]);
+
+    // Combined filter: search (name OR category) AND price ≤ sliderMax
+    const filteredProducts = products.filter((p) => {
+        const q = searchQuery.toLowerCase();
+        const matchesSearch =
+            !q ||
+            (p.productName || '').toLowerCase().includes(q) ||
+            (p.productCategory || '').toLowerCase().includes(q);
+        const matchesPrice = Number(p.productPrice) <= sliderMax;
+        return matchesSearch && matchesPrice;
+    });
+
+    // Group FILTERED products by category, preserving CATEGORY_ORDER
     const grouped = CATEGORY_ORDER.reduce((acc, cat) => {
-        const items = products.filter((p) => p.productCategory === cat);
+        const items = filteredProducts.filter((p) => p.productCategory === cat);
         if (items.length > 0) acc[cat] = items;
         return acc;
     }, {});
 
     // Any categories not in CATEGORY_ORDER go to Others
-    products.forEach((p) => {
+    filteredProducts.forEach((p) => {
         if (!CATEGORY_ORDER.includes(p.productCategory)) {
             if (!grouped['Others']) grouped['Others'] = [];
             grouped['Others'].push(p);
@@ -61,17 +85,20 @@ export default function UserProductsPage() {
     });
 
     const totalProducts = products.length;
+    const isFiltering = searchQuery.trim() !== '' || sliderMax !== maxPrice;
+    const filteredCount = filteredProducts.length;
 
     return (
         <DashboardLayout title="Product Prices">
             <div className="space-y-10 animate-in fade-in duration-700">
 
                 {/* ── Page Header ── */}
-                <div className="relative overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-3xl shadow-2xl group">
+                <div className="relative overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-3xl shadow-2xl group">
                     <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/15 transition-all duration-700 pointer-events-none" />
                     <div className="relative z-10">
+                        {/* Title row */}
                         <div className="flex items-center gap-6 mb-4">
-                            <div className="w-16 h-16 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-4xl">
+                            <div className="w-16 h-16 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-center text-4xl flex-shrink-0">
                                 🏷️
                             </div>
                             <div>
@@ -83,10 +110,140 @@ export default function UserProductsPage() {
                                 </p>
                             </div>
                         </div>
-                        <p className="text-slate-400 text-sm leading-relaxed max-w-2xl italic font-medium">
+                        <p className="text-slate-400 text-sm leading-relaxed max-w-2xl italic font-medium mb-7">
                             Browse the latest solar product offerings available through Solar Aid. Prices are
                             listed in Sri Lankan Rupees (Rs.). Contact support to place an order.
                         </p>
+
+                        {/* ── Search & Filter Controls ── */}
+                        {!loading && !error && (
+                            <div className="flex flex-col sm:flex-row gap-6 pt-6 border-t border-white/10">
+
+                                {/* Search bar */}
+                                <div className="flex-1 min-w-0">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">
+                                        🔍 Search by Name or Category
+                                    </label>
+                                    <div className="relative">
+                                        <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                                        </svg>
+                                        <input
+                                            id="product-search"
+                                            type="text"
+                                            placeholder="e.g. Solar Panel 400W or Solar Inverter…"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="w-full pl-10 pr-10 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all duration-200"
+                                        />
+                                        {searchQuery && (
+                                            <button
+                                                onClick={() => setSearchQuery('')}
+                                                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                                                aria-label="Clear search"
+                                            >
+                                                ✕
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Price Range Slider */}
+                                <div className="flex-1 min-w-0">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">
+                                        💰 Price Range
+                                    </label>
+                                    {/* Range display */}
+                                    <div className="flex items-center justify-between mb-3">
+                                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-wider">
+                                            Rs. 0
+                                        </span>
+                                        <span className="px-3 py-1 bg-blue-500/15 border border-blue-500/30 rounded-lg text-xs font-black text-blue-300 tracking-wide">
+                                            Up to Rs. {Number(sliderMax).toLocaleString('en-LK')}
+                                        </span>
+                                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-wider">
+                                            Rs. {Number(maxPrice).toLocaleString('en-LK')}
+                                        </span>
+                                    </div>
+                                    {/* Slider */}
+                                    <div className="relative">
+                                        <style>{`
+                                            #price-slider {
+                                                -webkit-appearance: none;
+                                                appearance: none;
+                                                width: 100%;
+                                                height: 6px;
+                                                border-radius: 9999px;
+                                                outline: none;
+                                                cursor: pointer;
+                                                background: linear-gradient(
+                                                    to right,
+                                                    #3b82f6 0%,
+                                                    #3b82f6 ${maxPrice > 0 ? (sliderMax / maxPrice) * 100 : 100}%,
+                                                    rgba(255,255,255,0.08) ${maxPrice > 0 ? (sliderMax / maxPrice) * 100 : 100}%,
+                                                    rgba(255,255,255,0.08) 100%
+                                                );
+                                            }
+                                            #price-slider::-webkit-slider-thumb {
+                                                -webkit-appearance: none;
+                                                appearance: none;
+                                                width: 20px;
+                                                height: 20px;
+                                                border-radius: 50%;
+                                                background: #3b82f6;
+                                                border: 3px solid #1e3a8a;
+                                                box-shadow: 0 0 0 3px rgba(59,130,246,0.3), 0 2px 8px rgba(59,130,246,0.4);
+                                                cursor: pointer;
+                                                transition: box-shadow 0.15s ease, transform 0.15s ease;
+                                            }
+                                            #price-slider::-webkit-slider-thumb:hover {
+                                                box-shadow: 0 0 0 5px rgba(59,130,246,0.4), 0 2px 10px rgba(59,130,246,0.6);
+                                                transform: scale(1.15);
+                                            }
+                                            #price-slider::-moz-range-thumb {
+                                                width: 20px;
+                                                height: 20px;
+                                                border-radius: 50%;
+                                                background: #3b82f6;
+                                                border: 3px solid #1e3a8a;
+                                                box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+                                                cursor: pointer;
+                                            }
+                                        `}</style>
+                                        <input
+                                            id="price-slider"
+                                            type="range"
+                                            min={0}
+                                            max={maxPrice || 1}
+                                            step={Math.max(1, Math.ceil(maxPrice / 500))}
+                                            value={sliderMax}
+                                            onChange={(e) => setSliderMax(Number(e.target.value))}
+                                        />
+                                    </div>
+                                    {/* Reset link */}
+                                    {sliderMax !== maxPrice && (
+                                        <button
+                                            onClick={() => setSliderMax(maxPrice)}
+                                            className="mt-1.5 text-[9px] font-black text-blue-400 hover:text-blue-300 uppercase tracking-widest transition-colors"
+                                        >
+                                            Reset range
+                                        </button>
+                                    )}
+                                </div>
+
+                            </div>
+                        )}
+
+                        {/* Active filter result count */}
+                        {!loading && !error && isFiltering && (
+                            <p className="mt-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                Showing{' '}
+                                <span className="text-blue-400">{filteredCount}</span>
+                                {' '}of{' '}
+                                <span className="text-white">{totalProducts}</span>
+                                {' '}products
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -220,8 +377,8 @@ export default function UserProductsPage() {
                             );
                         })}
 
-                        {/* Empty State */}
-                        {Object.keys(grouped).length === 0 && (
+                        {/* Empty State — no products at all */}
+                        {Object.keys(grouped).length === 0 && !isFiltering && (
                             <div className="flex flex-col items-center justify-center bg-white/5 border border-white/5 rounded-3xl p-16 text-center">
                                 <div className="w-20 h-20 bg-blue-500/10 border border-blue-500/20 rounded-3xl flex items-center justify-center text-4xl mb-6">
                                     📦
@@ -232,6 +389,27 @@ export default function UserProductsPage() {
                                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest max-w-xs">
                                     The product catalog is currently empty. Check back soon.
                                 </p>
+                            </div>
+                        )}
+
+                        {/* Empty State — filters returned nothing */}
+                        {Object.keys(grouped).length === 0 && isFiltering && (
+                            <div className="flex flex-col items-center justify-center bg-white/5 border border-white/5 rounded-3xl p-16 text-center">
+                                <div className="w-20 h-20 bg-blue-500/10 border border-blue-500/20 rounded-3xl flex items-center justify-center text-4xl mb-6">
+                                    🔍
+                                </div>
+                                <h3 className="text-base font-black text-white uppercase tracking-tight mb-2">
+                                    No Matching Products
+                                </h3>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest max-w-xs mb-5">
+                                    Try adjusting your search term or expanding the price range.
+                                </p>
+                                <button
+                                    onClick={() => { setSearchQuery(''); setSliderMax(maxPrice); }}
+                                    className="px-5 py-2.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-xl text-blue-300 text-xs font-black uppercase tracking-widest transition-colors"
+                                >
+                                    Clear All Filters
+                                </button>
                             </div>
                         )}
                     </div>
