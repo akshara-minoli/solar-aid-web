@@ -17,6 +17,16 @@ export const protect = async (req, res, next) => {
       // Get user from token (exclude password)
       req.user = await User.findById(decoded.id).select('-password');
 
+      // Backward compatibility for older demo tokens that use a virtual user id.
+      if (!req.user && decoded.id === 'demo-user-id' && decoded.role === 'admin') {
+        req.user = {
+          _id: 'demo-user-id',
+          fullName: 'Demo User',
+          email: 'demo@solaraid.com',
+          role: 'admin'
+        };
+      }
+
       if (!req.user) {
         return res.status(401).json({
           success: false,

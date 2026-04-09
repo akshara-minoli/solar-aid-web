@@ -107,7 +107,25 @@ export const login = async (req, res) => {
 
     // Demo user for testing when database is disconnected
     if (email === 'demo@solaraid.com' && password === 'demo123') {
-      // Return demo token with role so frontend can redirect properly
+      // Prefer a real admin account when available so protected admin routes work.
+      const dbAdmin = await User.findOne({ email: 'admin@example.com' });
+
+      if (dbAdmin) {
+        const token = generateToken({ id: dbAdmin._id, role: dbAdmin.role });
+        return res.status(200).json({
+          success: true,
+          message: 'Login successful (Demo Mode)',
+          token,
+          user: {
+            id: dbAdmin._id,
+            fullName: dbAdmin.fullName,
+            email: dbAdmin.email,
+            phone: dbAdmin.phone,
+            role: dbAdmin.role
+          }
+        });
+      }
+
       const token = generateToken({ id: 'demo-user-id', role: 'admin' });
       return res.status(200).json({
         success: true,
@@ -130,6 +148,15 @@ export const login = async (req, res) => {
 
       // Check if user exists
       if (!user) {
+        const totalUsers = await User.countDocuments();
+
+        if (totalUsers === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'No account found yet. Please create an account first or use demo@solaraid.com / demo123'
+          });
+        }
+
         return res.status(401).json({
           success: false,
           message: 'Invalid email or password'

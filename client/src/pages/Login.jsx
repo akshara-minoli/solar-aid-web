@@ -47,6 +47,11 @@ const Login = () => {
     setLoading(true);
     setMessage('');
 
+    const normalizedFormData = {
+      ...formData,
+      email: formData.email.trim().toLowerCase()
+    };
+
     try {
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
@@ -55,7 +60,7 @@ const Login = () => {
           'Accept': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: JSON.stringify(normalizedFormData),
       });
 
       const data = await response.json();

@@ -125,6 +125,57 @@ chore: Update dependencies
 - Test your changes locally before pushing
 - Resolve conflicts promptly
 
+## test Report
+## Testing Environment Configuration Details
+
+This project uses Jest and Supertest for integration testing. The test environment is completely isolated from production/development data by using `mongodb-memory-server`, which spins up a temporary in-memory database during test runs.
+
+### Prerequisites
+
+The following testing libraries are required (installed via `npm install --save-dev`):
+- `jest`
+- `supertest`
+- `mongodb-memory-server`
+- `cross-env`
+- `jest-html-reporter`
+
+### Environment Variables
+
+No special `.env` variables are strictly required to run tests, because `tests/setup.js` automatically provisions the target `MONGODB_URI` using the memory server. However, if your tests require other environment variables like `JWT_SECRET`, ensure they are present in the `server/.env` file.
+
+### Executing Tests
+
+To run the integration testing suite locally:
+
+1. Navigate to the server folder:
+   ```bash
+   cd server
+   ```
+2. Make sure you have installed all dependencies, including dev dependencies:
+   ```bash
+   npm install
+   ```
+3. Execute the tests in terminal:
+   ```bash
+   npm run test
+   ```
+4. Generate and view the HTML Test Report:
+   ```bash
+   npm run test:ui
+   ```
+   *This command runs the tests and automatically opens `test-report.html` in your default browser, allowing you to view detailed logs and capture screenshots of successful or failed test outputs.*
+
+### Performance Testing Configuration
+
+This project implements load testing using Artillery.
+To simulate user traffic and observe concurrent request handling, ensure your server is running (`npm start`) and execute:
+
+```bash
+cd server
+npm run test:performance
+```
+The load tests will target the `/api/health` and base routes with sequential phases of warmup and sustained loading over 30 seconds.
+
 ## Environment Variables
 
 See `.env.example` for required environment variables. Create a `.env` file in both `client/` and `server/` directories with your actual values.
