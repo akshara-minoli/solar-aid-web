@@ -42,7 +42,7 @@ const MaintenanceScheduleList = ({ schedules, onUpdate }) => {
     setLoading(true);
     setError(null);
     try {
-      await api.put(`/api/maintenance-schedules/${scheduleId}/confirm`);
+      await api.put(`/api/maintenance-schedules/${scheduleId}/confirm`, { confirmedBy: 'user' });
       onUpdate();
     } catch (err) {
       setError('Failed to confirm schedule');
@@ -57,7 +57,7 @@ const MaintenanceScheduleList = ({ schedules, onUpdate }) => {
       setLoading(true);
       setError(null);
       try {
-        await api.put(`/api/maintenance-schedules/${scheduleId}/cancel`);
+        await api.put(`/api/maintenance-schedules/${scheduleId}/cancel`, { reason: 'Cancelled by user' });
         onUpdate();
       } catch (err) {
         setError('Failed to cancel schedule');
@@ -199,7 +199,7 @@ const MaintenanceScheduleList = ({ schedules, onUpdate }) => {
                     disabled={loading}
                     className="flex-1 px-6 py-3.5 bg-rose-600/10 border border-rose-500/20 hover:bg-rose-500 hover:text-white text-rose-400 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all disabled:opacity-50"
                   >
-                    {loading ? 'Aborting...' : 'Abort Request'}
+                    {loading ? 'Cancelling...' : 'Cancel Request'}
                   </button>
                 )}
               </div>

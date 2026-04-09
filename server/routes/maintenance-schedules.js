@@ -35,21 +35,14 @@ router.get('/upcoming/:days', admin, getUpcomingSchedules);
 // @desc    Get schedules by technician
 router.get('/technician/:technicianId', getSchedulesByTechnician);
 
-// @route   GET /api/maintenance-schedules/:id
-// @desc    Get single maintenance schedule
-router.get('/:id', getMaintenanceSchedule);
-
-// @route   PUT /api/maintenance-schedules/:id
-// @desc    Update maintenance schedule
-router.put('/:id', admin, updateMaintenanceSchedule);
-
+// IMPORTANT: Action routes MUST come before /:id route to avoid path conflicts
 // @route   PUT /api/maintenance-schedules/:id/complete
 // @desc    Complete maintenance schedule
 router.put('/:id/complete', admin, completeMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id/cancel
 // @desc    Cancel maintenance schedule
-router.put('/:id/cancel', admin, cancelMaintenanceSchedule);
+router.put('/:id/cancel', cancelMaintenanceSchedule);
 
 // @route   PUT /api/maintenance-schedules/:id/reschedule
 // @desc    Reschedule maintenance
@@ -58,6 +51,14 @@ router.put('/:id/reschedule', admin, rescheduleMaintenanceSchedule);
 // @route   PUT /api/maintenance-schedules/:id/confirm
 // @desc    Confirm schedule (by technician or user)
 router.put('/:id/confirm', confirmMaintenanceSchedule);
+
+// @route   GET /api/maintenance-schedules/:id
+// @desc    Get single maintenance schedule
+router.get('/:id', getMaintenanceSchedule);
+
+// @route   PUT /api/maintenance-schedules/:id
+// @desc    Update maintenance schedule
+router.put('/:id', admin, updateMaintenanceSchedule);
 
 // @route   DELETE /api/maintenance-schedules/:id
 // @desc    Delete maintenance schedule

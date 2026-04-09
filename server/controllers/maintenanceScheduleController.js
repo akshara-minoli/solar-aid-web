@@ -274,6 +274,11 @@ export const cancelMaintenanceSchedule = async (req, res) => {
       });
     }
 
+    // Check ownership if not admin
+    if (req.user.role !== 'admin' && schedule.userId.toString() !== req.user.id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized to cancel this schedule' });
+    }
+
     if (schedule.status === 'Cancelled') {
       return res.status(400).json({
         success: false,
@@ -282,7 +287,7 @@ export const cancelMaintenanceSchedule = async (req, res) => {
     }
 
     schedule.status = 'Cancelled';
-    schedule.notes = reason || 'Cancelled by admin';
+    schedule.notes = reason || 'Cancelled by user';
 
     schedule = await schedule.save();
 
