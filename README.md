@@ -125,37 +125,32 @@ chore: Update dependencies
 - Test your changes locally before pushing
 - Resolve conflicts promptly
 
-## test Report
-## Testing Environment Configuration Details
+## Testing Instruction Report
 
-This project uses Jest and Supertest for integration testing. The test environment is completely isolated from production/development data by using `mongodb-memory-server`, which spins up a temporary in-memory database during test runs.
+### i. How to Run Unit Tests
 
-### Prerequisites
-
-The following testing libraries are required (installed via `npm install --save-dev`):
-- `jest`
-- `supertest`
-- `mongodb-memory-server`
-- `cross-env`
-- `jest-html-reporter`
-
-### Environment Variables
-
-No special `.env` variables are strictly required to run tests, because `tests/setup.js` automatically provisions the target `MONGODB_URI` using the memory server. However, if your tests require other environment variables like `JWT_SECRET`, ensure they are present in the `server/.env` file.
-
-### Executing Tests
-
-To run the integration testing suite locally:
-
-1. Navigate to the server folder:
+Unit tests focus on individual functions and service-layer logic to ensure reliable operation without external dependencies.
+1. Navigate to the server directory:
    ```bash
    cd server
    ```
-2. Make sure you have installed all dependencies, including dev dependencies:
+2. Run the unit test suite:
+   ```bash
+   npm run test:unit
+   ```
+
+### ii. Integration Testing Setup and Execution
+
+Integration tests verify controllers and database interactions by isolating the test environment using an in-memory MongoDB instance.
+1. Navigate to the server directory:
+   ```bash
+   cd server
+   ```
+2. Install dependencies (if not already installed):
    ```bash
    npm install
    ```
-3. Execute the tests in terminal:
+3. Execute the integration testing suite:
    ```bash
    npm run test
    ```
@@ -163,18 +158,28 @@ To run the integration testing suite locally:
    ```bash
    npm run test:ui
    ```
-   *This command runs the tests and automatically opens `test-report.html` in your default browser, allowing you to view detailed logs and capture screenshots of successful or failed test outputs.*
+   *(This command runs the tests and opens `test-report.html` in your browser for detailed logs.)*
 
-### Performance Testing Configuration
+### iii. Performance Testing Setup and Execution
 
-This project implements load testing using Artillery.
-To simulate user traffic and observe concurrent request handling, ensure your server is running (`npm start`) and execute:
+Performance testing simulates user traffic and concurrent request handling using Artillery.
+1. Ensure the backend server is running:
+   ```bash
+   cd server
+   npm start
+   ```
+2. In a new terminal, execute the load tests:
+   ```bash
+   cd server
+   npm run test:performance
+   ```
+   *(Testing targets `/api/health` and base routes with warmup and sustained loading over 30 seconds.)*
 
-```bash
-cd server
-npm run test:performance
-```
-The load tests will target the `/api/health` and base routes with sequential phases of warmup and sustained loading over 30 seconds.
+### iv. Testing Environment Configuration details
+
+- **Testing Libraries:** Jest, Supertest, mongodb-memory-server, cross-env, jest-html-reporter.
+- **Database:** `mongodb-memory-server` creates a temporary, isolated MongoDB database during runtime, ensuring production and development data are protected.
+- **Environment Variables:** Handled automatically in `tests/setup.js`. Test-specific `MONGODB_URI` is automatically provisioned. Additional variables like `JWT_SECRET` may still need to be in `server/.env`.
 
 ## Environment Variables
 
