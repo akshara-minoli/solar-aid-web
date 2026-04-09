@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
-// Generate JWT token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+// Generate JWT token (includes role in payload)
+const generateToken = (payload) => {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '7d'
   });
 };
@@ -57,8 +57,8 @@ export const signup = async (req, res) => {
         password
       });
 
-      // Generate token
-      const token = generateToken(user._id);
+      // Generate token including role
+      const token = generateToken({ id: user._id, role: user.role });
 
       res.status(201).json({
         success: true,
@@ -68,7 +68,8 @@ export const signup = async (req, res) => {
           id: user._id,
           fullName: user.fullName,
           email: user.email,
-          phone: user.phone
+          phone: user.phone,
+          role: user.role
         }
       });
 
@@ -106,7 +107,8 @@ export const login = async (req, res) => {
 
     // Demo user for testing when database is disconnected
     if (email === 'demo@solaraid.com' && password === 'demo123') {
-      const token = generateToken('demo-user-id');
+      // Return demo token with role so frontend can redirect properly
+      const token = generateToken({ id: 'demo-user-id', role: 'admin' });
       return res.status(200).json({
         success: true,
         message: 'Login successful (Demo Mode)',
@@ -115,7 +117,8 @@ export const login = async (req, res) => {
           id: 'demo-user-id',
           fullName: 'Demo User',
           email: 'demo@solaraid.com',
-          phone: '+1234567890'
+          phone: '+1234567890',
+          role: 'admin'
         }
       });
     }
@@ -142,8 +145,8 @@ export const login = async (req, res) => {
         });
       }
 
-      // Generate token
-      const token = generateToken(user._id);
+      // Generate token including role
+      const token = generateToken({ id: user._id, role: user.role });
 
       res.status(200).json({
         success: true,
@@ -153,7 +156,8 @@ export const login = async (req, res) => {
           id: user._id,
           fullName: user.fullName,
           email: user.email,
-          phone: user.phone
+          phone: user.phone,
+          role: user.role
         }
       });
 

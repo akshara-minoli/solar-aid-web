@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import AuthLayout from '../components/AuthLayout';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -21,6 +24,22 @@ const Login = () => {
       email: 'demo@solaraid.com',
       password: 'demo123'
     });
+    setMessage('Demo credentials loaded - click Login to test');
+  };
+
+  const testConnection = async () => {
+    try {
+      setMessage('Testing connection...');
+      const response = await fetch('http://localhost:5000/api/health');
+      const data = await response.json();
+      if (response.ok) {
+        setMessage(`✅ Server connected: ${data.status}`);
+      } else {
+        setMessage('❌ Server responded but with error');
+      }
+    } catch (error) {
+      setMessage(`❌ Connection failed: ${error.message}`);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -33,185 +52,187 @@ const Login = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
 
+      if (!response.ok) {
+        // Extract descriptive error from server or fallback to status
+        throw new Error(data.message || `HTTP ${response.status}`);
+      }
+
       if (data.success) {
-        alert('Login successful! Welcome back.');
-        // Store token and user data
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        setFormData({ email: '', password: '' });
-        // Redirect to dashboard or home page
+        setMessage('Login successful! Redirecting...');
+        setTimeout(() => {
+          if (data.user && data.user.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+            navigate('/home');
+          }
+        }, 500);
       } else {
         setMessage(data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setMessage('Network error. Please check if the server is running.');
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setMessage('Connection failed. Server port 5000 offline.');
+      } else {
+        // Now displays descriptive error if available
+        setMessage(error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[#fafaf9] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-orange-100 rounded-full blur-3xl opacity-50" />
-      <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-emerald-50 rounded-full blur-3xl opacity-50" />
+  const sideContent = (
+    <div className="space-y-12 max-w-lg">
+      <div className="space-y-6">
+        <h1 className="text-5xl lg:text-7xl font-black text-white tracking-tighter leading-[0.9] italic">
+          Welcome back to <span className="text-blue-500">Solar Aid</span>
+        </h1>
+        <p className="text-slate-400 text-lg font-medium leading-relaxed">
+          Continue your journey towards sustainable energy and check your personalized savings dashboard.
+        </p>
+      </div>
 
-      <div className="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-        <div className="hidden lg:flex flex-col justify-center space-y-8 pr-12">
-          <div className="space-y-4">
-            <h1 className="text-5xl font-bold text-gray-900 leading-tight">
-              Welcome back to <br />
-              <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
-                Solar Aid
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Continue your journey towards sustainable energy and check your personalized savings dashboard.
-            </p>
-          </div>
-
-          <div className="p-8 bg-white/50 backdrop-blur-md rounded-[2.5rem] border border-white shadow-xl space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-2xl">📊</div>
-              <div>
-                <p className="font-bold text-gray-900 text-lg">Real-time Tracking</p>
-                <p className="text-gray-500 text-sm">Monitor your energy production</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl">💰</div>
-              <div>
-                <p className="font-bold text-gray-900 text-lg">Savings Analysis</p>
-                <p className="text-gray-500 text-sm">View your monthly cost reduction</p>
-              </div>
-            </div>
+      <div className="space-y-4">
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 transition-all hover:bg-white/10 group cursor-default backdrop-blur-md flex items-center gap-6">
+          <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-3xl border border-blue-500/20 group-hover:scale-110 transition-transform flex-shrink-0">📊</div>
+          <div>
+            <h3 className="text-xs font-black text-white uppercase tracking-widest mb-1">Real-time Tracking</h3>
+            <p className="text-slate-500 font-medium text-xs">Monitor your energy production instantly.</p>
           </div>
         </div>
-
-        <div className="bg-white/80 backdrop-blur-xl p-10 md:p-14 rounded-[3.5rem] shadow-2xl border border-white/50 relative">
-          <div className="flex items-center justify-between mb-10">
-            <div className="flex items-center gap-2 text-2xl font-bold">
-              <span className="text-3xl">☀️</span>
-              <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Solar Aid</span>
-            </div>
-            <a href="#home" className="text-gray-400 hover:text-orange-500 transition-colors">
-              ✕
-            </a>
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-6 transition-all hover:bg-white/10 group cursor-default backdrop-blur-md flex items-center gap-6">
+          <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-3xl border border-emerald-500/20 group-hover:scale-110 transition-transform flex-shrink-0">💰</div>
+          <div>
+            <h3 className="text-xs font-black text-white uppercase tracking-widest mb-1">Savings Analysis</h3>
+            <p className="text-slate-500 font-medium text-xs">View your monthly cost reduction and efficiency.</p>
           </div>
-
-          <div className="mb-10 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Login</h2>
-            <p className="text-gray-500 font-medium">Enter your credentials to continue</p>
-          </div>
-
-          {/* Demo Credentials Section */}
-          <div className="bg-orange-50/50 p-6 mb-8 rounded-3xl border border-orange-100 flex items-center justify-between gap-4">
-            <div className="text-left">
-              <p className="text-sm font-bold text-orange-600 mb-1">Testing our demo? ✨</p>
-              <p className="text-xs text-gray-600">Instantly fill credentials for a tour.</p>
-            </div>
-            <button
-              type="button"
-              onClick={fillDemoData}
-              className="px-5 py-3 bg-white text-orange-600 rounded-2xl hover:bg-orange-500 hover:text-white transition-all duration-300 font-bold text-sm shadow-sm border border-orange-100"
-            >
-              Fill Demo
-            </button>
-          </div>
-
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm text-gray-800 font-bold ml-1">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="w-full p-5 bg-gray-50 border-2 border-transparent rounded-[1.5rem] text-base transition-all duration-300 focus:outline-none focus:bg-white focus:border-orange-200 focus:ring-4 focus:ring-orange-100/50"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center px-1">
-                <label htmlFor="password" className="text-sm text-gray-800 font-bold">Password</label>
-                <a href="#forgot" className="text-sm text-orange-500 hover:underline font-bold">Forgot?</a>
-              </div>
-              <div className="relative group">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full p-5 bg-gray-50 border-2 border-transparent rounded-[1.5rem] text-base transition-all duration-300 focus:outline-none focus:bg-white focus:border-orange-200 focus:ring-4 focus:ring-orange-100/50 pr-14"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 px-1">
-              <input type="checkbox" id="remember" className="w-5 h-5 rounded-lg border-2 border-gray-200 text-orange-500 focus:ring-orange-500 cursor-pointer" />
-              <label htmlFor="remember" className="text-sm text-gray-600 font-medium cursor-pointer">Remember me for 30 days</label>
-            </div>
-
-            {message && (
-              <div className={`p-4 rounded-2xl text-center font-bold text-sm animate-fade-in ${message.includes('successful')
-                ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
-                : 'bg-red-50 text-red-600 border border-red-100'
-                }`}>
-                {message}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className={`w-full p-5 bg-orange-500 text-white rounded-[1.5rem] text-lg font-bold transition-all duration-300 shadow-xl shadow-orange-500/20 ${loading
-                ? 'opacity-70 cursor-not-allowed'
-                : 'hover:bg-orange-600 hover:-translate-y-1 hover:shadow-2xl'
-                }`}
-              disabled={loading}
-            >
-              {loading ? 'Processing...' : 'Login to Dashboard'}
-            </button>
-
-            <div className="text-center pt-4">
-              <p className="text-gray-600 font-medium">
-                New to Solar Aid? <a href="#signin" className="text-orange-500 hover:underline font-bold ml-1">Create an account</a>
-              </p>
-            </div>
-          </form>
         </div>
       </div>
     </div>
   );
+
+  return (
+    <AuthLayout
+      split={true}
+      sideContent={sideContent}
+      title="Login"
+      subtitle="Enter your credentials to continue"
+    >
+      <form className="space-y-6" onSubmit={handleSubmit}>
+
+        {/* Demo Credentials Box */}
+        <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 mb-6 animate-fade-in">
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div>
+              <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Demo Environment</p>
+              <p className="text-xs text-slate-400 font-medium">Test platform capabilities instantly.</p>
+            </div>
+            <button
+              type="button"
+              onClick={fillDemoData}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20"
+            >
+              Fill Demo
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={testConnection}
+            className="w-full py-2 border border-white/5 bg-white/5 text-slate-400 hover:text-white rounded-lg font-black text-[9px] uppercase tracking-[0.2em] transition-all"
+          >
+            Check Connectivity
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="email@example.com"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-medium placeholder:text-slate-600"
+              required
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between items-center mb-1.5 px-1">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest">Password</label>
+              <Link to="/forgot" className="text-[9px] font-black text-blue-400 hover:text-blue-300 uppercase tracking-widest">Forgot Password?</Link>
+            </div>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-medium placeholder:text-slate-600 pr-12"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-blue-400 transition-colors"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {message && (
+          <div className={`p-4 rounded-xl text-center font-black text-[10px] uppercase tracking-widest animate-fade-in border ${message.includes('successful')
+            ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+            : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+            }`}>
+            {message}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-4 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-600/20 ${loading
+            ? 'opacity-70 cursor-not-allowed'
+            : 'hover:bg-blue-500 hover:shadow-blue-500/40 hover:-translate-y-0.5'
+            }`}
+        >
+          {loading ? 'Logging In...' : 'Log In'}
+        </button>
+
+        <div className="text-center pt-4 border-t border-white/5">
+          <p className="text-slate-500 font-medium text-xs">
+            New to Solar Aid? <Link to="/signin" className="text-blue-400 hover:text-blue-300 font-black uppercase tracking-widest ml-1">Create Account</Link>
+          </p>
+        </div>
+      </form>
+    </AuthLayout>
+  );
 };
 
 export default Login;
+

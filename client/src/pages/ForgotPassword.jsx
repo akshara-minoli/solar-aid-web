@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import AuthLayout from '../components/AuthLayout';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
@@ -12,7 +14,6 @@ const ForgotPassword = () => {
         setMessage('');
 
         try {
-            // Simulate API call
             const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
                 method: 'POST',
                 headers: {
@@ -25,98 +26,83 @@ const ForgotPassword = () => {
 
             if (data.success) {
                 setIsSuccess(true);
-                setMessage('Reset link sent! Please check your email inbox.');
+                setMessage('Recovery protocol initiated. Please check your secure inbox for instructions.');
             } else {
-                setMessage(data.message || 'Error requesting reset.');
+                setMessage(data.message || 'Error processing recovery request.');
             }
         } catch (error) {
             console.error('Forgot password error:', error);
-            setMessage('Network error. Please try again later.');
+            setMessage('Network error. Security link temporarily unavailable.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#fafaf9] flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
-            {/* Decorative Background Elements */}
-            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-orange-100 rounded-full blur-3xl opacity-50" />
-            <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-emerald-50 rounded-full blur-3xl opacity-50" />
-
-            <div className="max-w-xl w-full relative z-10">
-                <div className="bg-white/80 backdrop-blur-xl p-8 md:p-12 rounded-[3.5rem] shadow-2xl border border-white/50">
-                    <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-2 text-2xl font-bold">
-                            <span className="text-3xl">☀️</span>
-                            <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">Solar Aid</span>
-                        </div>
-                        <a href="#login" className="text-gray-400 hover:text-orange-500 transition-colors">
-                            ✕
-                        </a>
+        <AuthLayout
+            title="Reset Password"
+            subtitle="Enter your email to recover your account"
+        >
+            {isSuccess ? (
+                <div className="space-y-8 text-center animate-fade-in">
+                    <div className="p-6 bg-blue-500/10 text-blue-400 rounded-3xl border border-blue-500/20 font-black text-[10px] uppercase tracking-[0.2em] leading-relaxed">
+                        {message}
                     </div>
-
-                    <div className="mb-10 text-center">
-                        <div className="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6">🔑</div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h2>
-                        <p className="text-gray-500 font-medium">No worries, we'll send you reset instructions.</p>
-                    </div>
-
-                    {isSuccess ? (
-                        <div className="space-y-8 text-center animate-fade-in">
-                            <div className="p-6 bg-emerald-50 text-emerald-600 rounded-3xl border border-emerald-100 font-bold">
-                                {message}
-                            </div>
-                            <a
-                                href="#login"
-                                className="block w-full p-5 bg-orange-500 text-white rounded-[1.5rem] text-lg font-bold transition-all duration-300 shadow-xl shadow-orange-500/20 hover:bg-orange-600 hover:-translate-y-1 hover:shadow-2xl"
-                            >
-                                Back to Login
-                            </a>
-                        </div>
-                    ) : (
-                        <form className="space-y-6" onSubmit={handleSubmit}>
-                            <div className="space-y-2">
-                                <label htmlFor="email" className="text-sm text-gray-800 font-bold ml-1">Email Address</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="you@example.com"
-                                    className="w-full p-5 bg-gray-50 border-2 border-transparent rounded-[1.5rem] text-base transition-all duration-300 focus:outline-none focus:bg-white focus:border-orange-200 focus:ring-4 focus:ring-orange-100/50"
-                                    required
-                                />
-                            </div>
-
-                            {message && (
-                                <div className="p-4 bg-red-50 text-red-600 rounded-2xl border border-red-100 text-center font-bold text-sm animate-fade-in">
-                                    {message}
-                                </div>
-                            )}
-
-                            <button
-                                type="submit"
-                                className={`w-full p-5 bg-orange-500 text-white rounded-[1.5rem] text-lg font-bold transition-all duration-300 shadow-xl shadow-orange-500/20 ${loading
-                                        ? 'opacity-70 cursor-not-allowed'
-                                        : 'hover:bg-orange-600 hover:-translate-y-1 hover:shadow-2xl'
-                                    }`}
-                                disabled={loading}
-                            >
-                                {loading ? 'Sending...' : 'Reset Password'}
-                            </button>
-
-                            <div className="text-center pt-4">
-                                <a href="#login" className="text-gray-500 hover:text-orange-500 font-bold transition-colors">
-                                    ← Back to Login
-                                </a>
-                            </div>
-                        </form>
-                    )}
+                    <Link
+                        to="/login"
+                        className="block w-full py-4 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-600/20 hover:bg-blue-500 hover:shadow-blue-500/40 hover:-translate-y-0.5"
+                    >
+                        Return to Terminal
+                    </Link>
                 </div>
-            </div>
-        </div>
+            ) : (
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    <div className="mb-8 text-center">
+                        <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 border border-blue-500/20">🔑</div>
+                        <p className="text-slate-400 text-xs font-medium leading-relaxed">
+                            Enter your registered identity email to receive an encrypted recovery sequence.
+                        </p>
+                    </div>
+
+                    <div>
+                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1.5 ml-1">Identity Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="email@example.com"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all font-medium placeholder:text-slate-600"
+                            required
+                        />
+                    </div>
+
+                    {message && (
+                        <div className="p-4 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20 text-center font-black text-[10px] uppercase tracking-widest animate-fade-in">
+                            {message}
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`w-full py-4 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-600/20 ${loading
+                            ? 'opacity-70 cursor-not-allowed'
+                            : 'hover:bg-blue-500 hover:shadow-blue-500/40 hover:-translate-y-0.5'
+                            }`}
+                    >
+                        {loading ? 'Sending Request...' : 'Reset Password'}
+                    </button>
+
+                    <div className="text-center pt-4 border-t border-white/5">
+                        <Link to="/login" className="text-[10px] font-black text-slate-500 hover:text-blue-400 uppercase tracking-widest transition-colors">
+                            ← Return to Login
+                        </Link>
+                    </div>
+                </form>
+            )}
+        </AuthLayout>
     );
 };
 
 export default ForgotPassword;
+

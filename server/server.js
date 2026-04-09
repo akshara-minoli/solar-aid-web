@@ -8,8 +8,23 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import contactRoutes from './routes/contact.js';
+import householdRoutes from './routes/households.js';
+import consultationRoutes from './routes/consultations.js';
+import assistanceRoutes from './routes/assistances.js';
+import weatherRoutes from './routes/weather.js';
+import adminRoutes from './routes/admin.js';
+import technicianRoutes from './routes/technicians.js';
+import maintenanceScheduleRoutes from './routes/maintenance-schedules.js';
+import educationRoutes from './routes/education.js';
+import notificationRoutes from './routes/notifications.js';
+import feedbackRoutes from './routes/feedback.js';
+
+import initializeFirebase from './config/firebase.js';
 
 dotenv.config();
+
+// Initialize Firebase Admin
+initializeFirebase();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,11 +34,17 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',') || '*',
-  credentials: true
+  origin: ["http://localhost:5177", "http://localhost:5176", "http://localhost:5175", "http://localhost:5174", "http://localhost:5173", "http://127.0.0.1:5177", "http://127.0.0.1:5176", "http://127.0.0.1:5175", "http://127.0.0.1:5173"],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve uploaded images
+import path from 'path';
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Basic route
 app.get('/', (req, res) => {
@@ -32,7 +53,7 @@ app.get('/', (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'Server is healthy',
     database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
   });
@@ -42,6 +63,18 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/households', householdRoutes);
+app.use('/api/consultations', consultationRoutes);
+app.use('/api/assistances', assistanceRoutes);
+app.use('/api/weather', weatherRoutes);
+app.use('/api/technicians', technicianRoutes);
+app.use('/api/maintenance-schedules', maintenanceScheduleRoutes);
+// Member 4: Education & Communication Routes
+app.use('/api/education', educationRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/feedback', feedbackRoutes);
+// Admin routes (users, consultations, products management)
+app.use('/api/admin', adminRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

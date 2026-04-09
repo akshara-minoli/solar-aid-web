@@ -1,7 +1,16 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { registerUser, loginUser } from '../controllers/userController.js';
+import { 
+  registerUser, 
+  loginUser, 
+  getUserProfile, 
+  updateUserProfile, 
+  deleteUserAccount,
+  getAllUsers,
+  getUserById
+} from '../controllers/userController.js';
 import { forgotPassword } from '../controllers/authController.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -35,9 +44,18 @@ const forgotPasswordValidation = [
     .normalizeEmail()
 ];
 
-// Routes matching your requirements
+// Public routes
 router.post('/register', registerValidation, registerUser);
 router.post('/login', loginValidation, loginUser);
 router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
+
+// Protected routes - User profile management
+router.get('/profile', protect, getUserProfile);
+router.put('/profile', protect, updateUserProfile);
+router.delete('/profile', protect, deleteUserAccount);
+
+// Admin routes - Get all users or specific user
+router.get('/', protect, getAllUsers);
+router.get('/:id', protect, getUserById);
 
 export default router;

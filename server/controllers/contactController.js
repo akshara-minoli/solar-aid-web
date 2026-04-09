@@ -1,4 +1,5 @@
 import Contact from '../models/Contact.js';
+import { sendContactFormEmail } from '../services/emailService.js';
 
 // @desc    Submit contact form
 // @route   POST /api/contact
@@ -21,6 +22,9 @@ export const submitContactForm = async (req, res) => {
       email,
       message
     });
+
+    // Send email notification to admin
+    await sendContactFormEmail({ name, email, message });
 
     res.status(201).json({
       success: true,
