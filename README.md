@@ -185,6 +185,131 @@ Performance testing simulates user traffic and concurrent request handling using
 
 See `.env.example` for required environment variables. Create a `.env` file in both `client/` and `server/` directories with your actual values.
 
+### Backend (`server/.env`)
+
+- `MONGO_URI` or `MONGODB_URI`
+- `JWT_SECRET`
+- `JWT_EXPIRE`
+- `CORS_ORIGIN` (optional, comma-separated allowed origins)
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_PRIVATE_KEY`
+- `FIREBASE_CLIENT_EMAIL`
+- `OPENWEATHER_API_KEY`
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE`
+- `EMAIL_HOST`
+- `EMAIL_PORT`
+- `EMAIL_SECURE`
+- `EMAIL_USER`
+- `EMAIL_PASS` (or `EMAIL_PASSWORD`)
+- `ADMIN_EMAIL`
+- `GOOGLE_MAPS_API_KEY`
+- `PORT` (optional in Render)
+
+### Frontend (`client/.env.local`)
+
+- `VITE_API_URL`
+- `VITE_API_BASE_URL`
+
+## Deployment Guide (Render + Vercel)
+
+### 1. Local Pre-Check
+
+1. Run backend locally:
+   ```bash
+   cd server
+   npm install
+   npm start
+   ```
+2. Run frontend locally:
+   ```bash
+   cd client
+   npm install
+   npm run dev
+   ```
+3. Confirm frontend requests hit backend successfully.
+
+### 2. Push to GitHub
+
+1. Commit all required code changes.
+2. Push to your deployment branch (usually `main`).
+3. Ensure Vercel and Render are connected to the same canonical repository.
+
+### 3. Deploy Backend on Render
+
+1. Create a **New Web Service** in Render.
+2. Connect your GitHub repository.
+3. Use these settings:
+   - Root Directory: `server`
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Environment: `Node`
+4. Add backend environment variables listed above.
+5. Deploy and verify health check:
+   - `https://solar-aid-web.onrender.com/api/health`
+
+Notes:
+- For `FIREBASE_PRIVATE_KEY`, keep newlines escaped as `\n` in Render.
+- Current backend CORS setup supports localhost dev, optional `CORS_ORIGIN`, and secure `*.vercel.app` origins.
+
+### 4. Deploy Frontend on Vercel
+
+1. Import the same GitHub repository in Vercel.
+2. Use these settings:
+   - Framework Preset: `Vite`
+   - Root Directory: `client`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+3. Add frontend environment variables:
+   - `VITE_API_URL=https://solar-aid-web.onrender.com/api`
+   - `VITE_API_BASE_URL=https://solar-aid-web.onrender.com`
+4. Deploy and verify frontend loads correctly.
+
+### 5. End-to-End Verification
+
+1. Open frontend URL:
+   - `https://solar-aid-web-group.vercel.app`
+2. Test authentication and core workflows (households, consultations, weather, profile).
+3. In browser Network tab, confirm API calls go to `solar-aid-web.onrender.com`.
+4. Confirm no CORS, JSON parsing, or 401/500 regressions.
+
+### 6. Deployment Evidence
+
+1. Render deployment ready
+
+![Render Deployment Ready](docs/evidence/Render-deployment-ready.png)
+
+2. Render live service ready
+
+![Render Live Ready](docs/evidence/Render-live-ready.png)
+
+3. Render environment variables configured
+
+![Render Environment Variables](docs/evidence/Render-Environment-Variables.jpeg)
+
+4. Vercel deployment ready
+
+![Vercel Deployment Ready](docs/evidence/vercel-deployment-ready.png)
+
+5. Live frontend running on Vercel
+
+![Frontend Live Home](docs/evidence/frontend-live-home.png)
+
+6. Backend health endpoint JSON response
+
+![Backend Health Endpoint](docs/evidence/backend-health-endpoint.png)
+
+7. Frontend API success from Network tab
+
+![Frontend Network API Success](docs/evidence/frontend-network-api-success.png)
+
+## Live URLs
+
+- Frontend: `https://solar-aid-web-group.vercel.app`
+- Backend API: `https://solar-aid-web.onrender.com/api`
+- Backend Health: `https://solar-aid-web.onrender.com/api/health`
+
 ## Weather Insight Integration
 
 This system integrates OpenWeather API to:
@@ -204,4 +329,4 @@ For questions or issues, please contact the project maintainers or create a GitH
 
 ---
 
-**Last Updated:** February 2026
+**Last Updated:** April 2026
