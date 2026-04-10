@@ -80,7 +80,6 @@ export default function AdminDashboard() {
     { href: '/admin/education', label: 'Manage Education', icon: '📚' },
     { href: '/admin/notifications', label: 'Send Notifications', icon: '🔔' },
     { href: '/admin/feedback', label: 'View Feedback', icon: '💬' },
-    { href: '/home', label: 'User Dashboard', icon: '👤' },
   ]
 
   return (
