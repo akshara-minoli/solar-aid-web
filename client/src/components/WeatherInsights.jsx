@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const WeatherInsights = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
     const [weatherData, setWeatherData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,7 +12,7 @@ const WeatherInsights = () => {
                 const token = localStorage.getItem('token');
 
                 // 1. Fetch household data to get district
-                const householdResponse = await fetch('/api/households', {
+                const householdResponse = await fetch(`${API_URL}/households`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const householdData = await householdResponse.json();
@@ -22,7 +23,7 @@ const WeatherInsights = () => {
                 }
 
                 // 2. Fetch weather for that district
-                const weatherResponse = await fetch(`/api/weather?city=${userDistrict}`, {
+                const weatherResponse = await fetch(`${API_URL}/weather?city=${encodeURIComponent(userDistrict)}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const weatherData = await weatherResponse.json();

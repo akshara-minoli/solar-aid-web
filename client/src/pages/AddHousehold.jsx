@@ -11,6 +11,7 @@ const districts = [
 ];
 
 const AddHousehold = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
     const [formData, setFormData] = useState({
         houseType: '',
         roofArea: '',
@@ -45,7 +46,7 @@ const AddHousehold = () => {
     const fetchHouseholdData = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/households/${id}`, {
+            const response = await fetch(`${API_URL}/households/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -84,8 +85,8 @@ const AddHousehold = () => {
         try {
             const token = localStorage.getItem('token');
             const url = isEditMode
-                ? `/api/households/${householdId}`
-                : '/api/households';
+                ? `${API_URL}/households/${householdId}`
+                : `${API_URL}/households`;
 
             const method = isEditMode ? 'PUT' : 'POST';
 
