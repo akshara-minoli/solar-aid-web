@@ -48,6 +48,15 @@ const configuredOrigins = (process.env.CORS_ORIGIN || '')
 
 const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])];
 
+const isAllowedVercelOrigin = (origin) => {
+  try {
+    const parsed = new URL(origin);
+    return parsed.protocol === 'https:' && parsed.hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+};
+
 // MongoDB Connection
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
@@ -56,7 +65,7 @@ if (process.env.NODE_ENV !== 'test') {
 // Middleware
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || isAllowedVercelOrigin(origin)) {
       return callback(null, true);
     }
     return callback(new Error('CORS blocked for this origin'));
