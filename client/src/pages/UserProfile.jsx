@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const UserProfile = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +25,7 @@ const UserProfile = () => {
     const fetchUserData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/users/profile', {
+            const response = await fetch(`${API_URL}/users/profile`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -67,7 +68,7 @@ const UserProfile = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/users/profile', {
+            const response = await fetch(`${API_URL}/users/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ const UserProfile = () => {
     const handleDelete = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('/api/users/profile', {
+            const response = await fetch(`${API_URL}/users/profile`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

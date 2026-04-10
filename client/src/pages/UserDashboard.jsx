@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('overview');
     const [latestConsult, setLatestConsult] = useState(null);
@@ -32,21 +33,21 @@ const UserDashboard = () => {
                 const headers = { 'Authorization': `Bearer ${token}` };
 
                 // Fetch Consultations
-                const consultRes = await fetch('/api/consultations', { headers });
+                const consultRes = await fetch(`${API_URL}/consultations`, { headers });
                 const consultData = await consultRes.json();
                 if (consultData.success && consultData.data && consultData.data.length > 0) {
                     setLatestConsult(consultData.data[0]);
                 }
 
                 // Fetch Households
-                const householdRes = await fetch('/api/households', { headers });
+                const householdRes = await fetch(`${API_URL}/households`, { headers });
                 const householdData = await householdRes.json();
                 if (householdData.success) {
-                    setHouseholdCount(householdData.data.length);
+                    setHouseholdCount((householdData.households || []).length);
                 }
 
                 // Fetch Service Requests
-                const serviceRes = await fetch('/api/assistances', { headers });
+                const serviceRes = await fetch(`${API_URL}/assistances`, { headers });
                 const serviceData = await serviceRes.json();
                 if (serviceData.success) {
                     const pending = serviceData.data.filter(r => r.status === 'Pending').length;

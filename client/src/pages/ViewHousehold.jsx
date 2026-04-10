@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const ViewHousehold = () => {
+  const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
   const [householdData, setHouseholdData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -12,7 +13,7 @@ const ViewHousehold = () => {
     const fetchHouseholdData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/households', {
+        const response = await fetch(`${API_URL}/households`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -53,7 +54,7 @@ const ViewHousehold = () => {
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/households/${householdData._id}`, {
+      const response = await fetch(`${API_URL}/households/${householdData._id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`
