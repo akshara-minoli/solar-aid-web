@@ -1,6 +1,9 @@
 # Solar Aid API Documentation
 
-Base URL: `http://localhost:5000/api`
+## Base URLs
+
+- Production: `https://solar-aid-web.onrender.com/api`
+- Development (Local): `http://localhost:5000/api`
 
 ## Authentication Endpoints
 
