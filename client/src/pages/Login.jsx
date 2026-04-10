@@ -30,7 +30,7 @@ const Login = () => {
   const testConnection = async () => {
     try {
       setMessage('Testing connection...');
-      const response = await fetch('http://localhost:5000/api/health');
+      const response = await fetch('https://solar-aid-web.onrender.com/api/health');
       const data = await response.json();
       if (response.ok) {
         setMessage(`✅ Server connected: ${data.status}`);
@@ -53,7 +53,7 @@ const Login = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('https://solar-aid-web.onrender.com/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

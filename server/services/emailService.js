@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS || process.env.EMAIL_PASSWORD;
+
 // Create a transporter using SMTP
 // User will need to provide actual SMTP credentials in .env
 const transporter = nodemailer.createTransport({
@@ -10,8 +13,8 @@ const transporter = nodemailer.createTransport({
     port: process.env.EMAIL_PORT || 587,
     secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for other ports
     auth: {
-        user: process.env.EMAIL_USER, // your email
-        pass: process.env.EMAIL_PASS, // your email password or app password
+        user: emailUser, // your email
+        pass: emailPass, // your email password or app password
     },
 });
 
@@ -21,13 +24,13 @@ const transporter = nodemailer.createTransport({
  */
 export const sendEmail = async (options) => {
     try {
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        if (!emailUser || !emailPass) {
             console.warn('⚠️ Email credentials missing in .env. Skipping email send.');
             return;
         }
 
         const mailOptions = {
-            from: `"Solar Aid" <${process.env.EMAIL_USER}>`,
+            from: `"Solar Aid" <${emailUser}>`,
             to: options.to,
             subject: options.subject,
             text: options.text,
@@ -48,7 +51,7 @@ export const sendEmail = async (options) => {
  */
 export const sendContactFormEmail = async (contactData) => {
     try {
-        const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+        const adminEmail = process.env.ADMIN_EMAIL || emailUser;
 
         if (!adminEmail) {
             console.warn('⚠️ Admin email not defined. Skipping contact notification.');
