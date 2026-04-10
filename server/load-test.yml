@@ -1,0 +1,16 @@
+config:
+  target: "http://localhost:5000"
+  phases:
+    - duration: 10
+      arrivalRate: 5
+      name: "Warm up phase"
+    - duration: 20
+      arrivalRate: 20
+      name: "Sustained load phase"
+scenarios:
+  - name: "API Health and Base Routes Verification"
+    flow:
+      - get:
+          url: "/"
+      - get:
+          url: "/api/health"
