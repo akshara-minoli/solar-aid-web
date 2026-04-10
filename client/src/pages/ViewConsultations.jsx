@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 
 const ViewConsultations = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
     const [consultations, setConsultations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -24,7 +25,7 @@ const ViewConsultations = () => {
                 return;
             }
 
-            const response = await fetch('/api/consultations', {
+            const response = await fetch(`${API_URL}/consultations`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -71,7 +72,7 @@ const ViewConsultations = () => {
     const handleUpdate = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/consultations/${id}`, {
+            const response = await fetch(`${API_URL}/consultations/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ const ViewConsultations = () => {
     const handleDelete = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`/api/consultations/${id}`, {
+            const response = await fetch(`${API_URL}/consultations/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

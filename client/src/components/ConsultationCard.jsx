@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 const ConsultationCard = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://solar-aid-web.onrender.com/api';
     const [showForm, setShowForm] = useState(false);
     const [formData, setFormData] = useState({
         fullName: '',
@@ -35,7 +36,7 @@ const ConsultationCard = () => {
                 return;
             }
 
-            const response = await fetch('/api/consultations', {
+            const response = await fetch(`${API_URL}/consultations`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

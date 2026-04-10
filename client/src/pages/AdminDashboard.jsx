@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import api from '../api'
 import AdminProfileMenu from '../components/AdminProfileMenu'
@@ -79,7 +80,7 @@ export default function AdminDashboard() {
     { href: '/admin/education', label: 'Manage Education', icon: '📚' },
     { href: '/admin/notifications', label: 'Send Notifications', icon: '🔔' },
     { href: '/admin/feedback', label: 'View Feedback', icon: '💬' },
-    { href: '/dashboard', label: 'User Dashboard', icon: '👤' },
+    { href: '/home', label: 'User Dashboard', icon: '👤' },
   ]
 
   return (
@@ -173,14 +174,14 @@ export default function AdminDashboard() {
                   </h2>
                   <div className="grid grid-cols-2 gap-3">
                     {quickLinks.map((link, idx) => (
-                      <a
+                      <Link
                         key={idx}
-                        href={link.href}
+                        to={link.href}
                         className="flex flex-col items-center justify-center p-4 rounded-lg bg-white/5 border border-white/5 hover:bg-blue-500/20 hover:border-blue-500/30 transition-all text-center group"
                       >
                         <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{link.icon}</span>
                         <span className="text-xs font-medium text-slate-300 group-hover:text-blue-200">{link.label}</span>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
