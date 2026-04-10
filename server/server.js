@@ -29,12 +29,36 @@ initializeFirebase();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const defaultOrigins = [
+  'http://localhost:5177',
+  'http://localhost:5176',
+  'http://localhost:5175',
+  'http://localhost:5174',
+  'http://localhost:5173',
+  'http://127.0.0.1:5177',
+  'http://127.0.0.1:5176',
+  'http://127.0.0.1:5175',
+  'http://127.0.0.1:5173'
+];
+
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = [...new Set([...defaultOrigins, ...configuredOrigins])];
+
 // MongoDB Connection
 connectDB();
 
 // Middleware
 app.use(cors({
-  origin: ["http://localhost:5177", "http://localhost:5176", "http://localhost:5175", "http://localhost:5174", "http://localhost:5173", "http://127.0.0.1:5177", "http://127.0.0.1:5176", "http://127.0.0.1:5175", "http://127.0.0.1:5173"],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS blocked for this origin'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
