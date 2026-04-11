@@ -307,7 +307,7 @@ Notes:
 ## Live URLs
 
 - Frontend: `https://solar-aid-web-group.vercel.app`
-- Backend API: `https://solar-aid-web.onrender.com/api`
+- Backend : `https://solar-aid-web.onrender.com`
 - Backend Health: `https://solar-aid-web.onrender.com/api/health`
 
 ## Weather Insight Integration
