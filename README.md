@@ -125,6 +125,39 @@ chore: Update dependencies
 - Test your changes locally before pushing
 - Resolve conflicts promptly
 
+## API Endpoints Documentation
+
+The backend service exposes a comprehensive set of RESTful API endpoints. Below is a structured overview of the primary routes, their relevant HTTP methods, and their core responsibilities.
+
+### Core Services
+
+| Endpoint Route | Typical Methods | Responsible Domain | Description |
+| --- | --- | --- | --- |
+| `/api/auth` | `POST` | Authentication | User registration, login, and token generation. |
+| `/api/users` | `GET`, `PUT`, `DELETE` | User Management | Handles user profile CRUD operations and role verifications. |
+| `/api/households` | `GET`, `POST`, `PUT`, `DELETE` | Household Management | Manages household solar installations and energy configurations. |
+| `/api/consultations` | `GET`, `POST`, `PUT` | Consultation Service | Schedules and manages professional solar assessment consultations. |
+| `/api/weather` | `GET` | Weather Integration | Provides real-time weather, cloud coverage, and solar efficiency data via OpenWeather API. |
+
+### Operational Services
+
+| Endpoint Route | Typical Methods | Responsible Domain | Description |
+| --- | --- | --- | --- |
+| `/api/technicians` | `GET`, `POST`, `PUT`, `DELETE` | Technician Management | Manages technician profiles, skills, and availability. |
+| `/api/maintenance-schedules` | `GET`, `POST`, `PUT` | Maintenance Service | Tracks and schedules ongoing solar panel maintenance. |
+| `/api/assistances` | `GET`, `POST`, `PUT` | Support Service | Manages incoming customer assistance requests. |
+| `/api/contact` | `POST`, `GET` | Contact Service | Handles incoming contact form submissions from the landing page. |
+
+### Communication & Administration
+
+| Endpoint Route | Typical Methods | Responsible Domain | Description |
+| --- | --- | --- | --- |
+| `/api/education` | `GET`, `POST`, `PUT`, `DELETE` | Education | Manages educational materials and resources for customers. |
+| `/api/notifications` | `GET`, `POST`, `PUT`, `DELETE` | Notifications | Handles dispatching and viewing user-specific system notifications. |
+| `/api/feedback` | `GET`, `POST` | Feedback | Collects and manages user feedback and system reviews. |
+| `/api/admin` | `GET`, `POST`, `PUT`, `DELETE` | Administration | Provides overarching administrative control over users, consultations, and the system. |
+| `/api/health` | `GET` | System | Returns system health checks and database connection status. |
+
 ## Testing Instruction Report
 
 ### i. How to Run Unit Tests
